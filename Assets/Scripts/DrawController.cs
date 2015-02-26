@@ -4,6 +4,7 @@ using System.Collections;
 public class DrawController : MonoBehaviour {
 
     public GameObject toDraw;
+    public Museum currentMuseum;
 
 	// Use this for initialization
 	void Start () {
