@@ -24,7 +24,7 @@ public class DrawController : MonoBehaviour {
             if (Physics.Raycast(origin, dir, out info,1 << 8)) {
                 var hitPosition = new Vector3(Mathf.Floor(info.point.x+0.5f), 0.5f, Mathf.Floor(info.point.z+0.5f));
                 Debug.Log(hitPosition +" "+ info.point);
-                GameObject.Instantiate(toDraw, hitPosition, toDraw.transform.rotation);
+                currentMuseum.SetTile((int)Mathf.Floor(info.point.x+0.5f), 0, (int)Mathf.Floor(info.point.z+0.5f),0,0,0);
             }
         }
 	}

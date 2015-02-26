@@ -14,7 +14,8 @@ public class Museum : MonoBehaviour {
     public void SetTile(int x = 0, int y = 0, int z = 0, int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0) {
         RemoveTile(x, y, z);
         GameObject tileObject = new GameObject();
-        tileObject.transform.position = new Vector3(x, y, z);
+        tileObject.transform.parent = transform.parent;
+        tileObject.transform.localPosition = new Vector3(x, y, z);
         var tile = tileObject.AddComponent<MuseumTile>();
         tiles.Add(tile);
         tile.x = x;
@@ -35,10 +36,10 @@ public class Museum : MonoBehaviour {
         else frontTile.back = false;
         if (backTile == null) tile.back = true;
         else backTile.front = false;
-        leftTile.UpdateEdges();
-        rightTile.UpdateEdges();
-        backTile.UpdateEdges();
-        frontTile.UpdateEdges();
+        if (leftTile != null) leftTile.UpdateEdges();
+        if (rightTile != null) rightTile.UpdateEdges();
+        if (backTile != null) backTile.UpdateEdges();
+        if (frontTile != null) frontTile.UpdateEdges();
     }
 
     public void RemoveTile(int x, int y, int z) {
@@ -55,10 +56,10 @@ public class Museum : MonoBehaviour {
             if (rightTile != null) rightTile.left = true;
             if (frontTile != null) frontTile.back = true;
             if (backTile != null) backTile.front = true;
-            leftTile.UpdateEdges();
-            rightTile.UpdateEdges();
-            frontTile.UpdateEdges();
-            backTile.UpdateEdges();
+            if (leftTile != null) leftTile.UpdateEdges();
+            if (rightTile != null) rightTile.UpdateEdges();
+            if (backTile != null) backTile.UpdateEdges();
+            if (frontTile != null) frontTile.UpdateEdges();
         }
     }
 

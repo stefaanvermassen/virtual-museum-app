@@ -12,12 +12,15 @@ public class MuseumTile : MonoBehaviour {
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
 	void Start () {
+        transform.position = new Vector3(x, y, z);
         upObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
         upObject.transform.parent = gameObject.transform;
-        upObject.transform.Rotate(new Vector3(0, 90, 0));
+        upObject.transform.localPosition = new Vector3(0,0,0);
+        upObject.transform.Rotate(new Vector3(90, 0, 0));
         downObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
         downObject.transform.parent = gameObject.transform;
-        downObject.transform.Rotate(new Vector3(0, 90, 0));
+        downObject.transform.localPosition = new Vector3(0, 1, 0);
+        downObject.transform.Rotate(new Vector3(-90, 0, 0));
         UpdateEdges();
 	}
 	
@@ -38,7 +41,8 @@ public class MuseumTile : MonoBehaviour {
         if (left && leftObject == null) {
             leftObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
             leftObject.transform.parent = gameObject.transform;
-            leftObject.transform.Rotate(new Vector3(0, 90, 0));
+            leftObject.transform.localPosition = new Vector3(-0.5f, 0.5f, 0);
+            leftObject.transform.Rotate(new Vector3(0, -90, 0));
         }
         if (!left && leftObject != null) {
             Destroy(leftObject);
@@ -47,6 +51,7 @@ public class MuseumTile : MonoBehaviour {
         if (right && rightObject == null) {
             rightObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
             rightObject.transform.parent = gameObject.transform;
+            rightObject.transform.localPosition = new Vector3(0.5f, 0.5f, 0);
             rightObject.transform.Rotate(new Vector3(0, 90, 0));
         }
         if (!right && rightObject != null) {
@@ -56,7 +61,8 @@ public class MuseumTile : MonoBehaviour {
         if (front && frontObject == null) {
             frontObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
             frontObject.transform.parent = gameObject.transform;
-            frontObject.transform.Rotate(new Vector3(0, 90, 0));
+            frontObject.transform.localPosition = new Vector3(0, 0.5f, 0.5f);
+            frontObject.transform.Rotate(new Vector3(0, 0, 0));
         }
         if (!front && frontObject != null) {
             Destroy(frontObject);
@@ -65,7 +71,8 @@ public class MuseumTile : MonoBehaviour {
         if (back && backObject == null) {
             backObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
             backObject.transform.parent = gameObject.transform;
-            backObject.transform.Rotate(new Vector3(0, 90, 0));
+            backObject.transform.localPosition = new Vector3(0, 0.5f, -0.5f);
+            backObject.transform.Rotate(new Vector3(0, 180, 0));
         }
         if (!back && backObject != null) {
             Destroy(backObject);
