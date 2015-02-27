@@ -25,7 +25,7 @@ class PerformBuild
 
     static string GetBuildPathAndroid()
     {
-		return "build.apk";
+		return "C:\\WebServer\\teamsite\\build.apk";
     }
 
     [UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Android")]
