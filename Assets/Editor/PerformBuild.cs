@@ -31,23 +31,23 @@ class PerformBuild
     [UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Android")]
     static void CommandLineBuildAndroid()
     {
-		System.IO.StreamWriter file = new System.IO.StreamWriter("c:\\buildlog.txt");
+		//System.IO.StreamWriter file = new System.IO.StreamWriter("c:\\buildlog.txt");
 
-		file.WriteLine("Command line build android version\n------------------\n------------------");
+		//file.WriteLine("Command line build android version\n------------------\n------------------");
 
         string[] scenes = GetBuildScenes();
         string path = GetBuildPathAndroid();
         if (scenes == null || scenes.Length == 0 || path == null)
             return;
 
-		file.WriteLine (string.Format ("Path: \"{0}\"", path));
+		//file.WriteLine (string.Format ("Path: \"{0}\"", path));
         for (int i = 0; i < scenes.Length; ++i)
         {
-			file.WriteLine(string.Format("Scene[{0}]: \"{1}\"", i, scenes[i]));
+			//file.WriteLine(string.Format("Scene[{0}]: \"{1}\"", i, scenes[i]));
         }
 
-		file.WriteLine("Starting Android Build!");
+		//file.WriteLine("Starting Android Build!");
         BuildPipeline.BuildPlayer(scenes, path, BuildTarget.Android, BuildOptions.None);
-		file.Close();
+		//file.Close();
     }
 }
