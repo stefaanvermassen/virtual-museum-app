@@ -8,12 +8,10 @@ public class DrawController : MonoBehaviour {
     public float cameraSpeed = 10;
     public float edgeRatio = 0.05f;
 
-	// Use this for initialization
 	void Start () {
 	
 	}
 	
-	// Update is called once per frame
     void Update() {
         var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
         var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
