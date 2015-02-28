@@ -1,9 +1,10 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Editor\PerformBuild.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\ScanEngine\IDScanner.cs">
     <Files>
-      <File FileName="..\..\..\..\Program Files (x86)\Jenkins\jobs\1_build_virtual_museum\workspace\Assets\Editor\PerformBuild.cs" Line="1" Column="1" />
-      <File FileName="Assets\Editor\PerformBuild.cs" Line="16" Column="10" />
+      <File FileName="Assets\Scripts\ScanEngine\IDScanner.cs" Line="10" Column="3" />
+      <File FileName="Assets\Scripts\ScanEngine\Scanner.cs" Line="8" Column="43" />
+      <File FileName="Assets\Scripts\ScanEngine\QRScanner.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
