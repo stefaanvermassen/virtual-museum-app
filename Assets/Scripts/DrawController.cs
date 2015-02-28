@@ -68,7 +68,7 @@ public class DrawController : MonoBehaviour {
         }
         if (dragging) {
             var diff = new Vector3(Input.mousePosition.x, 0, Input.mousePosition.y) - dragPoint;
-            Camera.main.transform.position += diff.normalized * diff.magnitude / Display.main.renderingHeight * cameraSpeed * Time.deltaTime;
+            Camera.main.transform.Translate(diff.normalized * diff.magnitude / Display.main.renderingHeight * cameraSpeed * Time.deltaTime, Space.World);
         }
     }
 
@@ -89,8 +89,8 @@ public class DrawController : MonoBehaviour {
             dragging = false;
         }
         if (dragging) {
-            var diff = Input.mousePosition.x - dragPoint.x / Display.main.renderingHeight ;
-            Camera.main.transform.Rotate(diff, 0, 0);
+            var diff = (Input.mousePosition.x - dragPoint.x) / Display.main.renderingHeight ;
+            Camera.main.transform.Rotate(0, diff, 0, Space.World);
         }
     }
 }
