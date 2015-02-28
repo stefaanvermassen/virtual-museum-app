@@ -3,7 +3,7 @@
  * https://www.assetstore.unity3d.com/en/#!/content/18308
  */
 
-#define thread //comment out this line if you would like to disable multi-threaded search
+//#define thread //comment out this line if you would like to disable multi-threaded search
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,7 +23,7 @@ public class FileBrowser
     public GUISkin guiSkin; //The GUISkin to use
     public int layoutType { get { return layout; } } //returns the current Layout type
     public Texture2D fileTexture, directoryTexture, backTexture, driveTexture; //textures used to represent file types
-    public GUIStyle backStyle, cancelStyle, selectStyle; //styles used for specific buttons
+    public GUIStyle backStyle, cancelStyle, selectStyle, searchStyle; //styles used for specific buttons
     public Color selectedColor = new Color(0.5f, 0.5f, 0.9f); //the color of the selected file
     public bool isVisible { get { return visible; } } //check if the file browser is currently visible
     //File Options
@@ -98,8 +98,8 @@ public class FileBrowser
             case 0: // Non-mobile
                 // Draw statusbar on top
                 GUILayout.BeginHorizontal("box");
-                GUILayout.FlexibleSpace();
-                GUILayout.Label(currentDirectory.FullName);
+                GUILayout.Space(10);
+                GUILayout.Label(currentDirectory.FullName, guiSkin.GetStyle("label"));
                 GUILayout.FlexibleSpace();
                 if (showSearch)
                 {
@@ -163,6 +163,7 @@ public class FileBrowser
                     outputFile = null;
                     return true;
                 }
+
                 if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { return true; }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
@@ -224,7 +225,7 @@ public class FileBrowser
                 }
                 GUILayout.EndScrollView();
 
-                if ((selectStyle == null) ? GUILayout.Button("Select") : GUILayout.Button("Select", selectStyle)) { return true; }
+                if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { return true; }
                 if ((cancelStyle == null) ? GUILayout.Button("Cancel") : GUILayout.Button("Cancel", cancelStyle))
                 {
                     outputFile = null;
@@ -247,7 +248,7 @@ public class FileBrowser
         else
         {
             searchBarString = GUILayout.TextField(searchBarString, GUILayout.MinWidth(150));
-            if (GUILayout.Button("Search"))
+            if ((searchStyle != null) ? GUILayout.Button("Search", searchStyle) : GUILayout.Button("Search"))
             {
                 if (searchBarString.Length > 0)
                 {
@@ -257,7 +258,7 @@ public class FileBrowser
                     t = new Thread(threadSearchFileList);
                     t.Start(true);
 #else
-					searchFileList(currentDirectory);
+                    searchFileList(currentDirectory);
 #endif
                 }
                 else
@@ -321,8 +322,8 @@ public class FileBrowser
         files = new List<FileInformation>();
         foreach (string s in imageExtensions)
         {
-            FileInfo[] fia = di.GetFiles(searchPattern + "?.png");
-            //FileInfo[] fia = searchDirectory(di,searchPattern);
+            //FileInfo[] fia = di.GetFiles(searchPattern + "?.png");
+            FileInfo[] fia = searchDirectory(di, searchPattern + "?." + s, false);
             foreach (FileInfo info in fia)
             {
                 FileInformation finfo = new FileInformation(info, fileTexture);
@@ -336,20 +337,22 @@ public class FileBrowser
 
     protected void searchFileList(DirectoryInfo di)
     {
-        //(searchBarString.IndexOf("*") >= 0)?searchBarString:"*"+searchBarString+"*"; //this allows for more intuitive searching for strings in file names
-        FileInfo[] fia = di.GetFiles((searchBarString.IndexOf("*") >= 0) ? searchBarString : "*" + searchBarString + "*", (searchRecursively) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
         files.Clear();
-        for (int f = 0; f < fia.Length; f++)
+        foreach (string s in imageExtensions)
         {
-            FileInformation finfo = new FileInformation(fia[f], fileTexture);
-            if (!files.Contains(finfo))
+            FileInfo[] fia = searchDirectory(di, (searchBarString.IndexOf("*") >= 0) ? searchBarString + "?." + s : "*" + searchBarString + "?." + s, searchRecursively);
+            for (int f = 0; f < fia.Length; f++)
             {
-                files.Add(finfo);
+                FileInformation finfo = new FileInformation(fia[f], fileTexture);
+                if (!files.Contains(finfo))
+                {
+                    files.Add(finfo);
+                }
             }
         }
 #if thread
 #else
-		isSearching = false;
+        isSearching = false;
 #endif
     }
 
@@ -360,13 +363,9 @@ public class FileBrowser
     }
 
     //search a directory by a search pattern, this is optionally recursive
-    public static FileInfo[] searchDirectory(DirectoryInfo di, string sp, bool recursive)
+    public FileInfo[] searchDirectory(DirectoryInfo di, string sp, bool recursive)
     {
         return di.GetFiles(sp, (recursive) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-    }
-    public static FileInfo[] searchDirectory(DirectoryInfo di, string sp)
-    {
-        return searchDirectory(di, sp, false);
     }
 
     public float brightness(Color c) { return c.r * .3f + c.g * .59f + c.b * .11f; }
@@ -382,6 +381,7 @@ public class FileInformation : System.Object
 {
     public FileInfo fi;
     public GUIContent gc;
+
 
     public FileInformation(FileInfo f, Texture2D img)
     {

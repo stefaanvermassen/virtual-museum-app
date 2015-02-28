@@ -3,7 +3,7 @@ using System.Collections;
 
 public class testFileBrowser : MonoBehaviour {
 	//skins and textures
-	public GUISkin[] skins;
+	public GUISkin guiSkin;
 	public Texture2D file,folder,back,drive;
 	
 	private string[] layoutTypes = {"Type 0","Type 1"};
@@ -14,7 +14,7 @@ public class testFileBrowser : MonoBehaviour {
     private void Start()
     {
 		//setup file browser style
-		fb.guiSkin = skins[0]; //set the starting skin
+        fb.guiSkin = guiSkin; //set the starting skin
 		//set the various textures
 		fb.fileTexture = file;
 		fb.directoryTexture = folder;
@@ -24,6 +24,11 @@ public class testFileBrowser : MonoBehaviour {
 		fb.showSearch = true;
 		//search recursively (setting recursive search may cause a long delay)
 		fb.searchRecursively = true;
+        GUIStyle cancelStyle = new GUIStyle(guiSkin.GetStyle("button"));
+        cancelStyle.alignment = TextAnchor.MiddleCenter;
+        fb.cancelStyle = cancelStyle;
+        fb.selectStyle = cancelStyle;
+        fb.searchStyle = cancelStyle;
 	}
 
     private void OnGUI()
