@@ -6,10 +6,8 @@ public class testFileBrowser : MonoBehaviour {
 	public GUISkin guiSkin;
 	public Texture2D file,folder,back,drive;
 	
-	private string[] layoutTypes = {"Type 0","Type 1"};
 	//initialize file browser
     private FileBrowser fb = new FileBrowser();
-    private string output = "no file";
 	// Use this for initialization
     private void Start()
     {

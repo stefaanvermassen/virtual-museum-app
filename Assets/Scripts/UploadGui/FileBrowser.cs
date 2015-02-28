@@ -3,7 +3,7 @@
  * https://www.assetstore.unity3d.com/en/#!/content/18308
  */
 
-//#define thread //comment out this line if you would like to disable multi-threaded search
+#define thread //comment out this line if you would like to disable multi-threaded search
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -43,6 +43,7 @@ public class FileBrowser
     protected bool visible = false;
     //Search
     protected string searchBarString = ""; //string used in search bar
+    protected string prevSearchBarString = "";
     protected bool isSearching = false; //do not show the search bar if searching
     //File Information
     protected DirectoryInfo currentDirectory;
@@ -58,6 +59,7 @@ public class FileBrowser
 #endif
     //Private
     private readonly string[] imageExtensions = { "png", "gif", "bmp", "jpg", "jpeg" };
+    private const int REQ_SEARCH_LENGTH = 3;
 
     //Constructors
     public FileBrowser(string directory, int layoutStyle, Rect guiRect) { currentDirectory = new DirectoryInfo(directory); layout = layoutStyle; guiSize = guiRect; }
@@ -116,46 +118,39 @@ public class FileBrowser
                 {
                     foreach (DirectoryInformation di in drives)
                     {
-                        if (di.button()) { getFileList(di.di); }
+                        if (di.button()) { getFileList(di.d); }
                     }
                 }
                 else
                 {
                     if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
-                        getFileList(parentDir.di);
+                        getFileList(parentDir.d);
                 }
                 foreach (DirectoryInformation di in directories)
                 {
-                    if (di.button()) { getFileList(di.di); }
+                    if (di.button()) { getFileList(di.d); }
                 }
                 GUILayout.EndScrollView();
                 GUILayout.EndVertical();
                 // Draw found items
                 GUILayout.BeginVertical("box");
-                if (isSearching)
+                fileScroll = GUILayout.BeginScrollView(fileScroll);
+                for (int fi = 0; fi < files.Count; fi++)
                 {
-                    drawSearchMessage();
-                }
-                else
-                {
-                    fileScroll = GUILayout.BeginScrollView(fileScroll);
-                    for (int fi = 0; fi < files.Count; fi++)
+                    if (selectedFile == fi)
                     {
-                        if (selectedFile == fi)
-                        {
-                            defaultColor = GUI.color;
-                            GUI.color = selectedColor;
-                        }
-                        if (files[fi].button())
-                        {
-                            outputFile = files[fi].fi;
-                            selectedFile = fi;
-                        }
-                        if (selectedFile == fi)
-                            GUI.color = defaultColor;
+                        defaultColor = GUI.color;
+                        GUI.color = selectedColor;
                     }
-                    GUILayout.EndScrollView();
+                    if (files[fi].button())
+                    {
+                        outputFile = files[fi].f;
+                        selectedFile = fi;
+                    }
+                    if (selectedFile == fi)
+                        GUI.color = defaultColor;
                 }
+                GUILayout.EndScrollView();
                 // Draw the bar containing the buttons
                 GUILayout.BeginHorizontal();
                 if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
@@ -181,52 +176,45 @@ public class FileBrowser
                 }
                 fileScroll = GUILayout.BeginScrollView(fileScroll);
 
-                if (isSearching)
+                if (showDrives)
                 {
-                    drawSearchMessage();
+                    GUILayout.BeginHorizontal();
+                    foreach (DirectoryInformation di in drives)
+                    {
+                        if (di.button()) { getFileList(di.d); }
+                    }
+                    GUILayout.EndHorizontal();
                 }
                 else
                 {
-                    if (showDrives)
-                    {
-                        GUILayout.BeginHorizontal();
-                        foreach (DirectoryInformation di in drives)
-                        {
-                            if (di.button()) { getFileList(di.di); }
-                        }
-                        GUILayout.EndHorizontal();
-                    }
-                    else
-                    {
-                        if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
-                            getFileList(parentDir.di);
-                    }
+                    if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
+                        getFileList(parentDir.d);
+                }
 
 
-                    foreach (DirectoryInformation di in directories)
+                foreach (DirectoryInformation di in directories)
+                {
+                    if (di.button()) { getFileList(di.d); }
+                }
+                for (int fi = 0; fi < files.Count; fi++)
+                {
+                    if (selectedFile == fi)
                     {
-                        if (di.button()) { getFileList(di.di); }
+                        defaultColor = GUI.color;
+                        GUI.color = selectedColor;
                     }
-                    for (int fi = 0; fi < files.Count; fi++)
+                    if (files[fi].button())
                     {
-                        if (selectedFile == fi)
-                        {
-                            defaultColor = GUI.color;
-                            GUI.color = selectedColor;
-                        }
-                        if (files[fi].button())
-                        {
-                            outputFile = files[fi].fi;
-                            selectedFile = fi;
-                        }
-                        if (selectedFile == fi)
-                            GUI.color = defaultColor;
+                        outputFile = files[fi].f;
+                        selectedFile = fi;
                     }
+                    if (selectedFile == fi)
+                        GUI.color = defaultColor;
                 }
                 GUILayout.EndScrollView();
 
                 if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { return true; }
-                if ((cancelStyle == null) ? GUILayout.Button("Cancel") : GUILayout.Button("Cancel", cancelStyle))
+                if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
                 {
                     outputFile = null;
                     return true;
@@ -241,57 +229,30 @@ public class FileBrowser
 
     protected void drawSearchField()
     {
-        if (isSearching)
+        GUILayout.Label(new GUIContent("Search: ", "4 characters minimum"));
+        searchBarString = GUILayout.TextField(searchBarString, GUILayout.MinWidth(150));
+        if (searchBarString.Length > REQ_SEARCH_LENGTH)
         {
-            GUILayout.Label("Searching For: \"" + searchBarString + "\"");
+            if (prevSearchBarString != searchBarString)
+            {
+                isSearching = true;
+#if thread
+                startSearchTime = Time.time;
+                t = new Thread(threadSearchFileList);
+                t.Start(true);
+#else
+
+            searchFileList(currentDirectory);
+#endif
+            }
+            prevSearchBarString = searchBarString;
         }
         else
         {
-            searchBarString = GUILayout.TextField(searchBarString, GUILayout.MinWidth(150));
-            if ((searchStyle != null) ? GUILayout.Button("Search", searchStyle) : GUILayout.Button("Search"))
-            {
-                if (searchBarString.Length > 0)
-                {
-                    isSearching = true;
-#if thread
-                    startSearchTime = Time.time;
-                    t = new Thread(threadSearchFileList);
-                    t.Start(true);
-#else
-                    searchFileList(currentDirectory);
-#endif
-                }
-                else
-                {
-                    getFileList(currentDirectory);
-                }
-            }
+            isSearching = false;
+            getFileList(currentDirectory);
         }
     }
-
-    protected void drawSearchMessage()
-    {
-        float tt = Time.time - startSearchTime;
-        if (tt > 1)
-            GUILayout.Button("Searching");
-        if (tt > 2)
-            GUILayout.Button("For");
-        if (tt > 3)
-            GUILayout.Button("\"" + searchBarString + "\"");
-        if (tt > 4)
-            GUILayout.Button(".....");
-        if (tt > 5)
-            GUILayout.Button("It's");
-        if (tt > 6)
-            GUILayout.Button("Taking");
-        if (tt > 7)
-            GUILayout.Button("A");
-        if (tt > 8)
-            GUILayout.Button("While");
-        if (tt > 9)
-            GUILayout.Button(".....");
-    }
-
 
     // Only returns directories, drives and images
     public void getFileList(DirectoryInfo di)
@@ -346,20 +307,16 @@ public class FileBrowser
                 FileInformation finfo = new FileInformation(fia[f], fileTexture);
                 if (!files.Contains(finfo))
                 {
+                    Debug.Log(fia[f].Name);
                     files.Add(finfo);
                 }
             }
         }
-#if thread
-#else
-        isSearching = false;
-#endif
     }
 
-    protected void threadSearchFileList(object hasTexture)
+    protected void threadSearchFileList()
     {
         searchFileList(currentDirectory);
-        isSearching = false;
     }
 
     //search a directory by a search pattern, this is optionally recursive
@@ -373,33 +330,44 @@ public class FileBrowser
     //to string
     public override string ToString()
     {
-        return "Name: " + name + "\nVisible: " + isVisible.ToString() + "\nDirectory: " + currentDirectory + "\nLayout: " + layout.ToString() + "\nGUI Size: " + guiSize.ToString() + "\nDirectories: " + directories.Length.ToString() + "\nFiles: " + files.Count.ToString();
+        return "Name: " + name + "\nVisible: " + isVisible.ToString() + "\nDirectory: " + currentDirectory + "\nLayout: "
+            + layout.ToString() + "\nGUI Size: " + guiSize.ToString() + "\nDirectories: " + directories.Length.ToString() + "\nFiles: " + files.Count.ToString();
     }
 }
 
 public class FileInformation : System.Object
 {
-    public FileInfo fi;
-    public GUIContent gc;
+    public FileInfo f;
+    private string name;
+    private Texture2D img;
+    private GUIContent gc;
 
 
     public FileInformation(FileInfo f, Texture2D img)
     {
-        fi = f;
-        if (img)
-        {
-            gc = new GUIContent(fi.Name, img);
-        }
-        else
-        {
-            gc = new GUIContent(fi.Name);
-        }
+        this.f = f;
+        name = f.Name;
+        this.img = img;
     }
 
-    public bool button() { return GUILayout.Button(gc); }
-    public void label() { GUILayout.Label(gc); }
-    public bool button(GUIStyle gs) { return GUILayout.Button(gc, gs); }
-    public void label(GUIStyle gs) { GUILayout.Label(gc, gs); }
+    private GUIContent getGUIContent()
+    {
+        if (gc == null)
+        {
+            if (img == null)
+            {
+                gc = new GUIContent(name);
+            }
+            else
+            {
+                gc = new GUIContent(name, img);
+            }
+        }
+
+        return gc;
+    }
+
+    public bool button() { return GUILayout.Button(getGUIContent()); }
 
     public override bool Equals(System.Object obj)
     {
@@ -408,7 +376,7 @@ public class FileInformation : System.Object
             return false;
         }
 
-        return (fi.Name == ((FileInformation)obj).fi.Name);
+        return (f.Name == ((FileInformation)obj).f.Name);
     }
 
     public bool Equals(FileInformation info)
@@ -420,35 +388,46 @@ public class FileInformation : System.Object
         }
 
         // Return true if the fields match:
-        return (fi.Name == info.fi.Name);
+        return (f.Name == info.f.Name);
     }
 
     public override int GetHashCode()
     {
-        return fi.Name.GetHashCode();
+        return f.Name.GetHashCode();
     }
 }
 
 public class DirectoryInformation
 {
-    public DirectoryInfo di;
-    public GUIContent gc;
+    public DirectoryInfo d;
+    private string name;
+    private Texture2D img;
+    private GUIContent gc;
 
     public DirectoryInformation(DirectoryInfo d, Texture2D img)
     {
-        di = d;
-        if (img)
-        {
-            gc = new GUIContent(d.Name, img);
-        }
-        else
-        {
-            gc = new GUIContent(d.Name);
-        }
+        this.d = d;
+        name = d.Name;
+        this.img = img;
     }
 
-    public bool button() { return GUILayout.Button(gc); }
-    public void label() { GUILayout.Label(gc); }
-    public bool button(GUIStyle gs) { return GUILayout.Button(gc, gs); }
-    public void label(GUIStyle gs) { GUILayout.Label(gc, gs); }
+    private GUIContent getGUIContent()
+    {
+        if (gc == null)
+        {
+            if (img == null)
+            {
+                gc = new GUIContent(name);
+            }
+            else
+            {
+                gc = new GUIContent(name, img);
+            }
+        }
+
+        return gc;
+    }
+
+    public bool button() { return GUILayout.Button(getGUIContent()); }
+    public bool button(GUIStyle gs) { return GUILayout.Button(getGUIContent(), gs); }
 }
