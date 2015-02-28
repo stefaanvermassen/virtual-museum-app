@@ -107,7 +107,7 @@ public class FileBrowser
                     GUILayout.Space(10);
                 }
                 GUILayout.EndHorizontal();
-
+                // Draw the rest of the  panel
                 GUILayout.BeginHorizontal("box");
                 // Draw tree on left side
                 GUILayout.BeginVertical(GUILayout.MaxWidth(300));
@@ -156,16 +156,14 @@ public class FileBrowser
                     }
                     GUILayout.EndScrollView();
                 }
-                GUILayout.BeginHorizontal("box");
-                GUILayout.FlexibleSpace();
-                if ((cancelStyle == null) ? GUILayout.Button("Cancel") : GUILayout.Button("Cancel", cancelStyle))
+                // Draw the bar containing the buttons
+                GUILayout.BeginHorizontal();
+                if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
                 {
                     outputFile = null;
                     return true;
                 }
-                GUILayout.FlexibleSpace();
-                if ((selectStyle == null) ? GUILayout.Button("Select") : GUILayout.Button("Select", selectStyle)) { return true; }
-                GUILayout.FlexibleSpace();
+                if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { return true; }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
