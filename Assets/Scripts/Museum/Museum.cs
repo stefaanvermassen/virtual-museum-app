@@ -4,12 +4,30 @@ using System.Collections.Generic;
 public class Museum : MonoBehaviour {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
+    public List<GameObject> objects = new List<GameObject>();
     public string author;
     public string name;
     public string description;
 
 	void Start () {
 	}
+
+    public void AddObject(GameObject ob, Vector3 position) {
+        var clone = (GameObject) Instantiate(ob,position,ob.transform.rotation);
+        objects.Add(clone);
+    }
+
+    public void RemoveObject(Vector3 position, float maxDistance) {
+        GameObject toRemove = null;
+        foreach (GameObject o in objects) {
+            if (Vector3.Distance(o.transform.position, position) < maxDistance) {
+                toRemove = o;
+                break;
+            }
+        }
+        if (toRemove != null) objects.Remove(toRemove);
+        Destroy(toRemove);
+    }
 
     public void SetTile(int x = 0, int y = 0, int z = 0, int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0) {
         RemoveTile(x, y, z);

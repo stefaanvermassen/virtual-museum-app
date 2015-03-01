@@ -9,6 +9,7 @@ public class DrawController : MonoBehaviour {
     public const int ROTATING_TOOL = 2;
     public const int ERASE_TOOL = 3;
     public const int SCALE_TOOL = 4;
+    public const int PLACE_OBJECT_TOOL = 5;
 
     public GameObject toDraw;
     public Museum currentMuseum;
@@ -48,6 +49,9 @@ public class DrawController : MonoBehaviour {
                 break;
             case SCALE_TOOL:
                 ScaleUpdate();
+                break;
+            case PLACE_OBJECT_TOOL:
+                PlaceUpdate();
                 break;
         }
 	}
@@ -130,6 +134,17 @@ public class DrawController : MonoBehaviour {
         if (dragging) {
             var diff = (dragPoint.y - Input.mousePosition.y)/Display.main.renderingHeight * cameraSpeed * Time.deltaTime;
             Camera.main.orthographicSize += diff;
+        }
+    }
+
+    void PlaceUpdate() {
+        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
+            var dir = Camera.main.transform.forward;
+            var origin = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
+            RaycastHit info;
+            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+                currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), info.point + new Vector3(0,0.5f,0));
+            }
         }
     }
 }
