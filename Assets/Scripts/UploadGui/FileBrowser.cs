@@ -354,14 +354,13 @@ public class FileInformation : System.Object
     {
         if (gc == null)
         {
-            if (img == null)
+            Texture2D image = new Texture2D(84, 94);
+            image.LoadImage(File.ReadAllBytes(f.FullName));
+            if (image != null)
             {
-                gc = new GUIContent(name);
+                img = image;
             }
-            else
-            {
-                gc = new GUIContent(name, img);
-            }
+            gc = new GUIContent(name, img);
         }
 
         return gc;
