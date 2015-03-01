@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ScanEngine;
 
-
-    class ArtFilter: Scannable
+namespace Art
+{
+    class ArtFilter : Scannable
     {
-        
+
         public ArtFilter()
         {
 
@@ -22,14 +24,14 @@ using System.Text;
             String s = "artist:" + ArtistName + ":tags:";
             foreach (string tag in Tags)
             {
-                s += ","+tag;
+                s += "," + tag;
             }
             s += ":genres:";
             foreach (string genre in Genres)
             {
-                s += ","+genre;
+                s += "," + genre;
             }
             return s;
         }
     }
-
+}

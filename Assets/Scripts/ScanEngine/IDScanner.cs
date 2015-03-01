@@ -1,22 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using Art;
 /**
  * Stub for testing, just saves the id;
  * */
-public class IDScanner : Scanner {
 
-	public IDScanner(){
-	}
+namespace ScanEngine
+{
+    public class IDScanner : Scanner
+    {
 
-	public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable s){
-        return new ScanID(s.GetUniqueString());
-	}
-	
+        public IDScanner()
+        {
+        }
 
-	public Scannable Scan(ScanIdentity scan){
-        Scannable scannable = new ArtFilter();
+        public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable s)
+        {
+            return new ScanID(s.GetUniqueString());
+        }
 
-        return scannable;
-	}
+
+        public Scannable Scan(ScanIdentity scan)
+        {
+            ArtFilter scannable = new ArtFilter();
+
+            return (Scannable)scannable;
+        }
+    }
 }

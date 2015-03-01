@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
+namespace Art
+{
     class Oeuvre
     {
-        public  List<ArtPiece> Artpieces { get; set; }
+        public List<ArtPiece> Artpieces { get; set; }
 
         public Oeuvre()
         {
@@ -25,4 +26,4 @@ using System.Text;
         }
 
     }
-
+}

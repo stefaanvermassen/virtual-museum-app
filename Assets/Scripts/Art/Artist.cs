@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 
 //probably inherits from user or something like that
-
+namespace Art
+{
     class Artist
     {
 
@@ -18,3 +19,4 @@ using System.Text;
         }
     }
 
+}

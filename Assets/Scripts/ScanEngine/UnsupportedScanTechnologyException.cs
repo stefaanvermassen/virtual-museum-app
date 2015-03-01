@@ -1,13 +1,19 @@
 ﻿using System;
 
-public class UnsupportedScanTechnologyException : Exception {
 
-	public UnsupportedScanTechnologyException(){
-	}
+namespace ScanEngine
+{
+    public class UnsupportedScanTechnologyException : Exception
+    {
 
-	public UnsupportedScanTechnologyException(string message)
-		: base(message)
-	{
-	}
+        public UnsupportedScanTechnologyException()
+        {
+        }
 
+        public UnsupportedScanTechnologyException(string message)
+            : base(message)
+        {
+        }
+
+    }
 }

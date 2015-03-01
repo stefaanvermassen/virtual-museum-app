@@ -1,6 +1,11 @@
-﻿public enum ScanTechnology {
-	ID,
-	QR,
-	BLE,
-	NFC
+﻿
+namespace ScanEngine
+{
+    public enum ScanTechnology
+    {
+        ID,
+        QR,
+        BLE,
+        NFC
+    }
 }

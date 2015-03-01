@@ -1,7 +1,12 @@
-﻿public interface Scanner {
+﻿
+namespace ScanEngine
+{
+    public interface Scanner
+    {
 
-	ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable);
+        ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable);
 
-	Scannable Scan(ScanIdentity scan);
+        Scannable Scan(ScanIdentity scan);
 
+    }
 }

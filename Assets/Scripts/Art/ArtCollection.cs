@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 
 
-/**
- * This class contains collected art, not art made by the user himself
- * */
+namespace Art
+{
+
+    /**
+     * This class contains collected art, not art made by the user himself
+     * */
     class ArtCollection
     {
 
@@ -25,3 +28,4 @@ using System.Text;
 
 
     }
+}
