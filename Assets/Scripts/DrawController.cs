@@ -27,6 +27,10 @@ public class DrawController : MonoBehaviour {
     public void SetTool(int tool) {
         this.tool = tool;
     }
+
+    public bool IsPointerBusy() {
+        return EventSystem.current.IsPointerOverGameObject(0) || EventSystem.current.IsPointerOverGameObject();
+    }
 	
     void Update() {
         switch (tool) {
@@ -54,7 +58,7 @@ public class DrawController : MonoBehaviour {
         var dir = Camera.main.transform.forward;
         var origin = mouse3D;
         Debug.DrawRay(origin, dir * 100, Color.white, 0.1f);
-        if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        if (Input.GetMouseButton(0) && !IsPointerBusy()) {
             Debug.Log("Press " + origin + " " + dir);
             RaycastHit info;
             if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
@@ -69,7 +73,7 @@ public class DrawController : MonoBehaviour {
     void MoveUpdate() {
         var dir = Camera.main.transform.forward;
         var origin = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
             RaycastHit info;
             if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
                 dragging = true;
@@ -90,7 +94,7 @@ public class DrawController : MonoBehaviour {
     }
 
     void RotateUpdate() {
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
             var dir = Camera.main.transform.forward;
             var origin = Camera.main.transform.position;
             RaycastHit info;
@@ -111,7 +115,7 @@ public class DrawController : MonoBehaviour {
     }
 
     void ScaleUpdate() {
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
             var dir = Camera.main.transform.forward;
             var origin = Camera.main.transform.position;
             RaycastHit info;
