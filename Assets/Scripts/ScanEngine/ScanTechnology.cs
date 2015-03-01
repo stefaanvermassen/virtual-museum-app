@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public enum ScanTechnology {
+﻿public enum ScanTechnology {
 	ID,
 	QR,
 	BLE,

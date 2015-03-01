@@ -1,14 +1,18 @@
-using UnityEngine;
-using System.Collections;
 
 /**
- * Stub for testing, just saves the id;
+ * Stub for testing, just returns the filter string;
  * */
 class ScanID : ScanIdentity
 {
-	public ScanID (object par, object par2)
+    private string s;
+
+	public ScanID (string s):base(ScanTechnology.ID)
 	{
-		throw new System.NotImplementedException ();
+        this.s = s;
 	}
+
+    public string getString(){
+        return s;
+    }
 }
 

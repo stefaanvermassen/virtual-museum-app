@@ -7,12 +7,14 @@ public class QRScanner : Scanner {
 	public QRScanner(){
 	}
 
-	public ScanIdentity makeScannable(ScanIdentity scanId, Scannable scannable){
+	public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable){
 		//for QR codes scanId will be null
 		//TODO: implement
+        return null;
 	}
 
-	public Scannable scan(ScanIdentity scan){
+	public Scannable Scan(ScanIdentity scan){
 		//TODO: implement
+        return null;
 	}
 }

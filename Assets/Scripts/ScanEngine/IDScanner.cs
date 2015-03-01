@@ -9,13 +9,14 @@ public class IDScanner : Scanner {
 	public IDScanner(){
 	}
 
-	public ScanIdentity makeScannable(ScanIdentity scanId, Scannable s){
-		ScanIdentity id = new ScanID(s.getUniqueId(),s.getScannableType());
-		return id;
+	public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable s){
+        return new ScanID(s.GetUniqueString());
 	}
 	
 
-	public Scannable scan(ScanIdentity scan){
-		
+	public Scannable Scan(ScanIdentity scan){
+        Scannable scannable = new ArtFilter();
+
+        return scannable;
 	}
 }

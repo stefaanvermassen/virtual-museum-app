@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
 
 /**
  * Mediater implemented as Singleton: ScanEngine, used for scanning technologies
@@ -8,15 +6,16 @@ using System;
  * Example use: 
  * > Scannable scanned;
  * > ScanEngine engine = ScanEngine.get(ScanTechnology.QR);
- * > scanned = engine.scan();
+ * > scanned = engine.scan(qrCode);
  * 
  * */
 public class ScanEngine {
 	
 	private static ScanEngine instance;
 	
-	public ScanTechnology tech;
-	private Scanner scanner;
+	private static Scanner scanner;
+
+    public ScanTechnology Tech { get; set; }
 
 	private ScanEngine () {
 		//empty constructor
@@ -27,45 +26,39 @@ public class ScanEngine {
 		if (instance == null) {
 			instance = new ScanEngine();
 		}
-		instance.setTech (tech);
+        instance.Tech = tech;
 		//create Scanner
 		switch (tech) {
-			case ScanTechnology.ID
-				this.scanner = new IDScanner();
+			case ScanTechnology.ID:
+				scanner = new IDScanner();
 			break;
-			case ScanTechnology.QR
-				this.scanner = new QRScanner();
+			case ScanTechnology.QR:
+				scanner = new QRScanner();
 				break;
 			default:
 				//should not happen
-			throw UnsupportedScanTechnologyException("Technology not supported: "+tech);
+			throw new UnsupportedScanTechnologyException("Technology not supported: "+tech);
 		}
 		return instance;
 	}
 
-	public void setTech(ScanTechnology tech) {
-		this.tech = tech;
-	}
-	public ScanTechnology getTech(){
-		return tech;
-	}
 
 	/**
 	 * Method used to scan artpiece, group of art or oeuvre
 	 * */
 	public Scannable scan(ScanIdentity scanId){
-		scanner.scan(scanId);
+		return scanner.Scan(scanId);
 	}
 
 	/**
 	 * Methode used to link a ScanIdentity to a Scannable (eg for BLE tags)
 	 * */
 	public ScanIdentity makeScannable(ScanIdentity scanId, Scannable scannable){
-		scanner.makeScannable(scanId, scannable);
+		return scanner.MakeScannable(scanId, scannable);
 	}
 
 	/**
-	 * Methode used to generate a ScanIdentity for a SCannable (eg for QR codes)
+	 * Methode used to generate a ScanIdentity for a Scannable (eg for QR codes)
 	 * */
 	public ScanIdentity makeScannable(Scannable scannable){
 		return makeScannable(null,scannable);

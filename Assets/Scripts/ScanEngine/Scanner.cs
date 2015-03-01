@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿public interface Scanner {
 
-public interface Scanner {
+	ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable);
 
-	public ScanIdentity makeScannable(ScanIdentity scanId, Scannable scannable);
-
-	public Scannable scan(ScanIdentity scan);
+	Scannable Scan(ScanIdentity scan);
 
 }
