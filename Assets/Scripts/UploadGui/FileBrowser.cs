@@ -20,7 +20,6 @@ public class FileBrowser
     //Optional Parameters
     public string name = "Upload a File"; //Just a name to identify the file browser with
     //GUI Options
-    public GUISkin guiSkin; //The GUISkin to use
     public int layoutType { get { return layout; } } //returns the current Layout type
     public Texture2D fileTexture, directoryTexture, backTexture, driveTexture; //textures used to represent file types
     public GUIStyle backStyle, cancelStyle, selectStyle, searchStyle; //styles used for specific buttons
@@ -60,6 +59,7 @@ public class FileBrowser
     //Private
     private readonly string[] imageExtensions = { "png", "gif", "bmp", "jpg", "jpeg" };
     private const int REQ_SEARCH_LENGTH = 3;
+    private bool done = false;
 
     //Constructors
     public FileBrowser(string directory, int layoutStyle, Rect guiRect) { currentDirectory = new DirectoryInfo(directory); layout = layoutStyle; guiSize = guiRect; }
@@ -80,7 +80,7 @@ public class FileBrowser
     public void setGUIRect(Rect r) { guiSize = r; }
 
 
-    //gui function to be called during OnGUI
+    // Gui function to be called during OnGUI
     public bool draw()
     {
         if (getFiles)
@@ -88,143 +88,154 @@ public class FileBrowser
             getFileList(currentDirectory);
             getFiles = false;
         }
-        if (guiSkin)
-        {
-            oldSkin = GUI.skin;
-            GUI.skin = guiSkin;
-        }
-        GUILayout.BeginArea(guiSize);
-        GUILayout.BeginVertical("box");
+
         switch (layout)
         {
-            case 0: // Non-mobile
-                // Draw statusbar on top
-                GUILayout.BeginHorizontal("box");
-                GUILayout.Space(10);
-                GUILayout.Label(currentDirectory.FullName, guiSkin.GetStyle("label"));
-                GUILayout.FlexibleSpace();
-                if (showSearch)
-                {
-                    drawSearchField();
-                    GUILayout.Space(10);
-                }
-                GUILayout.EndHorizontal();
-                // Draw the rest of the  panel
-                GUILayout.BeginHorizontal("box");
-                // Draw tree on left side
-                GUILayout.BeginVertical(GUILayout.MaxWidth(300));
-                folderScroll = GUILayout.BeginScrollView(folderScroll);
-                if (showDrives)
-                {
-                    foreach (DirectoryInformation di in drives)
-                    {
-                        if (di.button()) { getFileList(di.d); }
-                    }
-                }
-                else
-                {
-                    if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
-                        getFileList(parentDir.d);
-                }
-                foreach (DirectoryInformation di in directories)
-                {
-                    if (di.button()) { getFileList(di.d); }
-                }
-                GUILayout.EndScrollView();
-                GUILayout.EndVertical();
-                // Draw found items
-                GUILayout.BeginVertical("box");
-                fileScroll = GUILayout.BeginScrollView(fileScroll);
-                for (int fi = 0; fi < files.Count; fi++)
-                {
-                    if (selectedFile == fi)
-                    {
-                        defaultColor = GUI.color;
-                        GUI.color = selectedColor;
-                    }
-                    if (files[fi].button())
-                    {
-                        outputFile = files[fi].f;
-                        selectedFile = fi;
-                    }
-                    if (selectedFile == fi)
-                        GUI.color = defaultColor;
-                }
-                GUILayout.EndScrollView();
-                // Draw the bar containing the buttons
-                GUILayout.BeginHorizontal();
-                if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
-                {
-                    outputFile = null;
-                    return true;
-                }
-
-                if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { return true; }
-                GUILayout.EndHorizontal();
-                GUILayout.EndVertical();
-                GUILayout.EndHorizontal();
+            case 0:
+                drawNonMobile();
                 break;
-            case 1: //mobile preferred layout
+            case 1:
             default:
-                if (showSearch)
-                {
-                    GUILayout.BeginHorizontal("box");
-                    GUILayout.FlexibleSpace();
-                    drawSearchField();
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
-                }
-                fileScroll = GUILayout.BeginScrollView(fileScroll);
-
-                if (showDrives)
-                {
-                    GUILayout.BeginHorizontal();
-                    foreach (DirectoryInformation di in drives)
-                    {
-                        if (di.button()) { getFileList(di.d); }
-                    }
-                    GUILayout.EndHorizontal();
-                }
-                else
-                {
-                    if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
-                        getFileList(parentDir.d);
-                }
-
-
-                foreach (DirectoryInformation di in directories)
-                {
-                    if (di.button()) { getFileList(di.d); }
-                }
-                for (int fi = 0; fi < files.Count; fi++)
-                {
-                    if (selectedFile == fi)
-                    {
-                        defaultColor = GUI.color;
-                        GUI.color = selectedColor;
-                    }
-                    if (files[fi].button())
-                    {
-                        outputFile = files[fi].f;
-                        selectedFile = fi;
-                    }
-                    if (selectedFile == fi)
-                        GUI.color = defaultColor;
-                }
-                GUILayout.EndScrollView();
-
-                if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { return true; }
-                if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
-                {
-                    outputFile = null;
-                    return true;
-                }
+                drawMobile();
                 break;
         }
+
+        return done;
+    }
+
+    private void drawNonMobile()
+    {
+        GUILayout.BeginArea(guiSize);
+        GUILayout.BeginVertical("box");
+        // Draw statusbar on top
+        GUILayout.BeginHorizontal("box");
+        GUILayout.Space(10);
+        GUILayout.Label(currentDirectory.FullName);
+        GUILayout.FlexibleSpace();
+        if (showSearch)
+        {
+            drawSearchField();
+            GUILayout.Space(10);
+        }
+        GUILayout.EndHorizontal();
+        // Draw the rest of the  panel
+        GUILayout.BeginHorizontal("box");
+        // Draw tree on left side
+        GUILayout.BeginVertical(GUILayout.MaxWidth(300));
+        folderScroll = GUILayout.BeginScrollView(folderScroll);
+        if (showDrives)
+        {
+            foreach (DirectoryInformation di in drives)
+            {
+                if (di.button()) { getFileList(di.d); }
+            }
+        }
+        else
+        {
+            if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
+                getFileList(parentDir.d);
+        }
+        foreach (DirectoryInformation di in directories)
+        {
+            if (di.button()) { getFileList(di.d); }
+        }
+        GUILayout.EndScrollView();
+        GUILayout.EndVertical();
+        // Draw found items
+        GUILayout.BeginVertical("box");
+        fileScroll = GUILayout.BeginScrollView(fileScroll);
+        for (int fi = 0; fi < files.Count; fi++)
+        {
+            if (selectedFile == fi)
+            {
+                defaultColor = GUI.color;
+                GUI.color = selectedColor;
+            }
+            if (files[fi].button())
+            {
+                outputFile = files[fi].f;
+                selectedFile = fi;
+            }
+            if (selectedFile == fi)
+                GUI.color = defaultColor;
+        }
+        GUILayout.EndScrollView();
+        // Draw the bar containing the buttons
+        GUILayout.BeginHorizontal();
+        if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
+        {
+            outputFile = null;
+            done = true;
+        }
+
+        if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { done = true; }
+        GUILayout.EndHorizontal();
+        GUILayout.EndVertical();
+        GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.EndArea();
-        if (guiSkin) { GUI.skin = oldSkin; }
-        return false;
+    }
+
+    private void drawMobile()
+    {
+        GUILayout.BeginArea(guiSize);
+        GUILayout.BeginVertical("box");
+        if (showSearch)
+        {
+            GUILayout.BeginHorizontal("box");
+            GUILayout.FlexibleSpace();
+            drawSearchField();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+        fileScroll = GUILayout.BeginScrollView(fileScroll);
+
+        if (showDrives)
+        {
+            GUILayout.BeginHorizontal();
+            foreach (DirectoryInformation di in drives)
+            {
+                if (di.button()) { getFileList(di.d); }
+            }
+            GUILayout.EndHorizontal();
+        }
+        else
+        {
+            if ((backStyle != null) ? parentDir.button(backStyle) : parentDir.button())
+                getFileList(parentDir.d);
+        }
+
+
+        foreach (DirectoryInformation di in directories)
+        {
+            if (di.button()) { getFileList(di.d); }
+        }
+        for (int fi = 0; fi < files.Count; fi++)
+        {
+            if (selectedFile == fi)
+            {
+                defaultColor = GUI.color;
+                GUI.color = selectedColor;
+            }
+            if (files[fi].button())
+            {
+                outputFile = files[fi].f;
+                selectedFile = fi;
+            }
+            if (selectedFile == fi)
+                GUI.color = defaultColor;
+        }
+        GUILayout.EndScrollView();
+
+        if ((selectStyle == null) ? GUILayout.Button(new GUIContent("Select")) : GUILayout.Button(new GUIContent("Select"), selectStyle)) { done = true; }
+        if ((cancelStyle == null) ? GUILayout.Button(new GUIContent("Cancel")) : GUILayout.Button(new GUIContent("Cancel"), cancelStyle))
+        {
+            outputFile = null;
+            done = true;
+        }
+
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
     }
 
     protected void drawSearchField()

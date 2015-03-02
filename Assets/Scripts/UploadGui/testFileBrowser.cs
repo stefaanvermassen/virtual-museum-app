@@ -2,31 +2,19 @@ using UnityEngine;
 using System.Collections;
 
 public class testFileBrowser : MonoBehaviour {
-	//skins and textures
-	public GUISkin guiSkin;
+
 	public Texture2D file,folder,back,drive;
-	
-	//initialize file browser
     private FileBrowser fb = new FileBrowser();
-	// Use this for initialization
+
     private void Start()
     {
-		//setup file browser style
-        fb.guiSkin = guiSkin; //set the starting skin
-		//set the various textures
 		fb.fileTexture = file;
 		fb.directoryTexture = folder;
 		fb.backTexture = back;
 		fb.driveTexture = drive;
-		//show the search bar
+
 		fb.showSearch = true;
-		//search recursively (setting recursive search may cause a long delay)
 		fb.searchRecursively = true;
-        GUIStyle cancelStyle = new GUIStyle(guiSkin.GetStyle("button"));
-        cancelStyle.alignment = TextAnchor.MiddleCenter;
-        fb.cancelStyle = cancelStyle;
-        fb.selectStyle = cancelStyle;
-        fb.searchStyle = cancelStyle;
 	}
 
     private void OnGUI()
