@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\GUI\Scripts\GUIComponent.cs" />
      <Compile Include="Assets\GUI\Scripts\MenuButton.cs" />
      <Compile Include="Assets\GUI\Scripts\MenuPanel.cs" />
  <Reference Include="UnityEngine.UI">
