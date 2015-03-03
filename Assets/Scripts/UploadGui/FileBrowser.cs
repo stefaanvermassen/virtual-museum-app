@@ -318,7 +318,6 @@ public class FileBrowser
                 FileInformation finfo = new FileInformation(fia[f], fileTexture);
                 if (!files.Contains(finfo))
                 {
-                    Debug.Log(fia[f].Name);
                     files.Add(finfo);
                 }
             }
