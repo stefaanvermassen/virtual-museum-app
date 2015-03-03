@@ -4,12 +4,69 @@ using System.Collections.Generic;
 public class Museum : MonoBehaviour {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
+    public List<GameObject> objects = new List<GameObject>();
+    public List<MuseumArt> art = new List<MuseumArt>();
     public string author;
     public string name;
     public string description;
 
 	void Start () {
 	}
+
+    public void AddArt(int x, int y, int z, int orientation, Texture2D texture) {
+        RemoveArt(x, y, z);
+        if(ContainsTile(x,y,z)){
+            GameObject o = new GameObject();
+            MuseumArt a = o.AddComponent<MuseumArt>();
+            a.x = x;
+            a.y = y;
+            a.z = z;
+            a.orientation = orientation;
+            a.texture = texture;
+            art.Add(a);
+        }
+    }
+
+    public bool ContainsArt(int x, int y, int z) {
+        foreach(MuseumArt a in art){
+            if (a.x == x && a.y == y && a.z == z) return true;
+        }
+        return false;
+    }
+
+    public void RemoveArt(int x, int y, int z) {
+        MuseumArt toRemove = null;
+        foreach (MuseumArt a in art) {
+            if (a.x == x && a.y == y && a.z == z) {
+                toRemove = a;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            art.Remove(toRemove);
+            toRemove.Remove();
+            Destroy(toRemove.gameObject);
+        }
+    }
+
+
+
+    public void AddObject(GameObject ob, Vector3 position) {
+        var clone = (GameObject) Instantiate(ob,position,ob.transform.rotation);
+        objects.Add(clone);
+    }
+
+    public void RemoveObject(Vector3 position, float maxDistance) {
+        GameObject toRemove = null;
+        foreach (GameObject o in objects) {
+            if (Vector3.Distance(o.transform.position, position) < maxDistance) {
+                toRemove = o;
+                break;
+            }
+        }
+        if (toRemove != null) objects.Remove(toRemove);
+        Destroy(toRemove);
+    }
 
     public void SetTile(int x = 0, int y = 0, int z = 0, int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0) {
         RemoveTile(x, y, z);
