@@ -10,6 +10,8 @@ public class Museum : MonoBehaviour {
     public string name;
     public string description;
 
+    public Material material;
+
 	void Start () {
 	}
 
@@ -22,6 +24,7 @@ public class Museum : MonoBehaviour {
             a.y = y;
             a.z = z;
             a.orientation = orientation;
+            a.material = material;
             a.texture = texture;
             art.Add(a);
         }
@@ -81,6 +84,7 @@ public class Museum : MonoBehaviour {
         tile.wallStyle = wallStyle;
         tile.floorStyle = floorStyle;
         tile.ceilingStyle = ceilingStyle;
+        tile.material = material;
         var leftTile = GetTile(x - 1, y, z);
         var rightTile = GetTile(x + 1, y, z);
         var frontTile = GetTile(x, y, z + 1);
