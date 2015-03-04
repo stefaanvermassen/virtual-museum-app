@@ -1,11 +1,19 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+<<<<<<< HEAD
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\ScanEngine\IDScanner.cs">
     <Files>
       <File FileName="Assets\Scripts\ScanEngine\IDScanner.cs" Line="12" Column="70" />
       <File FileName="Assets\Scripts\ScanEngine\Scanner.cs" Line="10" Column="2" />
       <File FileName="Assets\Scripts\ScanEngine\QRScanner.cs" Line="7" Column="21" />
       <File FileName="Assets\Scripts\ScanEngine\ScanID.cs" Line="7" Column="37" />
+=======
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GUI/Scripts/GUIControl.cs">
+    <Files>
+      <File FileName="Assets/GUI/Scripts/InputAdapter.cs" Line="1" Column="1" />
+      <File FileName="Assets/GUI/Scripts/TestGUIPrefab.cs" Line="1" Column="1" />
+      <File FileName="Assets/GUI/Scripts/GUIControl.cs" Line="22" Column="65" />
+>>>>>>> 2b78278961d5034d6c4e15a76dd6a578ab2e8c40
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
