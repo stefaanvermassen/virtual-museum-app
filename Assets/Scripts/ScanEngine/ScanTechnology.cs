@@ -1,5 +1,5 @@
 ﻿
-namespace ScanEngine
+namespace Scanning
 {
     public enum ScanTechnology
     {

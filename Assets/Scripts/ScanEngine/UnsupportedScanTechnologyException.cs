@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace ScanEngine
+namespace Scanning
 {
     public class UnsupportedScanTechnologyException : Exception
     {

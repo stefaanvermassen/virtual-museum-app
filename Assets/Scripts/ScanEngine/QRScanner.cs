@@ -4,7 +4,7 @@ using QRCoder;
 using System;
 
 
-namespace ScanEngine
+namespace Scanning
 {
     public class QRScanner : Scanner
     {

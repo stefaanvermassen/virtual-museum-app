@@ -9,7 +9,7 @@
  * > scanned = engine.scan(qrCode);
  * 
  * */
-namespace ScanEngine
+namespace Scanning
 {
     public class ScanEngine
     {

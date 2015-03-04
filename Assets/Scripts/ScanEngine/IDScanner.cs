@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Art;
 /**
  * Stub for testing, just saves the id;
  * */
 
-namespace ScanEngine
+namespace Scanning
 {
     public class IDScanner : Scanner
     {

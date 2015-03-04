@@ -1,4 +1,4 @@
-namespace ScanEngine
+namespace Scanning
 {
     /**
      * Stub for testing, just returns the filter string;
