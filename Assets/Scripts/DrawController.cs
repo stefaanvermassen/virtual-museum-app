@@ -24,8 +24,10 @@ public class DrawController : MonoBehaviour {
     private Vector3 dragPoint = Vector3.zero;
     private Vector3 dragAnchor = Vector3.zero;
 
+    private LayerMask groundLayerMask;
+
 	void Start () {
-	
+        groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
 	}
 
     public void SetTool(int tool) {
@@ -33,6 +35,10 @@ public class DrawController : MonoBehaviour {
     }
 
     public bool IsPointerBusy() {
+        foreach (Touch touch in Input.touches) {
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) return true;
+            if (touch.phase == TouchPhase.Ended) return true;
+        }
         return EventSystem.current.IsPointerOverGameObject(0) || EventSystem.current.IsPointerOverGameObject();
     }
 	
@@ -70,7 +76,7 @@ public class DrawController : MonoBehaviour {
         Debug.DrawRay(origin, dir * 100, Color.white, 0.1f);
         if (Input.GetMouseButton(0) && !IsPointerBusy()) {
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 var hitPosition = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
                 if (erase) currentMuseum.RemoveTile((int)Mathf.Floor(info.point.x + 0.5f), 0, (int)Mathf.Floor(info.point.z + 0.5f));
                 else currentMuseum.SetTile((int)Mathf.Floor(info.point.x + 0.5f), 0, (int)Mathf.Floor(info.point.z + 0.5f), 0, 0, 0);
@@ -83,7 +89,7 @@ public class DrawController : MonoBehaviour {
         var origin = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
         if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 dragging = true;
                 dragAnchor = info.point;
                 dragPoint = Input.mousePosition;
@@ -94,7 +100,7 @@ public class DrawController : MonoBehaviour {
         }
         if (dragging) {
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 Camera.main.transform.Translate((info.point - dragAnchor).normalized * cameraSpeed * Time.deltaTime, Space.World);
             }
             
@@ -106,7 +112,7 @@ public class DrawController : MonoBehaviour {
             var dir = Camera.main.transform.forward;
             var origin = Camera.main.transform.position;
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 dragging = true;
                 dragAnchor = info.point;
                 dragPoint = Input.mousePosition;
@@ -127,7 +133,7 @@ public class DrawController : MonoBehaviour {
             var dir = Camera.main.transform.forward;
             var origin = Camera.main.transform.position;
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 dragging = true;
                 dragPoint = Input.mousePosition;
             }
@@ -146,7 +152,8 @@ public class DrawController : MonoBehaviour {
             var dir = Camera.main.transform.forward;
             var origin = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)){
+                Debug.Log("layer " + info.collider.gameObject.layer);
                 currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), info.point + new Vector3(0,0.5f,0));
             }
         }
@@ -159,7 +166,7 @@ public class DrawController : MonoBehaviour {
         var origin = mouse3D;
         if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 dragging = true;
                 dragPoint = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
             }
@@ -169,7 +176,7 @@ public class DrawController : MonoBehaviour {
         }
         if (dragging) {
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, 1 << 8)) {
+            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
                 var point = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
                 var diff = (point - dragPoint).normalized;
                 var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI/2) / Mathf.PI * 180;
