@@ -148,13 +148,27 @@ public class DrawController : MonoBehaviour {
     }
 
     void PlaceObjectUpdate() {
+        var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
+        var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
+        var dir = Camera.main.transform.forward;
+        var origin = mouse3D;
         if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            var dir = Camera.main.transform.forward;
-            var origin = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
             RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)){
-                Debug.Log("layer " + info.collider.gameObject.layer);
-                currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), info.point + new Vector3(0,0.5f,0));
+            if (Physics.Raycast(origin, dir, out info, Mathf.Infinity, groundLayerMask)) {
+                dragging = true;
+                dragPoint = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
+            }
+        }
+        if (Input.GetMouseButtonUp(0)) {
+            dragging = false;
+        }
+        if (dragging) {
+            RaycastHit info;
+            if (Physics.Raycast(origin, dir, out info, Mathf.Infinity, groundLayerMask)) {
+                var point = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
+                var diff = (point - dragPoint).normalized;
+                var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
+                currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), dragPoint + new Vector3(0, 0.5f, 0), new Vector3(0, angle, 0));
             }
         }
     }

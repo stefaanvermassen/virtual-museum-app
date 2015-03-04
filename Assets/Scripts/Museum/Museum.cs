@@ -52,10 +52,9 @@ public class Museum : MonoBehaviour {
         }
     }
 
-
-
-    public void AddObject(GameObject ob, Vector3 position) {
-        var clone = (GameObject) Instantiate(ob,position,ob.transform.rotation);
+    public void AddObject(GameObject ob, Vector3 position, Vector3 rotation) {
+        RemoveObject(position, 1);
+        var clone = (GameObject) Instantiate(ob,position,Quaternion.Euler(rotation));
         objects.Add(clone);
     }
 
