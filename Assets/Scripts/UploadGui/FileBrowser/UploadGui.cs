@@ -41,6 +41,8 @@ public class UploadGui : MonoBehaviour
         addBrowseButton();
         cancelULButton.onClick.AddListener(() => handleClick(Type.CANCEL));
         uploadButton.onClick.AddListener(() => handleClick(Type.UPLOAD));
+        fileBrowserObject.SetActive(false);
+        thumbnail.enabled = false;
     }
 
     private void handleClick(Type type)
@@ -52,24 +54,14 @@ public class UploadGui : MonoBehaviour
                 exit();
                 break;
             case Type.UPLOAD:
-                string selected = fileBrowser.getSelected();
-                if (selected != "")
+                string selected = pathField.text;
+                foreach (string s in imageExtensions)
                 {
-                    //Upload selected file
-                    Debug.Log("Uploaded " + selected + " successful!");
-                    exit();
-                }
-                else
-                {
-                    selected = pathField.text;
-                    foreach (string s in imageExtensions)
+                    if (selected.EndsWith(s))
                     {
-                        if (selected.EndsWith(s))
-                        {
-                            //Upload selected file
-                            Debug.Log("Uploaded " + selected + " successful!");
-                            exit();
-                        }
+                        //Upload selected file
+                        Debug.Log("Uploaded " + selected + " successful!");
+                        exit();
                     }
                 }
 
@@ -98,6 +90,8 @@ public class UploadGui : MonoBehaviour
     {
         fileBrowser = new FileBrowser(directoryLabel, searchField, directoryButton, fileButton, fileTexture, folderTexture, backTexture, directoryView,
                 fileView, cancelButton, acceptButton, fileBrowserObject, imageExtensions);
+        fileBrowserObject.SetActive(true);
+        uploadGui.SetActive(false);
     }
 
     // Update is called once per frame
@@ -105,20 +99,35 @@ public class UploadGui : MonoBehaviour
     {
         if (fileBrowser != null)
         {
-            fileBrowser.Update();
-            
-            // Update our GUI
-            string selected = fileBrowser.getSelected();
-            if (selected != "")
+            if (fileBrowser.isCanceled())
             {
-                Debug.Log(selected);
-                pathField.text = selected;
+                killBrowser();
+            }
+            else
+            {
+                fileBrowser.Update();
 
-                thumbnail.enabled = true;
-                Texture2D image = new Texture2D(0, 0);
-                image.LoadImage(File.ReadAllBytes(selected));
-                thumbnail.sprite = Sprite.Create(image, new Rect(0, 0, folderTexture.width, folderTexture.height), Vector2.zero);
+                // Update our GUI
+                string selected = fileBrowser.getSelected();
+                if (selected != "")
+                {
+                    killBrowser();
+                    Debug.Log(selected);
+                    pathField.text = selected;
+
+                    thumbnail.enabled = true;
+                    Texture2D image = new Texture2D(0, 0);
+                    image.LoadImage(File.ReadAllBytes(selected));
+                    thumbnail.sprite = Sprite.Create(image, new Rect(0, 0, image.width, image.height), Vector2.zero);
+                }
             }
         }
+    }
+
+    private void killBrowser()
+    {
+        uploadGui.SetActive(true);
+        fileBrowserObject.SetActive(false);
+        fileBrowser = null;
     }
 }

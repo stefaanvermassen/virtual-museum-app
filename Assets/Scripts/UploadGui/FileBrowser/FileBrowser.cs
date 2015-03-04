@@ -23,6 +23,8 @@ public class FileBrowser
     private string prevSearch = "";
 
     private readonly string[] imageExtensions;
+    private bool done = false;
+    private bool cancel = false;
 
     private enum Type
     {
@@ -49,10 +51,6 @@ public class FileBrowser
         initialize();
     }
 
-    public string getSelected() {
-        return selectedFile;
-    }
-
     private void initialize()
     {
         currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
@@ -74,6 +72,16 @@ public class FileBrowser
         string search = getSearch();
         drawFiles(search);
         drawDirectories();
+    }
+
+    public string getSelected()
+    {
+        return (done) ? selectedFile : "";
+    }
+
+    public bool isCanceled()
+    {
+        return cancel;
     }
 
     private string getSearch()
@@ -170,7 +178,7 @@ public class FileBrowser
                 break;
             case Type.CANCEL:
                 Debug.Log("Cancel was hit.");
-                Object.DestroyImmediate(fileBrowser);
+                cancel = true;
                 break;
             case Type.ACCEPT:
                 if (name == "")
@@ -179,8 +187,8 @@ public class FileBrowser
                 }
                 else
                 {
+                    done = true;
                     Debug.Log(name + " was chosen.");
-                    Object.DestroyImmediate(fileBrowser);
                 }
                 break;
             default:
