@@ -5,39 +5,62 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
-public class NewFileBrowser : MonoBehaviour
+public class FileBrowser
 {
-
-    public Text directoryLabel;
-    public InputField searchField;
-    public GameObject directoryButton;
-    public GameObject fileButton;
-    public Texture2D fileTexture, folderTexture, backTexture;
-    public Transform directoryView;
-    public Transform fileView;
-    public Button cancelButton;
-    public Button acceptButton;
-    public GameObject fileBrowser;
+    private Text directoryLabel;
+    private InputField searchField;
+    private GameObject directoryButton;
+    private GameObject fileButton;
+    private Texture2D fileTexture, folderTexture, backTexture;
+    private Transform directoryView;
+    private Transform fileView;
+    private Button cancelButton;
+    private Button acceptButton;
+    private GameObject fileBrowser;
 
     private DirectoryInfo previousDirectory, currentDirectory;
     private string selectedFile = "";
     private string prevSearch = "";
 
-    private readonly string[] imageExtensions = { ".png", ".bmp", ".jpg", ".jpeg" };
+    private readonly string[] imageExtensions;
 
     private enum Type
     {
         FOLDER, FILE, CANCEL, ACCEPT
     };
 
-    private void Start()
+    public FileBrowser(Text directoryLabel, InputField searchField, GameObject directoryButton, GameObject fileButton,
+                        Texture2D fileTexture, Texture2D folderTexture, Texture2D backTexture, Transform directoryView,
+                        Transform fileView, Button cancelButton, Button acceptButton, GameObject fileBrowser, string[] imageExtensions)
+    {
+        this.directoryLabel = directoryLabel;
+        this.searchField = searchField;
+        this.directoryButton = directoryButton;
+        this.fileButton = fileButton;
+        this.fileTexture = fileTexture;
+        this.folderTexture = folderTexture;
+        this.backTexture = backTexture;
+        this.directoryView = directoryView;
+        this.fileView = fileView;
+        this.cancelButton = cancelButton;
+        this.acceptButton = acceptButton;
+        this.fileBrowser = fileBrowser;
+        this.imageExtensions = imageExtensions;
+        initialize();
+    }
+
+    public string getSelected() {
+        return selectedFile;
+    }
+
+    private void initialize()
     {
         currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         cancelButton.onClick.AddListener(() => handleClick("", Type.CANCEL));
         acceptButton.onClick.AddListener(() => handleClick(selectedFile, Type.ACCEPT));
     }
-    
-    private void Update()
+
+    public void Update()
     {
         if (directoryLabel == null)
         {
@@ -125,7 +148,7 @@ public class NewFileBrowser : MonoBehaviour
 
     private void addButton(GameObject but, string name, string fullName, Texture2D texture, Transform view, Type type)
     {
-        GameObject b = Instantiate(but) as GameObject;
+        GameObject b = GameObject.Instantiate(but) as GameObject;
         FBButton button = b.GetComponent<FBButton>();
         button.label.text = name;
         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
