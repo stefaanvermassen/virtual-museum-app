@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 public class NewFileBrowser : MonoBehaviour
 {
@@ -16,26 +15,38 @@ public class NewFileBrowser : MonoBehaviour
     public Texture2D fileTexture, folderTexture, backTexture;
     public Transform directoryView;
     public Transform fileView;
+    public Button cancelButton;
+    public Button acceptButton;
+    public GameObject fileBrowser;
 
     private DirectoryInfo previousDirectory, currentDirectory;
     private string selectedFile = "";
     private string prevSearch = "";
-    private Thread thread;
 
     private readonly string[] imageExtensions = { ".png", ".bmp", ".jpg", ".jpeg" };
 
     private enum Type
     {
-        FOLDER, FILE
+        FOLDER, FILE, CANCEL, ACCEPT
     };
 
     private void Start()
     {
         currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        cancelButton.onClick.AddListener(() => handleClick("", Type.CANCEL));
+        acceptButton.onClick.AddListener(() => handleClick(selectedFile, Type.ACCEPT));
     }
-
+    
     private void Update()
     {
+        if (directoryLabel == null)
+        {
+            Debug.Log("DirectoryLabel is null.");
+        }
+        else if (currentDirectory == null)
+        {
+            Debug.Log("CurrentDirectory is null.");
+        }
         directoryLabel.text = currentDirectory.FullName;
         string search = getSearch();
         drawFiles(search);
@@ -54,7 +65,11 @@ public class NewFileBrowser : MonoBehaviour
             return;
         }
 
+        // Remove the buttons
         fileView.DetachChildren();
+        // The selected file is now invalid
+        selectedFile = "";
+
         IEnumerable<FileInfo> files = getFileList(search.Length != 0, search);
         foreach (FileInfo file in files)
         {
@@ -71,6 +86,7 @@ public class NewFileBrowser : MonoBehaviour
             return;
         }
 
+        // Remove the buttons
         directoryView.DetachChildren();
 
         if (currentDirectory.Parent != null)
@@ -92,6 +108,7 @@ public class NewFileBrowser : MonoBehaviour
         Texture2D texture = fileTexture;
         Texture2D image = new Texture2D(0, 0);
         image.LoadImage(File.ReadAllBytes(file.FullName));
+
         if (image != null)
         {
             texture = image;
@@ -127,6 +144,21 @@ public class NewFileBrowser : MonoBehaviour
                 break;
             case Type.FILE:
                 selectedFile = name;
+                break;
+            case Type.CANCEL:
+                Debug.Log("Cancel was hit.");
+                Object.DestroyImmediate(fileBrowser);
+                break;
+            case Type.ACCEPT:
+                if (name == "")
+                {
+                    Debug.Log("A file has to be selected.");
+                }
+                else
+                {
+                    Debug.Log(name + " was chosen.");
+                    Object.DestroyImmediate(fileBrowser);
+                }
                 break;
             default:
                 break;
