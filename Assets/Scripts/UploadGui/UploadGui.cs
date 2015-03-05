@@ -7,15 +7,6 @@ using UnityEngine.UI;
 
 public class UploadGui : MonoBehaviour
 {
-
-    public GameObject browseButton;
-    public InputField pathField;
-    public Image thumbnail;
-    public Transform uploadPanel;
-    public GameObject uploadGui;
-    public Button cancelULButton;
-    public Button uploadButton;
-
     // For fileBrowser
     public Text directoryLabel;
     public InputField searchField;
@@ -28,11 +19,24 @@ public class UploadGui : MonoBehaviour
     public Button acceptButton;
     public GameObject fileBrowserObject;
 
+    // UploadGUI
+    public GameObject browseButton;
+    public InputField pathField;
+    public Image thumbnail;
+    public Transform uploadPanel;
+    public GameObject uploadGui;
+    public Button cancelULButton;
+    public Button uploadButton;
+
     private FileBrowser fileBrowser;
-    private string uploadableFile;
-    private readonly string[] imageExtensions = { ".png", ".bmp", ".jpg", ".jpeg" };
+    private byte[] uploadableFile;
     private IEnumerator www;
     private string accessToken;
+    private readonly string[] imageExtensions = { ".png", ".bmp", ".jpg", ".jpeg" };
+    private const string BASE_URL = "http://api.awesomepeople.tv/";
+    private const string TOKEN = "Token";
+    private const string ARTWORK = "api/artwork";
+    private const string MIME = "image/";
 
     private enum Type
     {
@@ -65,7 +69,8 @@ public class UploadGui : MonoBehaviour
                     if (selected.EndsWith(s))
                     {
                         //Upload selected file
-                        stubLogin();
+                        if (accessToken == "") { stubLogin(); }
+                        uploadableImage();
                         Debug.Log("Uploaded " + selected + " successful!");
                         exit();
                     }
@@ -123,12 +128,9 @@ public class UploadGui : MonoBehaviour
 
                     thumbnail.enabled = true;
                     Texture2D image = new Texture2D(0, 0);
-                    byte[] file = File.ReadAllBytes(selected);
-                    image.LoadImage(file);
+                    uploadableFile = File.ReadAllBytes(selected);
+                    image.LoadImage(uploadableFile);
                     thumbnail.sprite = Sprite.Create(image, new Rect(0, 0, image.width, image.height), Vector2.zero);
-
-                    // Generate the file to upload
-                    uploadableFile = Base64Encode(System.Text.Encoding.Default.GetString(file));
                 }
             }
         }
@@ -141,12 +143,6 @@ public class UploadGui : MonoBehaviour
         fileBrowser = null;
     }
 
-    private string Base64Encode(string plainText)
-    {
-        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-        return System.Convert.ToBase64String(plainTextBytes);
-    }
-
     /*
      * http://api.awesomepeople.tv/Token
      * {"grant_type":"password",
@@ -155,9 +151,28 @@ public class UploadGui : MonoBehaviour
      */
     private void stubLogin()
     {
-        WWW www = sendPost("http://api.awesomepeople.tv/Token", new string[] { "grant_type", "username", "password" }, new string[] { "password", "museum@awesomepeople.tv", "@wesomePeople_20" });
+        WWW www = sendPost(BASE_URL + TOKEN, new string[] { "grant_type", "username", "password" }, new string[] { "password", "museum@awesomepeople.tv", "@wesomePeople_20" });
         JSONNode node = JSON.Parse(www.text);
         accessToken = node["access_token"];
+    }
+
+    private void uploadableImage()
+    {
+        string[] splitted = pathField.text.Split(new char[]{'.'});
+        string mime = splitted[splitted.Length - 1];
+        splitted = pathField.text.Split(new char[] { '/', '\\' });
+        string name = splitted[splitted.Length - 1];
+        WWW www = sendImagePost(BASE_URL + ARTWORK, pathField.text, name, mime);
+        Debug.Log(www.text);
+    }
+
+
+    private WWW sendImagePost(string url, string imageLocation, string name, string mime)
+    {
+        WWWForm form = new WWWForm();
+        form.AddBinaryData(imageLocation, uploadableFile, name, MIME + mime);
+
+        return postForm(url, form);
     }
 
     private WWW sendPost(string url, string[] name, string[] value)
@@ -168,6 +183,11 @@ public class UploadGui : MonoBehaviour
             form.AddField(name[i], value[i]);
         }
 
+        return postForm(url, form);
+    }
+
+    private WWW postForm(string url, WWWForm form)
+    {
         Dictionary<string, string> headers = form.headers;
         byte[] rawData = form.data;
 
