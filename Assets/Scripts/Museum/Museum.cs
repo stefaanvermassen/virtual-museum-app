@@ -7,7 +7,7 @@ public class Museum : MonoBehaviour {
     public List<GameObject> objects = new List<GameObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string author;
-    public string name;
+    //public string name;
     public string description;
 
     public Material material;

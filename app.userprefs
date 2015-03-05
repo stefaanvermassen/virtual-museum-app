@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Editor\PerformBuild.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\DrawController.cs">
     <Files>
-      <File FileName="..\..\..\..\Program Files (x86)\Jenkins\jobs\1_build_virtual_museum\workspace\Assets\Editor\PerformBuild.cs" Line="1" Column="1" />
-      <File FileName="Assets\Editor\PerformBuild.cs" Line="16" Column="10" />
+      <File FileName="Assets\Scripts\DrawController.cs" Line="74" Column="1" />
+      <File FileName="Assets\Scripts\Museum\Museum.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScanEngine\QRCode.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
