@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using SimpleJSON;
 using System.Collections;
-using UnityEngine.UI;
+using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class UploadGui : MonoBehaviour
 {
@@ -27,7 +29,10 @@ public class UploadGui : MonoBehaviour
     public GameObject fileBrowserObject;
 
     private FileBrowser fileBrowser;
+    private string uploadableFile;
     private readonly string[] imageExtensions = { ".png", ".bmp", ".jpg", ".jpeg" };
+    private IEnumerator www;
+    private string accessToken;
 
     private enum Type
     {
@@ -60,6 +65,7 @@ public class UploadGui : MonoBehaviour
                     if (selected.EndsWith(s))
                     {
                         //Upload selected file
+                        stubLogin();
                         Debug.Log("Uploaded " + selected + " successful!");
                         exit();
                     }
@@ -117,8 +123,12 @@ public class UploadGui : MonoBehaviour
 
                     thumbnail.enabled = true;
                     Texture2D image = new Texture2D(0, 0);
-                    image.LoadImage(File.ReadAllBytes(selected));
+                    byte[] file = File.ReadAllBytes(selected);
+                    image.LoadImage(file);
                     thumbnail.sprite = Sprite.Create(image, new Rect(0, 0, image.width, image.height), Vector2.zero);
+
+                    // Generate the file to upload
+                    uploadableFile = Base64Encode(System.Text.Encoding.Default.GetString(file));
                 }
             }
         }
@@ -129,5 +139,40 @@ public class UploadGui : MonoBehaviour
         uploadGui.SetActive(true);
         fileBrowserObject.SetActive(false);
         fileBrowser = null;
+    }
+
+    private string Base64Encode(string plainText)
+    {
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        return System.Convert.ToBase64String(plainTextBytes);
+    }
+
+    /*
+     * http://api.awesomepeople.tv/Token
+     * {"grant_type":"password",
+     * "username":"username",
+     * "password":"password"}
+     */
+    private void stubLogin()
+    {
+        WWW www = sendPost("http://api.awesomepeople.tv/Token", new string[] { "grant_type", "username", "password" }, new string[] { "password", "museum@awesomepeople.tv", "@wesomePeople_20" });
+        JSONNode node = JSON.Parse(www.text);
+        accessToken = node["access_token"];
+    }
+
+    private WWW sendPost(string url, string[] name, string[] value)
+    {
+        WWWForm form = new WWWForm();
+        for (int i = 0; i < name.Length; i++)
+        {
+            form.AddField(name[i], value[i]);
+        }
+
+        Dictionary<string, string> headers = form.headers;
+        byte[] rawData = form.data;
+
+        WWW www = new WWW(url, rawData, headers);
+        while (!www.isDone) ;
+        return www;
     }
 }
