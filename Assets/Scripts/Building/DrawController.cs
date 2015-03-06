@@ -21,13 +21,12 @@ public class DrawController : MonoBehaviour {
     public Tools tool = Tools.Drawing;
     public Texture2D debugTexture;
 
-    private Vector3 dragPoint = Vector3.zero;
-    private Vector3 dragAnchor = Vector3.zero;
-
     private bool dragging = false;
     private Vector3 centerPointWorld = Vector3.zero;
     private Vector3 anchorPointScreen = Vector3.zero;
     private Vector3 anchorPointWorld = Vector3.zero;
+    private Vector3 lastDragPointScreen = Vector3.zero;
+    private Vector3 cameraAnchor = Vector3.zero;
 
     private LayerMask groundLayerMask;
 
@@ -39,56 +38,60 @@ public class DrawController : MonoBehaviour {
         this.tool = (Tools)tool;
     }
 
-    public bool IsPointerBusy() {
+    bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
             if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) return true;
             if (touch.phase == TouchPhase.Ended) return true;
         }
         return EventSystem.current.IsPointerOverGameObject(0) || EventSystem.current.IsPointerOverGameObject();
     }
+
+    Vector3 raycast(Vector3 origin, Vector3 direction, float maxDistance = Mathf.Infinity, int layermask = 1 << 8) {
+        RaycastHit info;
+        if (Physics.Raycast(origin, direction, out info, Mathf.Infinity, groundLayerMask)) {
+            return info.point;
+        }
+        return Vector3.zero;
+    }
 	
     void Update() {
         var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
         var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
-        var dragPointScreen = Vector3.zero;
-        var dragPointWorld = Vector3.zero;
         Debug.DrawRay(mouse3D, Camera.main.transform.forward * 100, Color.white, 0.1f);
         if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            RaycastHit mouseInfo;
-            if (Physics.Raycast(mouse3D, Camera.main.transform.forward, out mouseInfo, Mathf.Infinity, groundLayerMask)) {
-                dragging = true;
-                anchorPointScreen = mouse2D;
-                anchorPointWorld = mouseInfo.point;
-            }
-            RaycastHit centerInfo;
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out centerInfo, Mathf.Infinity, groundLayerMask)) {
-                centerPointWorld = centerInfo.point;
-            }
+            cameraAnchor = Camera.main.transform.position;
+            dragging = true;
+            anchorPointScreen = mouse2D;
+            anchorPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
+            lastDragPointScreen = anchorPointScreen;
+            centerPointWorld = raycast(cameraAnchor, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
         }
         if (Input.GetMouseButtonUp(0)) {
             dragging = false;
         }
         if (dragging) {
-            RaycastHit mouseInfo;
-            if (Physics.Raycast(mouse3D, Camera.main.transform.forward, out mouseInfo, Mathf.Infinity, groundLayerMask)) {
-                dragPointScreen = mouse2D;
-                dragPointWorld = mouseInfo.point;
-            }
+            var dragPointScreen = Vector3.zero;
+            var dragPointWorld = Vector3.zero;
+            dragPointScreen = mouse2D;
+            dragPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
+            var dragOffsetScreen = anchorPointScreen - dragPointScreen;
+            var dragOffsetWorld = anchorPointWorld - dragPointWorld;
+            var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
             switch (tool) {
                 case Tools.Drawing:
                     Draw(dragPointWorld);
                     break;
                 case Tools.Moving:
-                    Move(dragPointWorld, anchorPointWorld);
+                    Move(dragOffsetWorld);
                     break;
                 case Tools.Rotating:
-                    Rotate(dragPointScreen, anchorPointScreen, centerPointWorld);
+                    Rotate(centerPointWorld, frameOffsetScreen.x/Display.main.renderingWidth*180);
                     break;
                 case Tools.Erasing:
                     Erase(dragPointWorld);
                     break;
                 case Tools.Scaling:
-                    Scale(dragPointScreen, anchorPointScreen);
+                    Scale(Mathf.Pow(2,-frameOffsetScreen.y / Display.main.renderingHeight));
                     break;
                 case Tools.PlacingObject:
                     PlaceObject(dragPointWorld, anchorPointWorld);
@@ -97,6 +100,7 @@ public class DrawController : MonoBehaviour {
                     PlaceArt(dragPointWorld, anchorPointWorld);
                     break;
             }
+            lastDragPointScreen = dragPointScreen;
         }
     }
 
@@ -108,19 +112,16 @@ public class DrawController : MonoBehaviour {
         currentMuseum.RemoveTile((int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f));
     }
 
-    void Move(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
-        Camera.main.transform.Translate((dragPointWorld - anchorPointWorld).normalized * cameraSpeed * Time.deltaTime, Space.World);
+    void Move(Vector3 movement) {
+        Camera.main.transform.Translate(movement, Space.World);
     }
 
-    void Rotate(Vector3 dragPointScreen, Vector3 anchorPointScreen, Vector3 centerPointWorld) {
-        var diff = (dragPointScreen.x - anchorPointScreen.x) / Display.main.renderingWidth;
-        Camera.main.transform.Translate(new Vector3(diff, 0, 0) * cameraSpeed * Time.deltaTime);
-        Camera.main.transform.LookAt(centerPointWorld);
+    void Rotate(Vector3 center, float amount) {
+        Camera.main.transform.RotateAround(center, new Vector3(0, 1, 0), amount);
     }
 
-    void Scale(Vector3 dragPointScreen, Vector3 anchorPointScreen) {
-        var diff = (anchorPointScreen.x - dragPointScreen.x) / Display.main.renderingHeight * cameraSpeed * Time.deltaTime;
-        Camera.main.orthographicSize += diff;
+    void Scale(float factor) {
+        Camera.main.orthographicSize *= factor;
     }
 
     void PlaceObject(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
