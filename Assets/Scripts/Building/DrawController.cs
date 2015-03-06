@@ -55,8 +55,16 @@ public class DrawController : MonoBehaviour {
     }
 
     void Update() {
+#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
         ToolUpdate(0, tool);
         MouseUpdate();
+#endif
+#if UNITY_IOS || UNITY_ANDROID
+        if(Input.touchCount == 1)
+            ToolUpdate(0, tool);
+        else
+            GestureUpdate();
+#endif
     }
 	
     void ToolUpdate(int mouseButton, Tools tool) {
@@ -85,7 +93,7 @@ public class DrawController : MonoBehaviour {
 
             if      (tool == Tools.Drawing)         Draw(dragPointWorld);
             else if (tool == Tools.Moving)          Move(dragOffsetWorld);
-            else if (tool == Tools.Rotating)        Rotate(centerPointWorld, frameOffsetScreen.x / Display.main.renderingWidth * 180);
+            else if (tool == Tools.Rotating)        Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Display.main.renderingHeight * 180, frameOffsetScreen.x / Display.main.renderingWidth * 180, 0));
             else if (tool == Tools.Erasing)         Erase(dragPointWorld);
             else if (tool == Tools.Scaling)         Scale(Mathf.Pow(2, -frameOffsetScreen.y / Display.main.renderingHeight));
             else if (tool == Tools.PlacingObject)   PlaceObject(dragPointWorld, anchorPointWorld);
@@ -103,6 +111,19 @@ public class DrawController : MonoBehaviour {
         ToolUpdate(2, Tools.Moving);
     }
 
+    void GestureUpdate() {
+        if (Input.touchCount == 2) {
+            Touch touchZero = Input.GetTouch(0);
+            Touch touchOne = Input.GetTouch(1);
+            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+            float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+            float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+            float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+            Scale(Mathf.Pow(2, deltaMagnitudeDiff*2 / Display.main.renderingHeight));
+        }
+    }
+
     void Draw(Vector3 dragPointWorld) {
         currentMuseum.SetTile((int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f), 0, 0, 0);
     }
@@ -115,8 +136,10 @@ public class DrawController : MonoBehaviour {
         Camera.main.transform.Translate(movement, Space.World);
     }
 
-    void Rotate(Vector3 center, float amount) {
-        Camera.main.transform.RotateAround(center, new Vector3(0, 1, 0), amount);
+    void Rotate(Vector3 center, Vector3 angles) {
+        Camera.main.transform.RotateAround(center, Camera.main.transform.right, angles.x);
+        Camera.main.transform.RotateAround(center, new Vector3(0, 1, 0), angles.y);
+        Camera.main.transform.RotateAround(center, new Vector3(0, 0, 1), angles.z);
     }
 
     void Scale(float factor) {
