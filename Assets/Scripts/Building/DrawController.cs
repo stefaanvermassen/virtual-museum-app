@@ -4,25 +4,30 @@ using UnityEngine.EventSystems;
 
 public class DrawController : MonoBehaviour {
 
-    public const int DRAWING_TOOL = 0;
-    public const int MOVING_TOOL = 1;
-    public const int ROTATING_TOOL = 2;
-
-    public const int ERASE_TOOL = 3;
-    public const int SCALE_TOOL = 4;
-    public const int PLACE_OBJECT_TOOL = 5;
-    public const int PLACE_ART_TOOL = 6;
+    public enum Tools : int {
+        Drawing,
+        Moving,
+        Rotating,
+        Erasing,
+        Scaling,
+        PlacingObject,
+        PlacingArt
+    }
 
     public GameObject toDraw;
     public Museum currentMuseum;
     public float cameraSpeed = 10;
     public float edgeRatio = 0.05f;
-    public int tool = 0;
+    public Tools tool = Tools.Drawing;
     public Texture2D debugTexture;
 
-    private bool dragging = false;
     private Vector3 dragPoint = Vector3.zero;
     private Vector3 dragAnchor = Vector3.zero;
+
+    private bool dragging = false;
+    private Vector3 centerPointWorld = Vector3.zero;
+    private Vector3 anchorPointScreen = Vector3.zero;
+    private Vector3 anchorPointWorld = Vector3.zero;
 
     private LayerMask groundLayerMask;
 
@@ -31,7 +36,7 @@ public class DrawController : MonoBehaviour {
 	}
 
     public void SetTool(int tool) {
-        this.tool = tool;
+        this.tool = (Tools)tool;
     }
 
     public bool IsPointerBusy() {
@@ -43,161 +48,92 @@ public class DrawController : MonoBehaviour {
     }
 	
     void Update() {
-        switch (tool) {
-            case DRAWING_TOOL:
-                DrawUpdate();
-                break;
-            case MOVING_TOOL:
-                MoveUpdate();
-                break;
-            case ROTATING_TOOL:
-                RotateUpdate();
-                break;
-            case ERASE_TOOL:
-                DrawUpdate(true);
-                break;
-            case SCALE_TOOL:
-                ScaleUpdate();
-                break;
-            case PLACE_OBJECT_TOOL:
-                PlaceObjectUpdate();
-                break;
-            case PLACE_ART_TOOL:
-                PlaceArtUpdate();
-                break;
-        }
-	}
-
-    void DrawUpdate(bool erase = false) {
         var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
         var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
-        var dir = Camera.main.transform.forward;
-        var origin = mouse3D;
-        Debug.DrawRay(origin, dir * 100, Color.white, 0.1f);
-        if (Input.GetMouseButton(0) && !IsPointerBusy()) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
-                var hitPosition = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
-                if (erase) currentMuseum.RemoveTile((int)Mathf.Floor(info.point.x + 0.5f), 0, (int)Mathf.Floor(info.point.z + 0.5f));
-                else currentMuseum.SetTile((int)Mathf.Floor(info.point.x + 0.5f), 0, (int)Mathf.Floor(info.point.z + 0.5f), 0, 0, 0);
-            }
-        }
-    }
-
-    void MoveUpdate() {
-        var dir = Camera.main.transform.forward;
-        var origin = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
+        var dragPointScreen = Vector3.zero;
+        var dragPointWorld = Vector3.zero;
+        Debug.DrawRay(mouse3D, Camera.main.transform.forward * 100, Color.white, 0.1f);
         if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
+            RaycastHit mouseInfo;
+            if (Physics.Raycast(mouse3D, Camera.main.transform.forward, out mouseInfo, Mathf.Infinity, groundLayerMask)) {
                 dragging = true;
-                dragAnchor = info.point;
-                dragPoint = Input.mousePosition;
+                anchorPointScreen = mouse2D;
+                anchorPointWorld = mouseInfo.point;
+            }
+            RaycastHit centerInfo;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out centerInfo, Mathf.Infinity, groundLayerMask)) {
+                centerPointWorld = centerInfo.point;
             }
         }
         if (Input.GetMouseButtonUp(0)) {
             dragging = false;
         }
         if (dragging) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
-                Camera.main.transform.Translate((info.point - dragAnchor).normalized * cameraSpeed * Time.deltaTime, Space.World);
+            RaycastHit mouseInfo;
+            if (Physics.Raycast(mouse3D, Camera.main.transform.forward, out mouseInfo, Mathf.Infinity, groundLayerMask)) {
+                dragPointScreen = mouse2D;
+                dragPointWorld = mouseInfo.point;
             }
-            
-        }
-    }
-
-    void RotateUpdate() {
-        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            var dir = Camera.main.transform.forward;
-            var origin = Camera.main.transform.position;
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
-                dragging = true;
-                dragAnchor = info.point;
-                dragPoint = Input.mousePosition;
-            }
-        }
-        if (Input.GetMouseButtonUp(0)) {
-            dragging = false;
-        }
-        if (dragging) {
-            var diff = (Input.mousePosition.x - dragPoint.x) / Display.main.renderingHeight ;
-            Camera.main.transform.Translate(new Vector3(diff, 0, 0) * cameraSpeed * Time.deltaTime);
-            Camera.main.transform.LookAt(dragAnchor);
-        }
-    }
-
-    void ScaleUpdate() {
-        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            var dir = Camera.main.transform.forward;
-            var origin = Camera.main.transform.position;
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
-                dragging = true;
-                dragPoint = Input.mousePosition;
-            }
-        }
-        if (Input.GetMouseButtonUp(0)) {
-            dragging = false;
-        }
-        if (dragging) {
-            var diff = (dragPoint.y - Input.mousePosition.y)/Display.main.renderingHeight * cameraSpeed * Time.deltaTime;
-            Camera.main.orthographicSize += diff;
-        }
-    }
-
-    void PlaceObjectUpdate() {
-        var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
-        var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
-        var dir = Camera.main.transform.forward;
-        var origin = mouse3D;
-        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, Mathf.Infinity, groundLayerMask)) {
-                dragging = true;
-                dragPoint = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
-            }
-        }
-        if (Input.GetMouseButtonUp(0)) {
-            dragging = false;
-        }
-        if (dragging) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info, Mathf.Infinity, groundLayerMask)) {
-                var point = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
-                var diff = (point - dragPoint).normalized;
-                var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
-                currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), dragPoint + new Vector3(0, 0.5f, 0), new Vector3(0, angle, 0));
+            switch (tool) {
+                case Tools.Drawing:
+                    Draw(dragPointWorld);
+                    break;
+                case Tools.Moving:
+                    Move(dragPointWorld, anchorPointWorld);
+                    break;
+                case Tools.Rotating:
+                    Rotate(dragPointScreen, anchorPointScreen, centerPointWorld);
+                    break;
+                case Tools.Erasing:
+                    Erase(dragPointWorld);
+                    break;
+                case Tools.Scaling:
+                    Scale(dragPointScreen, anchorPointScreen);
+                    break;
+                case Tools.PlacingObject:
+                    PlaceObject(dragPointWorld, anchorPointWorld);
+                    break;
+                case Tools.PlacingArt:
+                    PlaceArt(dragPointWorld, anchorPointWorld);
+                    break;
             }
         }
     }
 
-    void PlaceArtUpdate() {
-        var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
-        var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
-        var dir = Camera.main.transform.forward;
-        var origin = mouse3D;
-        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
-                dragging = true;
-                dragPoint = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
-            }
-        }
-        if (Input.GetMouseButtonUp(0)) {
-            dragging = false;
-        }
-        if (dragging) {
-            RaycastHit info;
-            if (Physics.Raycast(origin, dir, out info,Mathf.Infinity , groundLayerMask)) {
-                var point = new Vector3(Mathf.Floor(info.point.x + 0.5f), 0.5f, Mathf.Floor(info.point.z + 0.5f));
-                var diff = (point - dragPoint).normalized;
-                var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI/2) / Mathf.PI * 180;
-                if (angle < 0) angle = 360 + angle;
-                var orientation = (int)angle / 90;
-                currentMuseum.AddArt((int)dragPoint.x, (int)dragPoint.y, (int)dragPoint.z, orientation, debugTexture);
-            }
-        }
+    void Draw(Vector3 dragPointWorld) {
+        currentMuseum.SetTile((int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f), 0, 0, 0);
+    }
+
+    void Erase(Vector3 dragPointWorld) {
+        currentMuseum.RemoveTile((int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f));
+    }
+
+    void Move(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
+        Camera.main.transform.Translate((dragPointWorld - anchorPointWorld).normalized * cameraSpeed * Time.deltaTime, Space.World);
+    }
+
+    void Rotate(Vector3 dragPointScreen, Vector3 anchorPointScreen, Vector3 centerPointWorld) {
+        var diff = (dragPointScreen.x - anchorPointScreen.x) / Display.main.renderingWidth;
+        Camera.main.transform.Translate(new Vector3(diff, 0, 0) * cameraSpeed * Time.deltaTime);
+        Camera.main.transform.LookAt(centerPointWorld);
+    }
+
+    void Scale(Vector3 dragPointScreen, Vector3 anchorPointScreen) {
+        var diff = (anchorPointScreen.x - dragPointScreen.x) / Display.main.renderingHeight * cameraSpeed * Time.deltaTime;
+        Camera.main.orthographicSize += diff;
+    }
+
+    void PlaceObject(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
+        var diff = (dragPointWorld - anchorPointWorld).normalized;
+        var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
+        currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), anchorPointWorld + new Vector3(0, 0.5f, 0), new Vector3(0, angle, 0));
+    }
+
+    void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
+        var diff = (dragPointWorld - anchorPointWorld).normalized;
+        var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
+        if (angle < 0) angle = 360 + angle;
+        var orientation = (int)angle / 90;
+        currentMuseum.AddArt((int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), orientation, debugTexture);
     }
 }
