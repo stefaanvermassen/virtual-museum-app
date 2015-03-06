@@ -21,7 +21,7 @@ public class DrawController : MonoBehaviour {
     public Tools tool = Tools.Drawing;
     public Texture2D debugTexture;
 
-    private bool dragging = false;
+    private bool[] dragging = {false, false, false, false, false};
     private Vector3 centerPointWorld = Vector3.zero;
     private Vector3 anchorPointScreen = Vector3.zero;
     private Vector3 anchorPointWorld = Vector3.zero;
@@ -53,23 +53,28 @@ public class DrawController : MonoBehaviour {
         }
         return Vector3.zero;
     }
-	
+
     void Update() {
+        ToolUpdate(0, tool);
+        MouseUpdate();
+    }
+	
+    void ToolUpdate(int mouseButton, Tools tool) {
         var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
         var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
         Debug.DrawRay(mouse3D, Camera.main.transform.forward * 100, Color.white, 0.1f);
-        if (Input.GetMouseButtonDown(0) && !IsPointerBusy()) {
+        if (Input.GetMouseButtonDown(mouseButton) && !IsPointerBusy()) {
             cameraAnchor = Camera.main.transform.position;
-            dragging = true;
+            dragging[mouseButton] = true;
             anchorPointScreen = mouse2D;
             anchorPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
             lastDragPointScreen = anchorPointScreen;
             centerPointWorld = raycast(cameraAnchor, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
         }
-        if (Input.GetMouseButtonUp(0)) {
-            dragging = false;
+        if (Input.GetMouseButtonUp(mouseButton)) {
+            dragging[mouseButton] = false;
         }
-        if (dragging) {
+        if (dragging[mouseButton]) {
             var dragPointScreen = Vector3.zero;
             var dragPointWorld = Vector3.zero;
             dragPointScreen = mouse2D;
@@ -77,31 +82,25 @@ public class DrawController : MonoBehaviour {
             var dragOffsetScreen = anchorPointScreen - dragPointScreen;
             var dragOffsetWorld = anchorPointWorld - dragPointWorld;
             var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
-            switch (tool) {
-                case Tools.Drawing:
-                    Draw(dragPointWorld);
-                    break;
-                case Tools.Moving:
-                    Move(dragOffsetWorld);
-                    break;
-                case Tools.Rotating:
-                    Rotate(centerPointWorld, frameOffsetScreen.x/Display.main.renderingWidth*180);
-                    break;
-                case Tools.Erasing:
-                    Erase(dragPointWorld);
-                    break;
-                case Tools.Scaling:
-                    Scale(Mathf.Pow(2,-frameOffsetScreen.y / Display.main.renderingHeight));
-                    break;
-                case Tools.PlacingObject:
-                    PlaceObject(dragPointWorld, anchorPointWorld);
-                    break;
-                case Tools.PlacingArt:
-                    PlaceArt(dragPointWorld, anchorPointWorld);
-                    break;
-            }
+
+            if      (tool == Tools.Drawing)         Draw(dragPointWorld);
+            else if (tool == Tools.Moving)          Move(dragOffsetWorld);
+            else if (tool == Tools.Rotating)        Rotate(centerPointWorld, frameOffsetScreen.x / Display.main.renderingWidth * 180);
+            else if (tool == Tools.Erasing)         Erase(dragPointWorld);
+            else if (tool == Tools.Scaling)         Scale(Mathf.Pow(2, -frameOffsetScreen.y / Display.main.renderingHeight));
+            else if (tool == Tools.PlacingObject)   PlaceObject(dragPointWorld, anchorPointWorld);
+            else if (tool == Tools.PlacingArt)      PlaceArt(dragPointWorld, anchorPointWorld);
+
             lastDragPointScreen = dragPointScreen;
         }
+    }
+
+    void MouseUpdate() {
+        var scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll < 0) Scale(1.1f);
+        if (scroll > 0) Scale(0.9f);
+        ToolUpdate(1, Tools.Rotating);
+        ToolUpdate(2, Tools.Moving);
     }
 
     void Draw(Vector3 dragPointWorld) {
