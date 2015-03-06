@@ -1,7 +1,10 @@
-﻿<Properties>
+<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GUI/Scripts/BasicActions.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\DrawController.cs">
     <Files>
+      <File FileName="Assets\Scripts\DrawController.cs" Line="74" Column="1" />
+      <File FileName="Assets\Scripts\Museum\Museum.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScanEngine\QRCode.cs" Line="1" Column="1" />
       <File FileName="Assets/GUI/Scripts/InputAdapter.cs" Line="22" Column="74" />
       <File FileName="Assets/GUI/Scripts/TestGUIPrefab.cs" Line="1" Column="1" />
       <File FileName="Assets/GUI/Scripts/GUIControl.cs" Line="65" Column="1" />
