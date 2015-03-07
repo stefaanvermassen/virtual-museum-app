@@ -8,6 +8,7 @@ public class MuseumTile : MonoBehaviour {
     public int ceilingStyle;
     public int wallStyle;
     public int floorStyle;
+    public Material material;
 
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
