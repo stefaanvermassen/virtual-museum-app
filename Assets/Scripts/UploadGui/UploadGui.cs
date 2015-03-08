@@ -31,7 +31,7 @@ public class UploadGui : MonoBehaviour
     private byte[] uploadableFile;
     private IEnumerator www;
     private string accessToken;
-    private readonly string[] imageExtensions = { ".png", ".bmp", ".jpg", ".jpeg" };
+    private readonly string[] imageExtensions = { ".png", ".jpg" };
     private const string BASE_URL = "http://api.awesomepeople.tv/";
     private const string TOKEN = "Token";
     private const string ARTWORK = "api/artwork";

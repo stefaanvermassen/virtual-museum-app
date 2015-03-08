@@ -172,6 +172,8 @@ public class FileBrowser
         {
             case Type.FOLDER:
                 currentDirectory = new DirectoryInfo(name);
+                // Clear search
+                searchField.text = "";
                 break;
             case Type.FILE:
                 selectedFile = name;
