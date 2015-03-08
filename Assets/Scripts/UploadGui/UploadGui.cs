@@ -23,7 +23,6 @@ public class UploadGui : MonoBehaviour
     public GameObject browseButton;
     public InputField pathField;
     public Image thumbnail;
-    public Transform uploadPanel;
     public GameObject uploadGui;
     public Button cancelULButton;
     public Button uploadButton;
@@ -47,7 +46,6 @@ public class UploadGui : MonoBehaviour
     private void Start()
     {
         pathField.text = Directory.GetCurrentDirectory();
-        addBrowseButton();
         cancelULButton.onClick.AddListener(() => handleClick(Type.CANCEL));
         uploadButton.onClick.AddListener(() => handleClick(Type.UPLOAD));
         fileBrowserObject.SetActive(false);
@@ -88,16 +86,8 @@ public class UploadGui : MonoBehaviour
         Application.Quit();
     }
 
-    private void addBrowseButton()
-    {
-        GameObject b = GameObject.Instantiate(browseButton) as GameObject;
-        BrowseButton button = b.GetComponent<BrowseButton>();
-        button.icon.sprite = Sprite.Create(folderTexture, new Rect(0, 0, folderTexture.width, folderTexture.height), Vector2.zero);
-        b.transform.SetParent(uploadPanel);
-        button.button.onClick.AddListener(() => createFileBrowser());
-    }
 
-    private void createFileBrowser()
+    public void createFileBrowser()
     {
         fileBrowser = new FileBrowser(directoryLabel, searchField, directoryButton, fileButton, fileTexture, folderTexture, backTexture, directoryView,
                 fileView, cancelButton, acceptButton, fileBrowserObject, imageExtensions);
