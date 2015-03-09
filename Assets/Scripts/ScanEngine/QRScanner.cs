@@ -19,12 +19,11 @@ namespace Scanning
         public bool IsQuit { get; set; }
         public string LastResult { get; set; }
 
-        private bool ShouldEncodeNow { get; set; }
-
+        public ArtFilter Filter { get; set; }
         //empty constructor
         public QRScanner()
         {
-            
+            LastResult = "default";
         }
 
         public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable)
@@ -47,9 +46,8 @@ namespace Scanning
             return id;
         }
 
-        public Scannable Scan(ScanIdentity scan)
+        public void Scan()
         {
-            ArtFilter filter = new ArtFilter();
             // create a reader with a custom luminance source
             var barcodeReader = new BarcodeReader { AutoRotate = false, TryHarder = false };
 
@@ -64,21 +62,30 @@ namespace Scanning
                     var result = barcodeReader.Decode(Color, Width, Height);
                     if (result != null)
                     {
+                        Filter = new ArtFilter();
                         LastResult = result.Text;
-                        ShouldEncodeNow = true;
-                        filter.configure(result.Text);
-                        return filter;
+                        Filter.configure(result.Text);
+                        return;
                     }
 
                     // Sleep a little bit and set the signal to get the next frame
                     Thread.Sleep(200);
-                    Color = null;
+                    Color = null; //if null, Update() of GUI will set Color to a new frame of the webcam
                 }
                 catch
                 {
                 }
             }
             throw new TimeoutException("Scanning of QR code was interrupted");
+        }
+
+
+        public Scannable getScanResult()
+        {
+            if(Filter != null){
+                return Filter;
+            }
+            throw new MissingFieldException("The value of the result was not set, scan was not competed or unsuccesful");
         }
     }
 }

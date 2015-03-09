@@ -36,9 +36,6 @@ namespace Scanning
             //create Scanner
             switch (tech)
             {
-                case ScanTechnology.ID:
-                    scanner = new IDScanner();
-                    break;
                 case ScanTechnology.QR:
                     scanner = new QRScanner();
                     break;
@@ -55,7 +52,8 @@ namespace Scanning
          * */
         public Scannable scan(ScanIdentity scanId)
         {
-            return scanner.Scan(scanId);
+            scanner.Scan();
+            return scanner.getScanResult();
         }
 
         /**

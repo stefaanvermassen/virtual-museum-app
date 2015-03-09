@@ -7,13 +7,14 @@ using UnityEngine;
 using ZXing;
 using ZXing.QrCode;
 
+
 namespace Scanning
 {
     public class QRCode: ScanIdentity
     {
 
-        public Color32[] Image { get; set; }
 
+        public Color32[] Image { get; set; }
         public QRCode():base(ScanTechnology.QR)
         {
 
