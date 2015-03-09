@@ -9,7 +9,7 @@
 // ------------------------------------------------------------------------------
 using System;
 
-namespace GUI
+namespace gui_interface
 {
 public class ArtGUIInterface
 	{

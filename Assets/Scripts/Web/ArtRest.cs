@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 
-using GUI;
+using gui_interface;
 
 public class ArtRest : MonoBehaviour
 {
