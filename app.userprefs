@@ -1,10 +1,19 @@
 ﻿<Properties>
+<<<<<<< HEAD
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\DrawController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\FirstPersonController.cs">
     <Files>
-      <File FileName="Assets\Scripts\DrawController.cs" Line="74" Column="1" />
-      <File FileName="Assets\Scripts\Museum\Museum.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\ScanEngine\QRCode.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\FirstPersonController.cs" Line="91" Column="41" />
+      <File FileName="Assets\Scripts\CrossPlatformInput\CrossPlatformInputManager.cs" Line="12" Column="9" />
+=======
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GUI/Scripts/GUIControl.cs">
+    <Files>
+      <File FileName="Assets/GUI/Scripts/GUIControl.cs" Line="1" Column="1" />
+      <File FileName="Assets/GUI/Scripts/InputAdapter.cs" Line="1" Column="1" />
+      <File FileName="Assets/GUI/Scripts/TestGUIPrefab.cs" Line="1" Column="1" />
+      <File FileName="Assets/GUI/Scripts/BasicActions.cs" Line="1" Column="1" />
+>>>>>>> 02eec64b50c03c4290d3b69897f9fd7ca0680805
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
