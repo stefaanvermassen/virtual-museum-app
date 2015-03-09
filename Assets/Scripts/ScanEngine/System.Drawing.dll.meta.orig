@@ -1,5 +1,12 @@
 fileFormatVersion: 2
-guid: 19bc2dcfd07ed924eac9b6c421540fb5
+<<<<<<< HEAD
+guid: 4b834900a68750b4f975afd3f1a78064
+timeCreated: 1425596170
+=======
+guid: 08916723a28fe4adb9ef416834f82b5c
+timeCreated: 1425650636
+>>>>>>> FETCH_HEAD
+licenseType: Free
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
