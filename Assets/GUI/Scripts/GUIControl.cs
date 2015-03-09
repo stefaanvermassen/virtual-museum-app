@@ -7,8 +7,6 @@ using System.Collections;
 /// </summary>
 public class GUIControl : MonoBehaviour {
 
-	private static InputAdapter emptyAdapter=new InputAdapter();
-	private InputAdapter adapter;
 	//Todo
 	////create prefab for: checkbox, radio buttons, 
 	/// create input adaptor to be used in input guicontrol
@@ -18,13 +16,8 @@ public class GUIControl : MonoBehaviour {
 	}
 	//defauld adapter is empty
 	void Start () {
-		adapter = emptyAdapter;
-		//TODO set input adapter as listener for all input guicontrols
 	}
-	//change input adapter
-	public void setInputAdapter(InputAdapter adapter){
-		this.adapter = adapter;
-	}
+
 	
 	public void hide(){
 		gameObject.SetActive (false);
