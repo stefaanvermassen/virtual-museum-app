@@ -2,6 +2,10 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
+//DEBUG
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
 public class DrawController : MonoBehaviour {
 
     public enum Tools : int {
@@ -36,6 +40,25 @@ public class DrawController : MonoBehaviour {
 
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
+
+        //DEBUG
+        if (this.tool == Tools.PlacingObject) {
+            var data = currentMuseum.save();
+            Stream TestFileStream = File.Create("test.bin");
+            BinaryFormatter serializer = new BinaryFormatter();
+            serializer.Serialize(TestFileStream, data);
+            TestFileStream.Close();
+            Debug.Log("Done");
+        }
+        if (this.tool == Tools.PlacingArt) {
+            if (File.Exists("test.bin")) {
+                Stream TestFileStream = File.OpenRead("test.bin");
+                BinaryFormatter deserializer = new BinaryFormatter();
+                MuseumData data = (MuseumData)deserializer.Deserialize(TestFileStream);
+                TestFileStream.Close();
+                currentMuseum.load(data);
+            }
+        }
     }
 
     bool IsPointerBusy() {

@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
-public class Museum : MonoBehaviour {
+public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<GameObject> objects = new List<GameObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string author;
-    //public string name;
+    public string museumName;
     public string description;
 
     public Material frontMaterial;
@@ -15,6 +16,20 @@ public class Museum : MonoBehaviour {
 
 	void Start () {
 	}
+
+    public MuseumData save() {
+        var tileData = new List<MuseumTileData>();
+        foreach (var t in tiles)
+            tileData.Add(t.save());
+        return new MuseumData(tileData, author, museumName, description);
+    }
+    public void load(MuseumData data) {
+        foreach (var tileData in data.Tiles)
+            SetTile(tileData.X, tileData.Y, tileData.Z, tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle);
+        author = data.Author;
+        museumName = data.MuseumName;
+        description = data.Description;
+    }
 
     public void AddArt(int x, int y, int z, int orientation, Texture2D texture) {
         RemoveArt(x, y, z);
