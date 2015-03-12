@@ -2,10 +2,6 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-//DEBUG
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-
 public class DrawController : MonoBehaviour {
 
     public enum Tools : int {
@@ -45,25 +41,6 @@ public class DrawController : MonoBehaviour {
 
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
-
-        //DEBUG
-        if (this.tool == Tools.PlacingObject) {
-            var data = currentMuseum.Save();
-            Stream TestFileStream = File.Create(Application.persistentDataPath + "/test.bin");
-            BinaryFormatter serializer = new BinaryFormatter();
-            serializer.Serialize(TestFileStream, data);
-            TestFileStream.Close();
-            Debug.Log("Done");
-        }
-        if (this.tool == Tools.PlacingArt) {
-            if (File.Exists(Application.persistentDataPath + "/test.bin")) {
-                Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
-                BinaryFormatter deserializer = new BinaryFormatter();
-                MuseumData data = (MuseumData)deserializer.Deserialize(TestFileStream);
-                TestFileStream.Close();
-                currentMuseum.Load(data);
-            }
-        }
     }
 
     bool IsPointerBusy() {
@@ -176,13 +153,13 @@ public class DrawController : MonoBehaviour {
 
     void PlaceObject(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
         var diff = (dragPointWorld - anchorPointWorld).normalized;
-        var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
-        currentMuseum.AddObject(currentObject, (int)anchorPointWorld.x, (int)anchorPointWorld.y, (int)anchorPointWorld.z, angle);
+        var angle = -(Mathf.Atan2(diff.z, diff.x) - Mathf.PI / 2) / Mathf.PI * 180;
+        currentMuseum.AddObject(currentObject, (int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), angle);
     }
 
     void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
         var diff = (dragPointWorld - anchorPointWorld).normalized;
-        var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
+        var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI/4) / Mathf.PI * 180;
         if (angle < 0) angle = 360 + angle;
         var orientation = (int)angle / 90;
         currentMuseum.AddArt(currentArt, (int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), orientation);

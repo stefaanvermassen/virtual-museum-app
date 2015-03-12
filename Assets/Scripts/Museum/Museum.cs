@@ -60,8 +60,14 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     }
 
     public void AddArt(int artID, int x, int y, int z, int orientation) {
-        RemoveArt(x, y, z);
-        if(ContainsTile(x,y,z)){
+        if (ContainsTile(x, y, z) && (
+                    (orientation == 0 && !ContainsTile(x,y,z-1)) ||
+                    (orientation == 1 && !ContainsTile(x-1,y,z)) ||
+                    (orientation == 2 && !ContainsTile(x,y,z+1)) ||
+                    (orientation == 3 && !ContainsTile(x+1,y,z))
+                )
+            ) {
+            RemoveArt(x, y, z);
             GameObject o = new GameObject();
             MuseumArt a = o.AddComponent<MuseumArt>();
             a.x = x;
@@ -98,15 +104,17 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     }
 
     public void AddObject(int objectID, int x, int y, int z, float angle) {
-        RemoveObject(x,y,z);
-        var ob = new GameObject();
-        var museumObject = ob.AddComponent<MuseumObject>();
-        museumObject.objectID = objectID;
-        museumObject.x = x;
-        museumObject.y = y;
-        museumObject.z = z;
-        museumObject.angle = angle;
-        objects.Add(museumObject);
+        if (ContainsTile(x, y, z)) {
+            RemoveObject(x, y, z);
+            var ob = new GameObject();
+            var museumObject = ob.AddComponent<MuseumObject>();
+            museumObject.objectID = objectID;
+            museumObject.x = x;
+            museumObject.y = y;
+            museumObject.z = z;
+            museumObject.angle = angle;
+            objects.Add(museumObject);
+        }
     }
 
     public void RemoveObject(int x, int y, int z) {
@@ -160,6 +168,8 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public void RemoveTile(int x, int y, int z) {
         var tile = GetTile(x, y, z);
         if (tile != null) {
+            RemoveArt(x, y, z);
+            RemoveObject(x, y, z);
             tiles.Remove(tile);
             tile.Remove();
             Destroy(tile.gameObject);

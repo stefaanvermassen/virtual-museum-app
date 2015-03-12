@@ -24,9 +24,9 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
 
     void Start() {
         Remove();
-        var master = Resources.Load<GameObject>("texmonkey");
+        var master = Resources.Load<GameObject>("Vase1");
 
-        ob = (GameObject) Instantiate(master, new Vector3(x, y + 0.5f, z), Quaternion.Euler(new Vector3(0, angle, 0)));
+        ob = (GameObject) Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
     }
 
     // Update is called once per frame
