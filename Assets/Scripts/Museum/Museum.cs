@@ -5,7 +5,7 @@ using System.Linq;
 public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
-    public List<GameObject> objects = new List<GameObject>();
+    public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string author;
     public string museumName;
@@ -14,24 +14,52 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public Material frontMaterial;
     public Material backMaterial;
 
-	void Start () {
-	}
+    public Texture2D debugTexture;
 
-    public MuseumData save() {
+    public MuseumData Save() {
         var tileData = new List<MuseumTileData>();
         foreach (var t in tiles)
-            tileData.Add(t.save());
-        return new MuseumData(tileData, author, museumName, description);
+            tileData.Add(t.Save());
+        var artData = new List<MuseumArtData>();
+        foreach (var a in art)
+            artData.Add(a.Save());
+        var objectData = new List<MuseumObjectData>();
+        foreach (var o in objects)
+            objectData.Add(o.Save());
+        return new MuseumData(tileData, artData, objectData, author, museumName, description);
     }
-    public void load(MuseumData data) {
+    public void Load(MuseumData data) {
+        Clear();
         foreach (var tileData in data.Tiles)
-            SetTile(tileData.X, tileData.Y, tileData.Z, tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle);
+            SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
+        foreach (var artData in data.Art)
+            AddArt(artData.ArtID, artData.X, artData.Y, artData.Z, artData.Orientation);
+        foreach (var objectData in data.Objects)
+            AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
         author = data.Author;
         museumName = data.MuseumName;
         description = data.Description;
     }
 
-    public void AddArt(int x, int y, int z, int orientation, Texture2D texture) {
+    public void Clear() {
+        foreach (var t in tiles) {
+            t.Remove();
+            Destroy(t.gameObject);
+        }
+        tiles.Clear();
+        foreach (var a in art) {
+            a.Remove();
+            Destroy(a.gameObject);
+        }
+        art.Clear();
+        foreach (var o in objects) {
+            o.Remove();
+            Destroy(o.gameObject);
+        }
+        objects.Clear();
+    }
+
+    public void AddArt(int artID, int x, int y, int z, int orientation) {
         RemoveArt(x, y, z);
         if(ContainsTile(x,y,z)){
             GameObject o = new GameObject();
@@ -41,7 +69,8 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             a.z = z;
             a.orientation = orientation;
             a.material = frontMaterial;
-            a.texture = texture;
+            a.texture = debugTexture;
+            a.artID = artID;
             art.Add(a);
         }
     }
@@ -68,25 +97,34 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
     }
 
-    public void AddObject(GameObject ob, Vector3 position, Vector3 rotation) {
-        RemoveObject(position, 1);
-        var clone = (GameObject) Instantiate(ob,position,Quaternion.Euler(rotation));
-        objects.Add(clone);
+    public void AddObject(int objectID, int x, int y, int z, float angle) {
+        RemoveObject(x,y,z);
+        var ob = new GameObject();
+        var museumObject = ob.AddComponent<MuseumObject>();
+        museumObject.objectID = objectID;
+        museumObject.x = x;
+        museumObject.y = y;
+        museumObject.z = z;
+        museumObject.angle = angle;
+        objects.Add(museumObject);
     }
 
-    public void RemoveObject(Vector3 position, float maxDistance) {
-        GameObject toRemove = null;
-        foreach (GameObject o in objects) {
-            if (Vector3.Distance(o.transform.position, position) < maxDistance) {
+    public void RemoveObject(int x, int y, int z) {
+        MuseumObject toRemove = null;
+        foreach (MuseumObject o in objects) {
+            if (o.x == x && o.y == y && o.z == z) {
                 toRemove = o;
                 break;
             }
         }
-        if (toRemove != null) objects.Remove(toRemove);
-        Destroy(toRemove);
+        if (toRemove != null) {
+            objects.Remove(toRemove);
+            toRemove.Remove();
+            Destroy(toRemove.gameObject);
+        }
     }
 
-    public void SetTile(int x = 0, int y = 0, int z = 0, int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0) {
+    public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
         RemoveTile(x, y, z);
         GameObject tileObject = new GameObject();
         tileObject.transform.parent = transform.parent;

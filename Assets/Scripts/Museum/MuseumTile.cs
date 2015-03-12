@@ -13,10 +13,10 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
-    public MuseumTileData save() {
+    public MuseumTileData Save() {
         return new MuseumTileData(x, y, z, left, right, front, back, ceilingStyle, wallStyle, floorStyle);
     }
-    public void load(MuseumTileData data) {
+    public void Load(MuseumTileData data) {
         x = data.X;
         y = data.Y;
         z = data.Z;

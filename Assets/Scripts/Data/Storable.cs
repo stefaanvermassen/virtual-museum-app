@@ -5,7 +5,7 @@ using System.Text;
 
 public interface Storable<T,D> where D: Data<T> {
 
-    D save();
-    void load(D data);
+    D Save();
+    void Load(D data);
 
 }

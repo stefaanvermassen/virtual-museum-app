@@ -23,7 +23,12 @@ public class DrawController : MonoBehaviour {
     public float cameraSpeed = 10;
     public float edgeRatio = 0.05f;
     public Tools tool = Tools.Drawing;
-    public Texture2D debugTexture;
+
+    public int currentArt = 0;
+    public int currentObject = 0;
+    public int currentFloor = 0;
+    public int currentWall = 0;
+    public int currentCeiling = 0;
 
     private bool[] dragging = {false, false, false, false, false};
     private Vector3 centerPointWorld = Vector3.zero;
@@ -43,7 +48,7 @@ public class DrawController : MonoBehaviour {
 
         //DEBUG
         if (this.tool == Tools.PlacingObject) {
-            var data = currentMuseum.save();
+            var data = currentMuseum.Save();
             Stream TestFileStream = File.Create(Application.persistentDataPath + "/test.bin");
             BinaryFormatter serializer = new BinaryFormatter();
             serializer.Serialize(TestFileStream, data);
@@ -56,7 +61,7 @@ public class DrawController : MonoBehaviour {
                 BinaryFormatter deserializer = new BinaryFormatter();
                 MuseumData data = (MuseumData)deserializer.Deserialize(TestFileStream);
                 TestFileStream.Close();
-                currentMuseum.load(data);
+                currentMuseum.Load(data);
             }
         }
     }
@@ -148,7 +153,7 @@ public class DrawController : MonoBehaviour {
     }
 
     void Draw(Vector3 dragPointWorld) {
-        currentMuseum.SetTile((int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f), 0, 0, 0);
+        currentMuseum.SetTile(currentWall, currentFloor, currentCeiling, (int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f));
     }
 
     void Erase(Vector3 dragPointWorld) {
@@ -172,7 +177,7 @@ public class DrawController : MonoBehaviour {
     void PlaceObject(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
         var diff = (dragPointWorld - anchorPointWorld).normalized;
         var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
-        currentMuseum.AddObject(Resources.Load<GameObject>("texmonkey"), anchorPointWorld + new Vector3(0, 0.5f, 0), new Vector3(0, angle, 0));
+        currentMuseum.AddObject(currentObject, (int)anchorPointWorld.x, (int)anchorPointWorld.y, (int)anchorPointWorld.z, angle);
     }
 
     void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
@@ -180,6 +185,6 @@ public class DrawController : MonoBehaviour {
         var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI / 2) / Mathf.PI * 180;
         if (angle < 0) angle = 360 + angle;
         var orientation = (int)angle / 90;
-        currentMuseum.AddArt((int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), orientation, debugTexture);
+        currentMuseum.AddArt(currentArt, (int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), orientation);
     }
 }
