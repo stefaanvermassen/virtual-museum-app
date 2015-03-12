@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MuseumTile : MonoBehaviour {
+public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 
     public int x, y, z;
     public bool left, right, front, back;
@@ -12,6 +12,22 @@ public class MuseumTile : MonoBehaviour {
     public Material backMaterial;
 
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
+
+    public MuseumTileData Save() {
+        return new MuseumTileData(x, y, z, left, right, front, back, ceilingStyle, wallStyle, floorStyle);
+    }
+    public void Load(MuseumTileData data) {
+        x = data.X;
+        y = data.Y;
+        z = data.Z;
+        left = data.Left;
+        right = data.Right;
+        front = data.Front;
+        back = data.Back;
+        ceilingStyle = data.CeilingStyle;
+        wallStyle = data.WallStyle;
+        floorStyle = data.FloorStyle;
+    }
 
     GameObject ReversedQuad() {
         var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
