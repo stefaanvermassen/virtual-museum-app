@@ -1,5 +1,4 @@
-﻿using SimpleJSON;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -29,13 +28,8 @@ public class UploadGui : MonoBehaviour
 
     private FileBrowser fileBrowser;
     private byte[] uploadableFile;
-    private IEnumerator www;
     private string accessToken;
     private readonly string[] imageExtensions = { ".png", ".jpg" };
-    private const string BASE_URL = "http://api.awesomepeople.tv/";
-    private const string TOKEN = "Token";
-    private const string ARTWORK = "api/artwork";
-    private const string MIME = "image/";
 
     private enum Type
     {
@@ -50,6 +44,10 @@ public class UploadGui : MonoBehaviour
         uploadButton.onClick.AddListener(() => handleClick(Type.UPLOAD));
         fileBrowserObject.SetActive(false);
         thumbnail.enabled = false;
+
+		//Create the UC
+		API.UserController uc = API.UserController.Instance;
+		Debug.Log ("Access token: " + uc.user.accessToken);
     }
 
     private void handleClick(Type type)
@@ -67,7 +65,6 @@ public class UploadGui : MonoBehaviour
                     if (selected.EndsWith(s))
                     {
                         //Upload selected file
-                        if (accessToken == "") { stubLogin(); }
                         uploadableImage();
                         Debug.Log("Uploaded " + selected + " successful!");
                         exit();
@@ -133,56 +130,15 @@ public class UploadGui : MonoBehaviour
         fileBrowser = null;
     }
 
-    /*
-     * http://api.awesomepeople.tv/Token
-     * {"grant_type":"password",
-     * "username":"username",
-     * "password":"password"}
-     */
-    private void stubLogin()
-    {
-        WWW www = sendPost(BASE_URL + TOKEN, new string[] { "grant_type", "username", "password" }, new string[] { "password", "museum@awesomepeople.tv", "@wesomePeople_20" });
-        JSONNode node = JSON.Parse(www.text);
-        accessToken = node["access_token"];
-    }
-
     private void uploadableImage()
     {
         string[] splitted = pathField.text.Split(new char[]{'.'});
         string mime = splitted[splitted.Length - 1];
         splitted = pathField.text.Split(new char[] { '/', '\\' });
         string name = splitted[splitted.Length - 1];
-        WWW www = sendImagePost(BASE_URL + ARTWORK, pathField.text, name, mime);
-        Debug.Log(www.text);
-    }
-
-
-    private WWW sendImagePost(string url, string imageLocation, string name, string mime)
-    {
-        WWWForm form = new WWWForm();
-        form.AddBinaryData(imageLocation, uploadableFile, name, MIME + mime);
-
-        return postForm(url, form);
-    }
-
-    private WWW sendPost(string url, string[] name, string[] value)
-    {
-        WWWForm form = new WWWForm();
-        for (int i = 0; i < name.Length; i++)
-        {
-            form.AddField(name[i], value[i]);
-        }
-
-        return postForm(url, form);
-    }
-
-    private WWW postForm(string url, WWWForm form)
-    {
-        Dictionary<string, string> headers = form.headers;
-        byte[] rawData = form.data;
-
-        WWW www = new WWW(url, rawData, headers);
-        while (!www.isDone) ;
-        return www;
+		API.ArtworkController ac = API.ArtworkController.Instance;
+		ac.uploadImage (name, mime, pathField.text, uploadableFile, 
+		                ((response) => {Debug.Log("Upload was succesfull");}), 
+		                ((error) => {Debug.Log("Upload failed!");}));
     }
 }
