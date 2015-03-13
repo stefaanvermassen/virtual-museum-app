@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class DrawController : MonoBehaviour {
 
@@ -41,6 +43,14 @@ public class DrawController : MonoBehaviour {
 
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
+		if (this.tool == Tools.PlacingArt) {
+			var data = currentMuseum.Save();
+			Stream TestFileStream = File.Create(Application.persistentDataPath + "/test.bin");
+			BinaryFormatter serializer = new BinaryFormatter();
+			serializer.Serialize(TestFileStream, data);
+			TestFileStream.Close();
+			Debug.Log("Done");
+		}
     }
 
     bool IsPointerBusy() {
