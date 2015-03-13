@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-using SimpleJSON;
 using UnityEngine.UI;
 
 
@@ -13,23 +12,28 @@ public class ArtRest : MonoBehaviour
 	IEnumerator  getAllArt (GUIControl content)
 	{
 		string imageArtworkUrl;
-		www = new WWW (BASE_URL+ARTWORK);
-		yield return www;
-		JSONNode node = JSON.Parse (www.text);
+		API.UserController uc = API.UserController.Instance;
+		API.ArtworkController ac = API.ArtworkController.Instance;
+
 		allArt = new List<ArtGUIInterface> ();
 		ArtGUIInterface newArtCatalogItem;
 		content.removeAllChildren ();
-		//set content position
-		foreach (JSONNode child in node.Children) {
-			imageArtworkUrl = BASE_URL+ARTWORK + "/" + child ["ArtWorkID"];
-			www = new WWW (imageArtworkUrl);
-			yield return www;
-			newArtCatalogItem = new ArtGUIInterface (child ["ArtWorkID"], child ["ArtistID"], child ["Name"],www.texture);
-			allArt.Add (newArtCatalogItem);
-			catalogItemFromGUIInterface (newArtCatalogItem,content);
-		}
 
-	
+		ac.getAllArtworks (success: (response) => {
+			foreach(Hashtable child in response) {
+				ac.getArtwork(((string)child["ArtWorkID"]), success:(texture) => {
+					newArtCatalogItem = new ArtGUIInterface ((string)child ["ArtWorkID"], (string)child ["ArtistID"], (string)child ["Name"], texture);
+					allArt.Add (newArtCatalogItem);
+					catalogItemFromGUIInterface (newArtCatalogItem,content);
+				}, error:(error) => {Debug.Log("An error occured while loading artwork with ID: " + child["ArtWorkID"]);});
+
+			}
+		},
+							error: (error) => {
+			Debug.Log("An error occured while loading all artworks");
+		}); 
+
+		yield return null;
 	}
 	//post the edited art 
 	IEnumerator  postArt (GUIControl content)

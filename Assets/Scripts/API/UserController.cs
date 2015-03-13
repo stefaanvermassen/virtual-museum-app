@@ -47,14 +47,13 @@ namespace API {
 			post("http://api.awesomepeople.tv/Token", 
 				new string[] { "grant_type", "username", "password" }, 
 				new string[] { "password", "museum@awesomepeople.tv", "@wesomePeople_20" }, 
-				false, 
-				((response) => {
-					string accessToken = (string)response["access_token"];
-					Debug.Log (accessToken);
-					user.accessToken = accessToken;
+			((response) => {
+				string accessToken = (string)response.Object["access_token"];
+				Debug.Log (accessToken);
+				user.accessToken = accessToken;
 			}), ((API_Error)=>{
-				Debug.Log("An error  occured when request the token");
-			}));
+				Debug.Log("An error  occured while requesting the token.");
+			}), false);
 		}
 	}
 
