@@ -53,28 +53,28 @@ namespace Scanning
 
             while (true)
             {
+                Debug.Log("loop");
                 if (IsQuit)
                     break;
 
-                try
-                {
-                    // decode the current frame
-                    var result = barcodeReader.Decode(Color, Width, Height);
-                    if (result != null)
-                    {
-                        Filter = new ArtFilter();
-                        LastResult = result.Text;
-                        Filter.configure(result.Text);
-                        return;
-                    }
 
-                    // Sleep a little bit and set the signal to get the next frame
-                    Thread.Sleep(200);
-                    Color = null; //if null, Update() of GUI will set Color to a new frame of the webcam
-                }
-                catch
+                // decode the current frame
+                Debug.Log("Try to decode frame");
+                var result = barcodeReader.Decode(Color, Width, Height);
+                if (result != null)
                 {
+                    Filter = new ArtFilter();
+                    LastResult = result.Text;
+                    Filter.configure(result.Text);
+                    Debug.Log("QR code found :");
+                    return;
                 }
+                Debug.Log("Decoding failed: set Color to null");
+                // Sleep a little bit and set the signal to get the next frame
+                Thread.Sleep(200);
+                Color = null; //if null, Update() of GUI will set Color to a new frame of the webcam
+                Debug.Log("end loop");
+  
             }
             throw new TimeoutException("Scanning of QR code was interrupted");
         }

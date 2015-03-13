@@ -2,11 +2,13 @@
 using System.Collections;
 using Scanning;
 using System.Threading;
+using UnityEngine.UI;
 
 public class QRCam : MonoBehaviour {
 
     public Texture2D encoded;
     public WebCamTexture camTexture;
+    public Image image;
     private Rect paneRect;
     private QRScanner scanner = new QRScanner();
     private Thread scanThread;
@@ -59,7 +61,9 @@ public class QRCam : MonoBehaviour {
       camTexture = new WebCamTexture();
       camTexture.requestedHeight = Screen.height; // 480;
       camTexture.requestedWidth = Screen.width; //640;
+
       OnEnable();
+      image.material.mainTexture = camTexture;
 
       scanThread = new Thread(scanner.Scan);
       scanThread.Start();
