@@ -1,18 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MuseumArt : MonoBehaviour {
+public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
 
     public int x, y, z;
     public int orientation;
+    public int artID;
 
     public Texture2D texture;
     public Material material;
 
     private GameObject ob;
 
+    public MuseumArtData Save(){
+        return new MuseumArtData(artID, x, y, z, orientation);
+    }
+
+    public void Load(MuseumArtData data) {
+        artID = data.ArtID;
+        x = data.X;
+        y = data.Y;
+        z = data.Z;
+        orientation = data.Orientation;
+        Start();
+    }
+
 	// Use this for initialization
 	void Start () {
+        Remove();
         ob = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var renderer = ob.GetComponent<MeshRenderer>();
         renderer.material = material;
