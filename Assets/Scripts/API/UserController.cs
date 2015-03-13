@@ -46,7 +46,7 @@ namespace API {
 			user = new User (name, null);
 			post("http://api.awesomepeople.tv/Token", 
 				new string[] { "grant_type", "username", "password" }, 
-				new string[] { "password", "museum@awesomepeople.tv", "@wesomePeople_20" }, 
+				new string[] { "password", "VirtualMuseum", "@wesomePeople_20" }, 
 			((response) => {
 				string accessToken = (string)response.Object["access_token"];
 				Debug.Log (accessToken);

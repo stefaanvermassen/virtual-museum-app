@@ -28,7 +28,7 @@ namespace API
 		public HTTP.Request getAllArtworks(Action<ArrayList> success = null, Action<API.API_Error> error = null) {
 			return get (BASE_URL + ARTWORK, ((response) => {
 				if(success != null) {
-					success((ArrayList)response.Object["Artworks"]);
+					success((ArrayList)response.Object["ArtWorks"]);
 				}}), error);
 		}
 

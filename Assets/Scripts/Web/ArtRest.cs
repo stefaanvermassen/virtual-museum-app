@@ -21,8 +21,8 @@ public class ArtRest : MonoBehaviour
 
 		ac.getAllArtworks (success: (response) => {
 			foreach(Hashtable child in response) {
-				ac.getArtwork(((string)child["ArtWorkID"]), success:(texture) => {
-					newArtCatalogItem = new ArtGUIInterface ((string)child ["ArtWorkID"], (string)child ["ArtistID"], (string)child ["Name"], texture);
+				ac.getArtwork(child["ArtWorkID"].ToString(), success:(texture) => {
+					newArtCatalogItem = new ArtGUIInterface (child ["ArtWorkID"].ToString(), child ["ArtistID"].ToString(), child ["Name"].ToString(), texture);
 					allArt.Add (newArtCatalogItem);
 					catalogItemFromGUIInterface (newArtCatalogItem,content);
 				}, error:(error) => {Debug.Log("An error occured while loading artwork with ID: " + child["ArtWorkID"]);});
