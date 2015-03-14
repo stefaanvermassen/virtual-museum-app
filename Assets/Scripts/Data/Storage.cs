@@ -4,137 +4,119 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 /**
- * This class is implemented using the Singleton design and is used to abstract Saving and loading to local or remote storage
+ * This class is implemented using the Singleton design and is used to abstract saving and loading to local or remote storage
  * */
 public class Storage : MonoBehaviour {
 
-    public enum StoreMode { Only_Local, Only_Remote, Always_Local_Remote_On_Wifi, Local_And_Remote };
+    /* ******************
+     * Singleton Code   *
+     *********************/
 
-    //static variables
+    //unique instance
     private static Storage STORAGE;
-    private static string STORE_MODE_STRING = "StoreMode";
-    public static StoreMode MODE;
 
-    //non-static variables
-    private string MuseumFolder ="/museums/";
+    /**
+    * Method to get the instance of storage to work with
+    * */
+    public static Storage get()
+    {
+        if (STORAGE == null)
+        {
+            STORAGE = new Storage();
+            STORAGE.LoadPlayerPrefs();
+        }
+        return STORAGE;
+    }
 
     public Storage()
     {
         //empty constructor
     }
 
-	// Use this for initialization
-	void Start () {
-        DontDestroyOnLoad(gameObject); //This object will persist between all scenes-> the Storage singleton will not be destroyed
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-    /**
-     * Mmethod to get the instance of storage to work with
-     * */
-    public static Storage get()
+    // Use this for initialization
+    void Start()
     {
-        if (STORAGE == null)
-        {
-            STORAGE = new Storage();
-            LoadPlayerPrefs();
-        }
-        return STORAGE;
+        DontDestroyOnLoad(gameObject); //This object will persist between all scenes-> the Storage singleton will not be destroyed
     }
 
+    /* *****************************************
+     * Public methods for Saving and Loading   *
+     *******************************************/
     /**
-     * Method to Save a Storable object, the player preferences and application runtime platform will decide wether this is done local or remote or both
-     * */
+    * Method to Save a Storable object, the player preferences and application runtime platform will decide wether this is done local or remote or both
+    * */
     public void Save<T>(Storable<T, Data<T>> st)
     {
-        if (MODE == StoreMode.Only_Local || MODE == StoreMode.Local_And_Remote || MODE == StoreMode.Always_Local_Remote_On_Wifi)
+        switch (Mode)
         {
-            SaveLocal(st);
+            case StoreMode.Only_Local:
+                SaveLocal(st);
+                break;
+            case StoreMode.Local_And_Remote:
+                SaveLocal(st);
+                if (internet()) SaveRemote(st);
+                break;
+            case StoreMode.Only_Remote:
+                if (internet()) SaveRemote(st);
+                break;
+            case StoreMode.Always_Local_Remote_On_Wifi:
+                SaveLocal(st);
+                if (lan()) SaveRemote(st);
+                break;
+
         }
-
-        //DONE: refactor aparte calls voor leesbaarheid
-        bool wifi = (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork);
-        bool internet = wifi || (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork);
-
-        if(MODE == StoreMode.Always_Local_Remote_On_Wifi){
-            if(wifi) SaveRemote(st);
-        }
-
-        if(MODE == StoreMode.Only_Remote || MODE == StoreMode.Local_And_Remote)
-        {
-            if(internet) SaveRemote(st);
-        }
-
-    }
-
-    private void SaveRemote<T>(Storable<T, Data<T>> st)
-    {
-        //TODO: implement
-        //idea: make extra methods on Storable? 
-        throw new System.NotImplementedException();
-    }
-
-
-    private void SaveLocal<T>(Storable<T,Data<T>> st)
-    {
-        //Require data to save
-        var data = st.Save();
-        //Require path where to save
-        string path = getPath(st);
-        //create file and save data
-        Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
-        BinaryFormatter serializer = new BinaryFormatter();
-        serializer.Serialize(TestFileStream, data);
-        TestFileStream.Close();
-        Debug.Log("Data Saved");
-    }
-
-
-    private string getPath<T>(Storable<T, Data<T>> st)
-    {
-        string path = Application.persistentDataPath + "/3DVirtualMuseum";
-        //if type is Museum
-        if (typeof(T) == typeof(Museum))
-        {
-            string museumName = ((Museum)st).museumName.Replace(' ', '_');
-            path += MuseumFolder + museumName + ".mus";
-        }
-
-        return path;
     }
 
     /**
-     * Method to load a Storable object from storage
-     * */
-    public void Load()
-        //TODO: implement
+    * Method to load a Storable object from storage
+    * */
+    public void Load<T>(Storable<T, Data<T>> st, string path)
     {
+
+        //if no internet, only load locally
+        if (!internet())
+        {
+            if (checkType(st, path))
+            {
+                LoadLocal<T>(st, path);
+            }
+        }
+
+        //if internet, check date of last changed
+        else
+        {
+            //TODO: compare dates and decide to load or not (e.g. carrier and settings only lan: don't load but prompt user warning
+        }
+       
     }
 
+    /* ******************
+     * Storage Settings *
+     *********************/
+
+    public enum StoreMode { Only_Local, Only_Remote, Always_Local_Remote_On_Wifi, Local_And_Remote };
+    private static string STORE_MODE_STRING = "StoreMode";
+    public StoreMode Mode;
 
     /**
      * Method to request the Modus of storing
      * */
-    public static StoreMode getStoreMode()
+    public StoreMode getStoreMode()
     {
-        return MODE;
+        return Mode;
     }
 
     /**
-     * 
+     * Method to change the Modus of storing
      * */
-    public static void setStoreMode(StoreMode m)
+    public void setStoreMode(StoreMode m)
     {
-        MODE = m;
+        Mode = m;
         SavePlayerPrefs();
     }
 
     //Load playerpreferences for storage
-    public static void LoadPlayerPrefs()
+    private void LoadPlayerPrefs()
     {
         int storeMode = PlayerPrefs.GetInt(STORE_MODE_STRING,-1); //returns default value -1 if there is no StoreMode playerpref found (first launch of app)
         if (storeMode == -1)
@@ -145,30 +127,131 @@ public class Storage : MonoBehaviour {
                 //mobile
                 case RuntimePlatform.Android:
                 case RuntimePlatform.IPhonePlayer:
-                    MODE = Storage.StoreMode.Always_Local_Remote_On_Wifi;
+                    Mode = Storage.StoreMode.Always_Local_Remote_On_Wifi;
                     break;
                 //web
                 case RuntimePlatform.WebGLPlayer:
                 case RuntimePlatform.OSXWebPlayer:
                 case RuntimePlatform.WindowsWebPlayer:
-                    MODE = Storage.StoreMode.Only_Remote;
+                    Mode = Storage.StoreMode.Only_Remote;
                     break;
                 //desktop and development environment
                 case RuntimePlatform.WindowsPlayer:
                 case RuntimePlatform.LinuxPlayer:
                 case RuntimePlatform.WindowsEditor:
                 case RuntimePlatform.OSXEditor:
-                    MODE = Storage.StoreMode.Local_And_Remote;
+                    Mode = Storage.StoreMode.Local_And_Remote;
                     break;
             }
             SavePlayerPrefs();
         }
-        else MODE = (Storage.StoreMode)storeMode;
+        else Mode = (Storage.StoreMode)storeMode;
     }
 
     //Save playerpreferences for storage
-    public static void SavePlayerPrefs()
+    private void SavePlayerPrefs()
     {
-        PlayerPrefs.SetInt(STORE_MODE_STRING, (int)MODE);
+        PlayerPrefs.SetInt(STORE_MODE_STRING, (int)Mode);
+        PlayerPrefs.Save();
     }
+
+
+    /* *****************************
+    * Helper variables and methods *
+    ********************************/
+
+    //non-static variables
+    private string RootFolder = "/3DVirtualMuseum";
+    private string MuseumFolder = "/museums/";
+    private string MuseumFileExtension = ".mus";
+
+    // Update is called once per frame
+    void Update()
+    {}
+
+    private void SaveRemote<T>(Storable<T, Data<T>> st)
+    {
+        //TODO: implement
+        //idea: make extra methods on Storable? 
+        throw new System.NotImplementedException();
+    }
+
+
+    private void SaveLocal<T>(Storable<T, Data<T>> st)
+    {
+        //Require data to save
+        var data = st.Save();
+        //Require path where to save
+        string path = getPath(st);
+        //create file and save data
+        Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
+        BinaryFormatter serializer = new BinaryFormatter();
+        serializer.Serialize(TestFileStream, data);
+        TestFileStream.Close();
+        Debug.Log("Data Saved Locally.");
+    }
+
+    private void LoadRemote<T>(Storable<T, Data<T>> st, string path)
+    {
+        //TODO: implement
+        //idea: make extra methods on Storable? 
+        throw new System.NotImplementedException();
+    }
+
+    private void LoadLocal<T>(Storable<T, Data<T>> st, string path)
+    {
+        if (File.Exists(path))
+        {
+            Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
+            BinaryFormatter deserializer = new BinaryFormatter();
+            Data<T> data = (Data<T>)deserializer.Deserialize(TestFileStream);
+            TestFileStream.Close();
+            st.Load(data);
+        }
+        throw new FileNotFoundException("Could not load data because file does not exist. ("+path+")");
+    }
+
+
+    private string getPath<T>(Storable<T, Data<T>> st)
+    {
+        string path = Application.persistentDataPath + RootFolder;
+        //if type is Museum
+        if (typeof(T) == typeof(Museum))
+        {
+            string museumName = ((Museum)st).museumName.Replace(' ', '_'); //replace all spaces in the museum name with underscores
+            path += MuseumFolder + museumName + MuseumFileExtension;
+        }
+
+        return path;
+    }
+
+    private bool checkType<T>(Storable<T, Data<T>> st, string path)
+    {
+        //if type is Museum
+        if (typeof(T) == typeof(Museum))
+        {
+            string[] splitPath = path.Split('.');
+            //is the file of type museum?
+            return splitPath[splitPath.Length - 1].Equals( MuseumFileExtension );
+        }
+
+        return false;
+    }
+
+    public bool lan()
+    {
+        return (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork);
+    }
+
+    public bool carrier()
+    {
+        return (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork);
+    }
+
+    public bool internet()
+    {
+        return lan() || carrier();
+    }
+
+    
 }
