@@ -12,7 +12,7 @@ public class MuseumArtData: Data<MuseumArt>{
     public int Z { get; private set; }
     public int Orientation { get; private set; }
 
-    public MuseumArtData(int artID, int x, int y, int z, int orientation) {
+    public MuseumArtData(int artID, int x, int y, int z, int orientation){
         ArtID = artID;
         X = x;
         Y = y;

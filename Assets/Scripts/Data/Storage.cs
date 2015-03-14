@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -28,11 +29,6 @@ public class Storage : MonoBehaviour {
         return STORAGE;
     }
 
-    public Storage()
-    {
-        //empty constructor
-    }
-
     // Use this for initialization
     void Start()
     {
@@ -45,7 +41,7 @@ public class Storage : MonoBehaviour {
     /**
     * Method to Save a Storable object, the player preferences and application runtime platform will decide wether this is done local or remote or both
     * */
-    public void Save<T>(Storable<T, Data<T>> st)
+    public void Save<T>(Savable<T, Data<T>> st)
     {
         switch (Mode)
         {
@@ -69,25 +65,62 @@ public class Storage : MonoBehaviour {
 
     /**
     * Method to load a Storable object from storage
+    *
     * */
-    public void Load<T>(Storable<T, Data<T>> st, string path)
+    public void Load<T>(Savable<T, Data<T>> st, string identification)
     {
+        string path;
 
-        //if no internet, only load locally
-        if (!internet())
+        //if possibly stored locally but no internet
+        bool firstCase = (Mode == StoreMode.Local_And_Remote || Mode == StoreMode.Always_Local_Remote_On_Wifi) && !internet();
+        //if only locally stored        
+        bool secondCase = Mode == StoreMode.Only_Local;
+        //if only use data on lan mode and no lan available
+        bool thirdCase = Mode == StoreMode.Always_Local_Remote_On_Wifi && !lan();
+
+        //load locally
+        if (firstCase || secondCase || thirdCase)
         {
-            if (checkType(st, path))
+            path = findPath(identification);
+            if (checkFileExtension(st, path))
             {
                 LoadLocal<T>(st, path);
+                return;
             }
+            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
         }
 
-        //if internet, check date of last changed
+        //if only stored remote
+        if (Mode == StoreMode.Only_Remote)
+        {
+            LoadRemote(st, identification);
+            return;
+        }
+
+
+        //if stored remote and locally and internet is available and permitted to use (in case of only lan)
+
+        //compare last modified
+        path = findPath(identification);
+        DateTime dtLocal = File.GetLastWriteTime(path);
+        DateTime dtRemote = st.LastModified(identification);
+
+        //local file most recent
+        if (dtLocal.CompareTo(dtRemote) <= 0)
+        {
+            if (checkFileExtension(st, path))
+            {
+                LoadLocal<T>(st, path);
+                return;
+            }
+            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+        }
+        //remote file most recent
         else
         {
-            //TODO: compare dates and decide to load or not (e.g. carrier and settings only lan: don't load but prompt user warning
+            LoadRemote(st, identification);
+            return;
         }
-       
     }
 
     /* ******************
@@ -161,28 +194,28 @@ public class Storage : MonoBehaviour {
     ********************************/
 
     //non-static variables
-    private string RootFolder = "/3DVirtualMuseum";
-    private string MuseumFolder = "/museums/";
-    private string MuseumFileExtension = ".mus";
+    private string RootFolder = Application.persistentDataPath + "/3DVirtualMuseum/";
+
+    public Storage()
+    {
+    }
 
     // Update is called once per frame
     void Update()
     {}
 
-    private void SaveRemote<T>(Storable<T, Data<T>> st)
+    private void SaveRemote<T>(Savable<T, Data<T>> st)
     {
-        //TODO: implement
-        //idea: make extra methods on Storable? 
-        throw new System.NotImplementedException();
+        st.SaveRemote();
     }
 
 
-    private void SaveLocal<T>(Storable<T, Data<T>> st)
+    private void SaveLocal<T>(Savable<T, Data<T>> st)
     {
         //Require data to save
         var data = st.Save();
-        //Require path where to save
-        string path = getPath(st);
+        //Build path where to save
+        string path = RootFolder + st.getFolder() + "/" + st.getFileName() +"." +st.getExtension();
         //create file and save data
         Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
         BinaryFormatter serializer = new BinaryFormatter();
@@ -191,14 +224,12 @@ public class Storage : MonoBehaviour {
         Debug.Log("Data Saved Locally.");
     }
 
-    private void LoadRemote<T>(Storable<T, Data<T>> st, string path)
+    private void LoadRemote<T>(Savable<T, Data<T>> st, string identifier)
     {
-        //TODO: implement
-        //idea: make extra methods on Storable? 
-        throw new System.NotImplementedException();
+        st.LoadRemote(identifier);
     }
 
-    private void LoadLocal<T>(Storable<T, Data<T>> st, string path)
+    private void LoadLocal<T>(Savable<T, Data<T>> st, string path)
     {
         if (File.Exists(path))
         {
@@ -211,31 +242,22 @@ public class Storage : MonoBehaviour {
         throw new FileNotFoundException("Could not load data because file does not exist. ("+path+")");
     }
 
-
-    private string getPath<T>(Storable<T, Data<T>> st)
+    private bool checkFileExtension<T>(Savable<T, Data<T>> st, string path)
     {
-        string path = Application.persistentDataPath + RootFolder;
-        //if type is Museum
-        if (typeof(T) == typeof(Museum))
-        {
-            string museumName = ((Museum)st).museumName.Replace(' ', '_'); //replace all spaces in the museum name with underscores
-            path += MuseumFolder + museumName + MuseumFileExtension;
-        }
-
-        return path;
+        string[] splitPath = path.Split('.');
+        return splitPath[splitPath.Length - 1].Equals( st.getExtension() );
     }
 
-    private bool checkType<T>(Storable<T, Data<T>> st, string path)
+    private string findPath(string identification)
     {
-        //if type is Museum
-        if (typeof(T) == typeof(Museum))
-        {
-            string[] splitPath = path.Split('.');
-            //is the file of type museum?
-            return splitPath[splitPath.Length - 1].Equals( MuseumFileExtension );
-        }
+        //TODO: identification will probably be a user/museum combo or another unique identifier for the server: find the path of this file locally (if it exists)
+        return identification;
+    }
 
-        return false;
+    private DateTime lastModified(string path)
+    {
+        if (File.Exists(path)) return File.GetLastWriteTimeUtc(path);
+        else return new DateTime(); // default constructor returns 1/1/0001 12:00:00 AM.
     }
 
     public bool lan()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
+public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
@@ -40,6 +40,23 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         museumName = data.MuseumName;
         description = data.Description;
     }
+
+    public string getFolder()
+    {
+        return "museums";
+    }
+
+    public string getFileName()
+    {
+        return museumName.Replace(' ','_');
+    }
+
+    public string getExtension()
+    {
+        return "mus";
+    }
+
+
 
     public void Clear() {
         foreach (var t in tiles) {
@@ -192,4 +209,6 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 	void Update () {
 	
 	}
+
+
 }

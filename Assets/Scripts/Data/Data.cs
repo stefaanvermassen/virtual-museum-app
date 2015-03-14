@@ -5,7 +5,5 @@ using System.Text;
 
 [Serializable]
 public abstract class Data<T> {
-    
-
 
 }
