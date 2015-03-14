@@ -1,0 +1,30 @@
+﻿<Properties>
+<<<<<<< HEAD
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\FirstPersonController.cs">
+    <Files>
+      <File FileName="Assets\Scripts\FirstPersonController.cs" Line="91" Column="41" />
+      <File FileName="Assets\Scripts\CrossPlatformInput\CrossPlatformInputManager.cs" Line="12" Column="9" />
+=======
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GUI/Scripts/ArtGUIInterface.cs">
+    <Files>
+      <File FileName="Assets/Scripts/Web/ArtRest.cs" Line="5" Column="15" />
+      <File FileName="Assets/GUI/Scripts/GUIControl.cs" Line="20" Column="2" />
+      <File FileName="Assets/GUI/Scripts/TestGUIPrefab.cs" Line="1" Column="1" />
+      <File FileName="Assets/GUI/Scripts/BasicActions.cs" Line="1" Column="1" />
+<<<<<<< HEAD
+      <File FileName="Assets/Scripts/DrawController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Museum/MuseumArt.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/ScanEngine/QRScanner.cs" Line="25" Column="22" />
+      <File FileName="Assets/GUI/Scripts/ArtGUIInterface.cs" Line="14" Column="3" />
+=======
+>>>>>>> 02eec64b50c03c4290d3b69897f9fd7ca0680805
+>>>>>>> master
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
