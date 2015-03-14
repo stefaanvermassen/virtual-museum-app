@@ -48,7 +48,7 @@ public class ArtRest : MonoBehaviour
 		};
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		ac.updateArtWork (artWork, ((response) => {
-			Debug.Log ("Adding Artwork successfull");}), 
+			Debug.Log ("Updating Artwork successfull");}), 
 		                  ((error) => {
 			Debug.Log ("An error occured");}));
 	}

@@ -25,6 +25,10 @@ namespace API
 			}
 		}
 
+		public HTTP.Request getAllArtworksByName(string artistID, Action<ArrayList> success = null, Action<API.API_Error> error = null){
+			return getArtworksByFilter ("?ArtistID=" + artistID, success, error);
+		}
+
 		public HTTP.Request getAllArtworksByName(string name, Action<ArrayList> success = null, Action<API.API_Error> error = null){
 			return getArtworksByFilter ("?Name=" + name, success, error);
 		}

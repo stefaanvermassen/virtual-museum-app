@@ -9,8 +9,10 @@ namespace API {
 
 	public enum API_Error {
 		REQUEST_FAILED = 1,
-		REQUEST_NOT_ALLOW = 2,
-		USER_NOT_AUTHENTICATED = 3
+		REQUEST_NOT_ALLOWED = 2,
+		USER_NOT_AUTHENTICATED = 3,
+		OBJECT_NOT_FOUND = 4,
+		SERVER_ERROR = 5,
 	}
 
 	public abstract class APIConnection
@@ -18,25 +20,7 @@ namespace API {
 		protected const string BASE_URL = "http://api.awesomepeople.tv/api/";
 
 		protected HTTP.Request get(string url,  Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) {
-			HTTP.Request request = new HTTP.Request ("get", url);
-			if (authToken) {
-				request.AddHeader("Authorization", "Bearer " + UserController.Instance.user.accessToken);
-			}
-			request.Send ((new_request) => {
-				HTTP.Response response = new_request.response;
-				if(response.status == 200) {
-					if(success != null) {
-						success(response);
-					}
-				} else {
-					if(error != null) {
-						//TODO: add API_Errors
-						error(API_Error.REQUEST_FAILED);
-					}
-				}
-			});
-			
-			return request;
+			return sendRequest (new HTTP.Request ("get", url), success, error, authToken);
 		}
 
 		protected HTTP.Request post(string url, string[] name, string[] value)
@@ -72,26 +56,8 @@ namespace API {
 		protected HTTP.Request postOrPutForm(string method, string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
 			HTTP.Request postRequest = new HTTP.Request ("post", url, form);
-			if (authToken) {
-				postRequest.AddHeader("Authorization", "Bearer " + UserController.Instance.user.accessToken);
-			}
-			postRequest.Send ((request) => {
-				HTTP.Response response = request.response;
-				if(response.status == 200) {
-					if(success != null) {
-						success(response);
-					}
-				} else {
-					Debug.Log("Response status: " + response.status);
-					Debug.Log("Response text: " + response.Text);
-					if(error != null) {
-						//TODO: add API_Errors
-						error(API_Error.REQUEST_FAILED);
-					}
-				}
-			});
 
-			return postRequest;
+			return sendRequest(postRequest, success, error, authToken);
 		}
 
 		protected HTTP.Request put(string url, Dictionary<string, string> formData, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
@@ -102,6 +68,42 @@ namespace API {
 			}
 
 			return postOrPutForm ("put", url, form, success, error, authToken);
+		}
+
+		private HTTP.Request sendRequest(HTTP.Request sendRequest, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) 
+		{
+			if (authToken) {
+				sendRequest.AddHeader("Authorization", "Bearer " + UserController.Instance.user.accessToken);
+			}
+
+			sendRequest.Send ((request) => {
+				HTTP.Response response = request.response;
+				if(response.status == 200) {
+					if(success != null) {
+						success(response);
+					}
+				} else {
+					Debug.Log("Response status: " + response.status);
+					Debug.Log("Response text: " + response.Text);
+					var api_error = API_Error.REQUEST_FAILED;
+					switch(response.status) {
+					case 404:
+						api_error = API_Error.OBJECT_NOT_FOUND;
+						break;
+					case 401:
+						api_error = API_Error.USER_NOT_AUTHENTICATED;
+						break;
+					case 500:
+						api_error = API_Error.SERVER_ERROR;
+						break;
+					}
+					if(error != null) {
+						error(api_error);
+					}
+				}
+			});
+			
+			return sendRequest;
 		}
 
 	}
