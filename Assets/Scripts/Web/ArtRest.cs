@@ -38,12 +38,19 @@ public class ArtRest : MonoBehaviour
 	//post the edited art 
 	IEnumerator  postArt (GUIControl content)
 	{
-		string artworkUrl = "http://api.awesomepeople.tv/api/artwork";
-		www = new WWW (artworkUrl);
-		yield return www;
+		yield return null;
 	}
 	public void postArt(ArtGUIInterface art){
-
+		API.ArtWork artWork = new API.ArtWork () {
+			ArtWorkID = "1",
+			ArtistID = "1",
+			Name = "Feliciaan"
+		};
+		API.ArtworkController ac = API.ArtworkController.Instance;
+		ac.updateArtWork (artWork, ((response) => {
+			Debug.Log ("Adding Artwork successfull");}), 
+		                  ((error) => {
+			Debug.Log ("An error occured");}));
 	}
 	private GUIControl catalogItemFromGUIInterface (ArtGUIInterface art,GUIControl content)
 	{

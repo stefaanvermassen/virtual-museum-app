@@ -66,6 +66,11 @@ namespace API {
 
 		protected HTTP.Request postForm(string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
+			return postOrPutForm ("post", url, form, success, error, authToken);
+		}
+
+		protected HTTP.Request postOrPutForm(string method, string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		{
 			HTTP.Request postRequest = new HTTP.Request ("post", url, form);
 			if (authToken) {
 				postRequest.AddHeader("Authorization", "Bearer " + UserController.Instance.user.accessToken);
@@ -77,6 +82,8 @@ namespace API {
 						success(response);
 					}
 				} else {
+					Debug.Log("Response status: " + response.status);
+					Debug.Log("Response text: " + response.Text);
 					if(error != null) {
 						//TODO: add API_Errors
 						error(API_Error.REQUEST_FAILED);
@@ -86,6 +93,17 @@ namespace API {
 
 			return postRequest;
 		}
+
+		protected HTTP.Request put(string url, Dictionary<string, string> formData, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		{
+			WWWForm form = new WWWForm ();
+			foreach (var pair in formData) {
+				form.AddField(pair.Key, pair.Value);
+			}
+
+			return postOrPutForm ("put", url, form, success, error, authToken);
+		}
+
 	}
 
 }
