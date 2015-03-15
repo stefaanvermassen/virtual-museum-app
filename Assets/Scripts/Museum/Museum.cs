@@ -88,6 +88,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return false;
     }
 
+    public MuseumArt GetArt(int x, int y, int z) {
+        foreach (MuseumArt a in art) {
+            if (a.x == x && a.y == y && a.z == z) return a;
+        }
+        return null;
+    }
+
     public void RemoveArt(int x, int y, int z) {
         MuseumArt toRemove = null;
         foreach (MuseumArt a in art) {
@@ -130,6 +137,20 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             toRemove.Remove();
             Destroy(toRemove.gameObject);
         }
+    }
+
+    public bool ContainsObject(int x, int y, int z) {
+        foreach (MuseumObject o in objects) {
+            if (o.x == x && o.y == y && o.z == z) return true;
+        }
+        return false;
+    }
+
+    public MuseumObject GetObject(int x, int y, int z) {
+        foreach (MuseumObject o in objects) {
+            if (o.x == x && o.y == y && o.z == z) return o;
+        }
+        return null;
     }
 
     public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
