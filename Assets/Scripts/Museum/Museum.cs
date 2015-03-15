@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
-public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
+public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
@@ -56,9 +57,17 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
         return "mus";
     }
 
-    void SaveRemote();
-    void LoadRemote(string identifier);
-    DateTime LastModified(string identifier);
+    void SaveRemote()
+    {   //TODO
+    }
+    void LoadRemote(string identifier)
+    {   //TODO
+    }
+    DateTime LastModified(string identifier)
+    {
+        //TODO
+        return new DateTime();
+    }
 
 
     public void Clear() {

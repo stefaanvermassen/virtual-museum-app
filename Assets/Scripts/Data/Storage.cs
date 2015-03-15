@@ -127,6 +127,17 @@ public class Storage : MonoBehaviour {
         }
     }
 
+    public void Save(SavableData data)
+    {
+        //TODO
+    }
+
+    public SavableData Load(string identification)
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
+
     /* ******************
      * Storage Settings *
      *********************/
