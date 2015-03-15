@@ -19,14 +19,18 @@ public class Storage : MonoBehaviour {
     /**
     * Method to get the instance of storage to work with
     * */
-    public static Storage Instance()
+    public static Storage Instance
     {
-        if (STORAGE == null)
+        get
         {
-            STORAGE = new Storage();
-            STORAGE.LoadPlayerPrefs();
+            if (STORAGE == null)
+            {
+                STORAGE = new Storage();
+                STORAGE.LoadPlayerPrefs();
+            }
+        
+            return STORAGE;
         }
-        return STORAGE;
     }
 
     // Use this for initialization
