@@ -51,7 +51,6 @@ public class ArtRest : MonoBehaviour
 		Image image = item.transform.Find ("Preview").gameObject.GetComponent<Image> ();
 		image.enabled = true;
 		image.sprite = Sprite.Create (art.Thumbnail,new Rect(0, 0, art.Thumbnail.width, art.Thumbnail.height), Vector2.zero);
-		item.normalise ();
 
 		//change text
 		Transform inputFields = item.transform.Find ("InputBox/InputFields").transform;

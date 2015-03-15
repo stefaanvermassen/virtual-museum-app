@@ -8,26 +8,25 @@ using System.Collections;
 public class GUIControl : MonoBehaviour {
 
 	//Todo
-	////create prefab for: checkbox, radio buttons, 
-	/// create input adaptor to be used in input guicontrol
-	/// implement scrolling in panel if vertical space is exceeded by children
+	////create prefab for: , radio buttons, 
 	public enum types{
 		Button, Window, Label,Panel,CatalogItem,Catalog
 	}
-	//defauld adapter is empty
-	void Start () {
-	}
 
+	//both show and hide can be overriden to add extra close and open logic
 	
-	public void hide(){
+	public virtual void close(){
 		gameObject.SetActive (false);
 	}
-	public void show(){
+	public virtual void open(){
 		gameObject.SetActive (true);
+		Debug.Log ("opeetet");
 	}
 	//add gui control to children
 	public void add(GUIControl control){
 		control.gameObject.transform.SetParent(this.gameObject.transform);
+		//when an transform is added to it's parent it is scaled, for the sake of layout, performance and graphics all GUIControls are scale 1
+		control.normalise ();
 	}
 	//return an instantiatec prefab
 //	//Transform.SetParent method with the worldPositionStays parameter set to false
@@ -60,6 +59,9 @@ public class GUIControl : MonoBehaviour {
 		float y = control.getRelativeY ();
 		control.setRelativePosition (getRelativeX (), getRelativeY ());
 		setRelativePosition (x, y);
+		Debug.Log ("replace");
+		control.open ();
+		this.close ();
 	}
 	//Todo
 	//basic methods to be added for: color, text, position, behaviour, layout in panel
@@ -72,6 +74,9 @@ public class GUIControl : MonoBehaviour {
 	//on initialisation sometimes a gameobject is scaled
 	public void normalise(){
 		transform.localScale = Vector3.one;
+	}
+	public bool isHidden(){
+		return this.gameObject.activeSelf;
 	}
 
 
