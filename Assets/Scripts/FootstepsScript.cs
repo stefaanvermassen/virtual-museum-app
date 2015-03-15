@@ -16,7 +16,7 @@ public class FootstepsScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		nextFootTimer -= Time.deltaTime * controller.velocity.magnitude;
+		nextFootTimer -= Time.deltaTime * controller.velocity.magnitude * 2;
 		if(nextFootTimer <= 0 && controller.isGrounded && controller.velocity.magnitude > 0.3F) {
 			GetComponent<AudioSource>().PlayOneShot(footsteps[Random.Range(0, footsteps.Length)]);
 			nextFootTimer = timeBetweenFootsteps;
