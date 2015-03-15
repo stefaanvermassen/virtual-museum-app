@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-public interface Savable<T,D> : Storable<T,D> {
+public interface Savable<T,D> : Storable<T,D> where D: Data<T> {
 
     string getFolder();
     string getFileName();

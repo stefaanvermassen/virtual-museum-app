@@ -196,7 +196,7 @@ public class Storage : MonoBehaviour {
     //non-static variables
     private string RootFolder = Application.persistentDataPath + "/3DVirtualMuseum/";
 
-    public Storage()
+    protected Storage()
     {
     }
 

@@ -56,6 +56,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
         return "mus";
     }
 
+    void SaveRemote();
+    void LoadRemote(string identifier);
+    DateTime LastModified(string identifier);
 
 
     public void Clear() {
