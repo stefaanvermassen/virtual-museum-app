@@ -63,7 +63,6 @@ public class QRCam : MonoBehaviour {
       camTexture.requestedWidth = Screen.width; //640;
 
       OnEnable();
-      image.material.mainTexture = camTexture;
 
       scanThread = new Thread(scanner.Scan);
       scanThread.Start();
