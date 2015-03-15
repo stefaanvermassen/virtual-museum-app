@@ -19,7 +19,7 @@ public class Storage : MonoBehaviour {
     /**
     * Method to get the instance of storage to work with
     * */
-    public static Storage get()
+    public static Storage Instance()
     {
         if (STORAGE == null)
         {
