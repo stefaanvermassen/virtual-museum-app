@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-using SimpleJSON;
 using UnityEngine.UI;
 
 
@@ -13,33 +12,45 @@ public class ArtRest : MonoBehaviour
 	IEnumerator  getAllArt (GUIControl content)
 	{
 		string imageArtworkUrl;
-		www = new WWW (BASE_URL+ARTWORK);
-		yield return www;
-		JSONNode node = JSON.Parse (www.text);
+		API.UserController uc = API.UserController.Instance;
+		API.ArtworkController ac = API.ArtworkController.Instance;
+
 		allArt = new List<ArtGUIInterface> ();
 		ArtGUIInterface newArtCatalogItem;
 		content.removeAllChildren ();
-		//set content position
-		foreach (JSONNode child in node.Children) {
-			imageArtworkUrl = BASE_URL+ARTWORK + "/" + child ["ArtWorkID"];
-			www = new WWW (imageArtworkUrl);
-			yield return www;
-			newArtCatalogItem = new ArtGUIInterface (child ["ArtWorkID"], child ["ArtistID"], child ["Name"],www.texture);
-			allArt.Add (newArtCatalogItem);
-			catalogItemFromGUIInterface (newArtCatalogItem,content);
-		}
 
-	
+		ac.getAllArtworks (success: (response) => {
+			foreach(Hashtable child in response) {
+				ac.getArtwork(child["ArtWorkID"].ToString(), success:(texture) => {
+					newArtCatalogItem = new ArtGUIInterface (child ["ArtWorkID"].ToString(), child ["ArtistID"].ToString(), child ["Name"].ToString(), texture);
+					allArt.Add (newArtCatalogItem);
+					catalogItemFromGUIInterface (newArtCatalogItem,content);
+				}, error:(error) => {Debug.Log("An error occured while loading artwork with ID: " + child["ArtWorkID"]);});
+
+			}
+		},
+							error: (error) => {
+			Debug.Log("An error occured while loading all artworks");
+		}); 
+
+		yield return null;
 	}
 	//post the edited art 
 	IEnumerator  postArt (GUIControl content)
 	{
-		string artworkUrl = "http://api.awesomepeople.tv/api/artwork";
-		www = new WWW (artworkUrl);
-		yield return www;
+		yield return null;
 	}
 	public void postArt(ArtGUIInterface art){
-
+		API.ArtWork artWork = new API.ArtWork () {
+			ArtWorkID = "1",
+			ArtistID = "1",
+			Name = "Feliciaan"
+		};
+		API.ArtworkController ac = API.ArtworkController.Instance;
+		ac.updateArtWork (artWork, ((response) => {
+			Debug.Log ("Adding Artwork successfull");}), 
+		                  ((error) => {
+			Debug.Log ("An error occured");}));
 	}
 	private GUIControl catalogItemFromGUIInterface (ArtGUIInterface art,GUIControl content)
 	{
