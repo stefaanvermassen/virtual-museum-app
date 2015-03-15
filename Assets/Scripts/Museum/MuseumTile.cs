@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿/* Contains all information of a particular tile.
+ * 
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
@@ -65,7 +69,7 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         if (frontObject != null)    Destroy(frontObject);
         if (backObject != null)     Destroy(backObject);
     }
-
+    //Checks the neighbour booleans and creates or removes faces accordingly.
     public void UpdateEdges() {
         if (left && leftObject == null) {
             leftObject = CreateFace(new Vector3(-0.5f, 0.5f, 0), new Vector3(0, -90, 0));
