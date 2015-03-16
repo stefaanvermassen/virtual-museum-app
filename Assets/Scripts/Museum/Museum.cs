@@ -10,7 +10,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
-    public string author;
+    public string ownerID;
     public string museumName;
     public string description;
 
@@ -30,7 +30,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         var objectData = new List<MuseumObjectData>();
         foreach (var o in objects)
             objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, author, museumName, description);
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
     }
     //Load a MuseumData inside this museum.
     public void Load(MuseumData data) {
@@ -41,7 +41,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             AddArt(artData.ArtID, artData.X, artData.Y, artData.Z, artData.Orientation);
         foreach (var objectData in data.Objects)
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
-        author = data.Author;
+        ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
     }
