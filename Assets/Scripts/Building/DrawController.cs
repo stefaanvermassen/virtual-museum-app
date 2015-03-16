@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/* file: DrawController.cs
+ * author: Rian Goossens
+ * Controller that handles all input and uses it to modify both the scene and the
+ * museum when inside the BuildMuseum scene.
+ * */
+
+using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
 using System.IO;
@@ -41,6 +47,7 @@ public class DrawController : MonoBehaviour {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
 	}
 
+    //Change the current tool by using the toolID.
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
 		if (this.tool == Tools.PlacingArt) {

@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿/* Internal museum representation. This can load and save museum 
+ * representations and has methods to modify the museum.
+ */
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +10,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
-    public string author;
+    public string ownerID;
     public string museumName;
     public string description;
 
@@ -16,6 +19,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public Texture2D debugTexture;
 
+    //Create a MuseumData for serialization.
     public MuseumData Save() {
         var tileData = new List<MuseumTileData>();
         foreach (var t in tiles)
@@ -26,8 +30,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         var objectData = new List<MuseumObjectData>();
         foreach (var o in objects)
             objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, author, museumName, description);
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
     }
+    //Load a MuseumData inside this museum.
     public void Load(MuseumData data) {
         Clear();
         foreach (var tileData in data.Tiles)
@@ -36,11 +41,11 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             AddArt(artData.ArtID, artData.X, artData.Y, artData.Z, artData.Orientation);
         foreach (var objectData in data.Objects)
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
-        author = data.Author;
+        ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
     }
-
+    //Remove everything inside this museum.
     public void Clear() {
         foreach (var t in tiles) {
             t.Remove();
@@ -58,7 +63,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
         objects.Clear();
     }
-
+    //Add art with an id, position and orientation.
     public void AddArt(int artID, int x, int y, int z, int orientation) {
         if (ContainsTile(x, y, z) && (
                     (orientation == 0 && !ContainsTile(x,y,z-1)) ||
@@ -80,21 +85,21 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             art.Add(a);
         }
     }
-
+    //True if there is art at the position.
     public bool ContainsArt(int x, int y, int z) {
         foreach(MuseumArt a in art){
             if (a.x == x && a.y == y && a.z == z) return true;
         }
         return false;
     }
-
+    //Returns the art at position x,y,z. Returns null when there is none.
     public MuseumArt GetArt(int x, int y, int z) {
         foreach (MuseumArt a in art) {
             if (a.x == x && a.y == y && a.z == z) return a;
         }
         return null;
     }
-
+    //Removes the art at x,y,z, if there is any.
     public void RemoveArt(int x, int y, int z) {
         MuseumArt toRemove = null;
         foreach (MuseumArt a in art) {
@@ -109,7 +114,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             Destroy(toRemove.gameObject);
         }
     }
-
+    //Adds an object to x,y,z with an id and an angle in degrees.
     public void AddObject(int objectID, int x, int y, int z, float angle) {
         if (ContainsTile(x, y, z)) {
             RemoveObject(x, y, z);
@@ -123,7 +128,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             objects.Add(museumObject);
         }
     }
-
+    //Removes the object at x,y,z if it exists.
     public void RemoveObject(int x, int y, int z) {
         MuseumObject toRemove = null;
         foreach (MuseumObject o in objects) {
@@ -138,21 +143,21 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             Destroy(toRemove.gameObject);
         }
     }
-
+    //True if there is an object at x,y,z.
     public bool ContainsObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
             if (o.x == x && o.y == y && o.z == z) return true;
         }
         return false;
     }
-
+    //Returns the object at x,y,z if it exists, null otherwise.
     public MuseumObject GetObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
             if (o.x == x && o.y == y && o.z == z) return o;
         }
         return null;
     }
-
+    //Sets a tile using a wall, floor and ceiling-style at a position.
     public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
         RemoveTile(x, y, z);
         GameObject tileObject = new GameObject();
@@ -185,7 +190,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         if (backTile != null) backTile.UpdateEdges();
         if (frontTile != null) frontTile.UpdateEdges();
     }
-
+    //Remove the tile at x,y,z and everything it might contain.
     public void RemoveTile(int x, int y, int z) {
         var tile = GetTile(x, y, z);
         if (tile != null) {
@@ -208,19 +213,15 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             if (frontTile != null) frontTile.UpdateEdges();
         }
     }
-
+    //True if there is a tile at x,y,z.
     public bool ContainsTile(int x, int y, int z) {
         return GetTile(x, y, z) != null;
     }
-
+    //Returns the tile at position x,y,z.
     public MuseumTile GetTile(int x, int y, int z) {
         foreach (MuseumTile tile in tiles) {
             if (tile.x == x && tile.y == y && tile.z == z) return tile;
         }
         return null;
     }
-	
-	void Update () {
-	
-	}
 }

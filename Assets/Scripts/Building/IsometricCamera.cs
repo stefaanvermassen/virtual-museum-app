@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿/* Can be added to any camera to make it isometric with the desired settings.
+ */
+using UnityEngine;
 using System.Collections;
 
 public class IsometricCamera : MonoBehaviour {
 
-	// Use this for initialization
 	void Start () {
         var camera = GetComponent<Camera>();
         camera.orthographic = true;
@@ -13,11 +14,6 @@ public class IsometricCamera : MonoBehaviour {
 	}
 
     public void Move(float x) {
-        gameObject.transform.position += new Vector3(x,0,0);
+        gameObject.transform.position += new Vector3(x, 0, 0);
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
