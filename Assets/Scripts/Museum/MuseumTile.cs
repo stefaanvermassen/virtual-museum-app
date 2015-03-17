@@ -14,6 +14,10 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     public Material frontMaterial;
     public Material backMaterial;
 
+    private static float HEIGHT = 3;
+    private static float METER_PER_UNIT = 2;
+    private static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
+
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
     public MuseumTileData Save() {
@@ -56,7 +60,7 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 
 	void Start () {
         transform.position = new Vector3(x, y, z);
-        upObject = CreateFace(new Vector3(0, 3, 0), new Vector3(1,1,1), new Vector3(-90, 0, 0));
+        upObject = CreateFace(new Vector3(0, UNIT_HEIGHT, 0), new Vector3(1,1,1), new Vector3(-90, 0, 0));
         downObject = CreateFace(new Vector3(0, 0, 0), new Vector3(1,1,1), new Vector3(90, 0, 0));
         UpdateEdges();
 	}
@@ -75,28 +79,28 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     /// </summary>
     public void UpdateEdges() {
         if (left && leftObject == null) {
-            leftObject = CreateFace(new Vector3(-0.5f, 1.5f, 0), new Vector3(1,3,1), new Vector3(0, -90, 0));
+            leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0));
         }
         if (!left && leftObject != null) {
             Destroy(leftObject);
             leftObject = null;
         }
         if (right && rightObject == null) {
-            rightObject = CreateFace(new Vector3(0.5f, 1.5f, 0), new Vector3(1, 3, 1), new Vector3(0, 90, 0));
+            rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0));
         }
         if (!right && rightObject != null) {
             Destroy(rightObject);
             rightObject = null;
         }
         if (front && frontObject == null) {
-            frontObject = CreateFace(new Vector3(0, 1.5f, 0.5f), new Vector3(1, 3, 1), new Vector3(0, 0, 0));
+            frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0));
         }
         if (!front && frontObject != null) {
             Destroy(frontObject);
             frontObject = null;
         }
         if (back && backObject == null) {
-            backObject = CreateFace(new Vector3(0, 1.5f, -0.5f), new Vector3(1, 3, 1), new Vector3(0, 180, 0));
+            backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0));
         }
         if (!back && backObject != null) {
             Destroy(backObject);
