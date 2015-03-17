@@ -1,8 +1,9 @@
-﻿/* Can be added to any camera to make it isometric with the desired settings.
- */
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Script to setup an isometric camera. Just drag this to a camera object and it will adjust it correctly at startup.
+/// </summary>
 public class IsometricCamera : MonoBehaviour {
 
 	void Start () {

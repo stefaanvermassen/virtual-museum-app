@@ -1,10 +1,9 @@
-﻿/* Contains all information of a particular tile.
- * 
- */
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Contains all information of a particular tile. Generally this should only be used inside Museum.
+/// </summary>
 public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 
     public int x, y, z;
@@ -70,7 +69,10 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         if (frontObject != null)    Destroy(frontObject);
         if (backObject != null)     Destroy(backObject);
     }
-    //Checks the neighbour booleans and creates or removes faces accordingly.
+
+    /// <summary>
+    /// Checks the neighbour booleans and creates or removes faces accordingly.
+    /// </summary>
     public void UpdateEdges() {
         if (left && leftObject == null) {
             leftObject = CreateFace(new Vector3(-0.5f, 1.5f, 0), new Vector3(1,3,1), new Vector3(0, -90, 0));
