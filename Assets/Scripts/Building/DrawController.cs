@@ -60,6 +60,14 @@ public class DrawController : MonoBehaviour {
 		}
     }
 
+    /// <summary>
+    /// Change the current object by using the object's id.
+    /// </summary>
+    /// <param name="objectID"></param>
+    public void SetCurrentObject(int objectID) {
+        this.currentObject = objectID;
+    }
+
     bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
             if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) return true;
