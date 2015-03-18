@@ -1,4 +1,3 @@
-using SimpleJSON;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -91,55 +90,21 @@ public class UploadGui : GUIControl
      */
 	private void stubLogin ()
 	{
-		WWW www = sendPost (BASE_URL + TOKEN, new string[] {
-			"grant_type",
-			"username",
-			"password"
-		}, new string[] {
-			"password",
-			"museum@awesomepeople.tv",
-			"@wesomePeople_20"
-		});
-		JSONNode node = JSON.Parse (www.text);
-		accessToken = node ["access_token"];
+		API.UserController uc = API.UserController.Instance;
+		uc.stubLogin ();
 	}
 
-	private void uploadableImage ()
+	private void uploadableImage()
 	{
-		string[] splitted = pathField.text.Split (new char[]{'.'});
-		string mime = splitted [splitted.Length - 1];
-		splitted = pathField.text.Split (new char[] { '/', '\\' });
-		string name = splitted [splitted.Length - 1];
-		WWW www = sendImagePost (BASE_URL + ARTWORK, pathField.text, name, mime);
-		Debug.Log (www.text);
+		string[] splitted = pathField.text.Split(new char[]{'.'});
+		string mime = splitted[splitted.Length - 1];
+		splitted = pathField.text.Split(new char[] { '/', '\\' });
+		string name = splitted[splitted.Length - 1];
+		API.ArtworkController ac = API.ArtworkController.Instance;
+		ac.uploadImage (name, mime, pathField.text, uploadableFile, 
+		                ((response) => {Debug.Log("Upload was succesfull");}), 
+		                ((error) => {Debug.Log("Upload failed!");}));
 	}
 
-	private WWW sendImagePost (string url, string imageLocation, string name, string mime)
-	{
-		WWWForm form = new WWWForm ();
-		form.AddBinaryData (imageLocation, uploadableFile, name, MIME + mime);
 
-		return postForm (url, form);
-	}
-
-	private WWW sendPost (string url, string[] name, string[] value)
-	{
-		WWWForm form = new WWWForm ();
-		for (int i = 0; i < name.Length; i++) {
-			form.AddField (name [i], value [i]);
-		}
-
-		return postForm (url, form);
-	}
-
-	private WWW postForm (string url, WWWForm form)
-	{
-		Dictionary<string, string> headers = form.headers;
-		byte[] rawData = form.data;
-
-		WWW www = new WWW (url, rawData, headers);
-		while (!www.isDone)
-			;
-		return www;
-	}
 }

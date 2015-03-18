@@ -14,11 +14,9 @@ public class ArtRest : MonoBehaviour
 		string imageArtworkUrl;
 		API.UserController uc = API.UserController.Instance;
 		API.ArtworkController ac = API.ArtworkController.Instance;
-
 		allArt = new List<ArtGUIInterface> ();
 		ArtGUIInterface newArtCatalogItem;
 		content.removeAllChildren ();
-
 		ac.getAllArtworks (success: (response) => {
 			foreach(Hashtable child in response) {
 				ac.getArtwork(child["ArtWorkID"].ToString(), success:(texture) => {

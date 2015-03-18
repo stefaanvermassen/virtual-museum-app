@@ -88,7 +88,6 @@ public class FileBrowser: GUIControl
 		directoryView.removeAllChildren ();
 
 		if (currentDirectory.Parent != null) {
-			//TODO different color for parent directory
 			addButton (directoryUp, currentDirectory.Parent.FullName, directoryView, Type.FOLDER, true);
 		}
 
@@ -107,7 +106,8 @@ public class FileBrowser: GUIControl
 
 
 	}
-	//TODO
+	//TODO search file doesn't wokr yet
+	//TODO show file name in header, but save full path for file uploading
 	private void setSelectedFile(String fullPath){
 	}
 	private void addDirectoryButton (DirectoryInfo dir)
@@ -164,8 +164,6 @@ public class FileBrowser: GUIControl
 		} else if (!searchPattern.Contains ("*")) {
 			searchPattern = "*" + searchPattern + "*";
 		}
-
-
 		files = files.Union (searchDirectory (currentDirectory, searchPattern, recursive), comparer);
 
 
