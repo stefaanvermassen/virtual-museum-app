@@ -19,16 +19,16 @@ public class UploadGui : GUIControl
 	private const string TOKEN = "Token";
 	private const string ARTWORK = "api/artwork";
 	private const string MIME = "image/";
-	
+	private string selectedImagePath;
 
 	// Use this for initialization
 	private void Start ()
 	{
 	}
 
-	public override void open ()
+	public override void replace (GUIControl control)
 	{
-		base.open ();
+		base.replace (control);
 		Debug.Log ("open");
 
 		//update thumbnail and path label
@@ -61,17 +61,17 @@ public class UploadGui : GUIControl
 
     
 
-	// Update is called once per frame
+
 	private void update ()
 	{
 		if (fileBrowser != null) {
 			// Update our GUI
-			string selected = fileBrowser.getSelectedFile ();
-			if (selected != "") {
-				pathField.text = selected;					
+			selectedImagePath = fileBrowser.getSelectedFile ();
+			if (selectedImagePath != "") {
+				pathField.text = FileBrowser.cropString(selectedImagePath);					
 				thumbnail.enabled = true;
 				Texture2D image = new Texture2D (0, 0);
-				uploadableFile = File.ReadAllBytes (selected);
+				uploadableFile = File.ReadAllBytes (selectedImagePath);
 				image.LoadImage (uploadableFile);
 				thumbnail.sprite = Sprite.Create (image, new Rect (0, 0, image.width, image.height), Vector2.zero);
 

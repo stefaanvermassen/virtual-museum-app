@@ -17,13 +17,16 @@ public class FileBrowser: GUIControl
 	public string prevSearch = "";
 	public string[] fileExtensions;
 	private string directoryUp = "..";
-	private int maxNrOfNameChars=60;
+	private static int maxNrOfNameChars=60;
+	private string selectedFilePath;
 	private enum Type
 	{
 		FOLDER,
 		FILE    }
 	;
-
+	public static string cropString(string s){
+		return s.Substring (Math.Max (0, s.Length - maxNrOfNameChars));
+	}
 	public string[] getFileExtensions ()
 	{
 		return fileExtensions;
@@ -43,7 +46,7 @@ public class FileBrowser: GUIControl
 			Debug.Log ("CurrentDirectory is null.");
 		}
 		//only show last 100 chars
-		directoryLabel.text = currentDirectory.FullName.Substring (Math.Max (0, currentDirectory.FullName.Length - maxNrOfNameChars));
+		directoryLabel.text = cropString(currentDirectory.FullName);
 		string search = getSearch ();
 		drawFiles (search);
 		drawDirectories ();
@@ -51,7 +54,7 @@ public class FileBrowser: GUIControl
 
 	public string getSelectedFile ()
 	{
-		return fileLabel.text;
+		return selectedFilePath;
 	}
 
 	private string getSearch ()
@@ -109,6 +112,8 @@ public class FileBrowser: GUIControl
 	//TODO search file doesn't wokr yet
 	//TODO show file name in header, but save full path for file uploading
 	private void setSelectedFile(String fullPath){
+		selectedFilePath = fullPath;
+		fileLabel.text = cropString (fullPath);
 	}
 	private void addDirectoryButton (DirectoryInfo dir)
 	{
@@ -117,7 +122,8 @@ public class FileBrowser: GUIControl
 
 	private void addButton (string name, string fullName, GUIControl content, Type type, bool interactable)
 	{
-		GUIControl buttonControl = GUIControl.init (GUIControl.types.Button);
+		//create a clone of the contents child
+		GUIControl buttonControl = GUIControl.init (content.getChild(0));
 		Button button = buttonControl.GetComponent<Button> ();
 		button.interactable = interactable;
 		//change button label
@@ -147,7 +153,7 @@ public class FileBrowser: GUIControl
 			updateFileAndFolder ();
 			return;
 		case Type.FILE:
-			fileLabel.text = name;
+			setSelectedFile(name);
 			return;
 		default:
 			break;
