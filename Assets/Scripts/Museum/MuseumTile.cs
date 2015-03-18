@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Contains all information of a particular tile. Generally this should only be used inside Museum.
+/// </summary>
 public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 
     public int x, y, z;
@@ -35,7 +38,7 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         return quad;
     }
 
-    GameObject CreateFace(Vector3 localPosition, Vector3 angles){
+    GameObject CreateFace(Vector3 localPosition, Vector3 scale, Vector3 angles){
         var ob = new GameObject();
         ob.transform.parent = gameObject.transform;
         var frontSide = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -46,14 +49,15 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         backSide.GetComponent<MeshRenderer>().material = backMaterial;
 
         ob.transform.localPosition = localPosition;
+        ob.transform.localScale = scale;
         ob.transform.Rotate(angles);
         return ob;
     }
 
 	void Start () {
         transform.position = new Vector3(x, y, z);
-        upObject = CreateFace(new Vector3(0, 0, 0), new Vector3(90, 0, 0));
-        downObject = CreateFace(new Vector3(0, 1, 0), new Vector3(-90, 0, 0));
+        upObject = CreateFace(new Vector3(0, 3, 0), new Vector3(1,1,1), new Vector3(-90, 0, 0));
+        downObject = CreateFace(new Vector3(0, 0, 0), new Vector3(1,1,1), new Vector3(90, 0, 0));
         UpdateEdges();
 	}
 
@@ -66,30 +70,33 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         if (backObject != null)     Destroy(backObject);
     }
 
+    /// <summary>
+    /// Checks the neighbour booleans and creates or removes faces accordingly.
+    /// </summary>
     public void UpdateEdges() {
         if (left && leftObject == null) {
-            leftObject = CreateFace(new Vector3(-0.5f, 0.5f, 0), new Vector3(0, -90, 0));
+            leftObject = CreateFace(new Vector3(-0.5f, 1.5f, 0), new Vector3(1,3,1), new Vector3(0, -90, 0));
         }
         if (!left && leftObject != null) {
             Destroy(leftObject);
             leftObject = null;
         }
         if (right && rightObject == null) {
-            rightObject = CreateFace(new Vector3(0.5f, 0.5f, 0), new Vector3(0, 90, 0));
+            rightObject = CreateFace(new Vector3(0.5f, 1.5f, 0), new Vector3(1, 3, 1), new Vector3(0, 90, 0));
         }
         if (!right && rightObject != null) {
             Destroy(rightObject);
             rightObject = null;
         }
         if (front && frontObject == null) {
-            frontObject = CreateFace(new Vector3(0, 0.5f, 0.5f), new Vector3(0, 0, 0));
+            frontObject = CreateFace(new Vector3(0, 1.5f, 0.5f), new Vector3(1, 3, 1), new Vector3(0, 0, 0));
         }
         if (!front && frontObject != null) {
             Destroy(frontObject);
             frontObject = null;
         }
         if (back && backObject == null) {
-            backObject = CreateFace(new Vector3(0, 0.5f, -0.5f), new Vector3(0, 180, 0));
+            backObject = CreateFace(new Vector3(0, 1.5f, -0.5f), new Vector3(1, 3, 1), new Vector3(0, 180, 0));
         }
         if (!back && backObject != null) {
             Destroy(backObject);
