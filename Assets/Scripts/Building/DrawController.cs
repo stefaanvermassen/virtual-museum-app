@@ -4,6 +4,10 @@ using UnityEngine.EventSystems;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+/// <summary>
+/// Controller that handles all input and uses it to modify both the scene and the
+/// museum when inside the BuildMuseum scene.
+/// </summary>
 public class DrawController : MonoBehaviour {
 
     public enum Tools : int {
@@ -19,7 +23,6 @@ public class DrawController : MonoBehaviour {
     public GameObject toDraw;
     public Museum currentMuseum;
     public float cameraSpeed = 10;
-    public float edgeRatio = 0.05f;
     public Tools tool = Tools.Drawing;
 
     public int currentArt = 0;
@@ -41,6 +44,10 @@ public class DrawController : MonoBehaviour {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
 	}
 
+    /// <summary>
+    /// Change the current tool by using the toolID. One can use the Tools enum and convert it to an int as well.
+    /// </summary>
+    /// <param name="tool">The int representation of a Tools enum value.</param>
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
 		if (this.tool == Tools.PlacingArt) {

@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Internal museum representation. This can load and save museum 
+/// representations and has methods to modify the museum.
+/// </summary>
 public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
-    public string author;
+    public string ownerID;
     public string museumName;
     public string description;
 
@@ -16,6 +20,10 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public Texture2D debugTexture;
 
+    /// <summary>
+    /// Create a MuseumData for serialization.
+    /// </summary>
+    /// <returns>The MuseumData</returns>
     public MuseumData Save() {
         var tileData = new List<MuseumTileData>();
         foreach (var t in tiles)
@@ -26,8 +34,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         var objectData = new List<MuseumObjectData>();
         foreach (var o in objects)
             objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, author, museumName, description);
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
     }
+
+    /// <summary>
+    /// Load a MuseumData inside this museum.
+    /// </summary>
+    /// <param name="data"></param>
     public void Load(MuseumData data) {
         Clear();
         foreach (var tileData in data.Tiles)
@@ -36,11 +49,14 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             AddArt(artData.ArtID, artData.X, artData.Y, artData.Z, artData.Orientation);
         foreach (var objectData in data.Objects)
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
-        author = data.Author;
+        ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
     }
 
+    /// <summary>
+    /// Remove everything inside this museum.
+    /// </summary>
     public void Clear() {
         foreach (var t in tiles) {
             t.Remove();
@@ -59,6 +75,14 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         objects.Clear();
     }
 
+    /// <summary>
+    /// Add art, only works when it is placed on a wall.
+    /// </summary>
+    /// <param name="artID"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <param name="orientation">0, 1, 2 or 3, decides direction of painting</param>
     public void AddArt(int artID, int x, int y, int z, int orientation) {
         if (ContainsTile(x, y, z) && (
                     (orientation == 0 && !ContainsTile(x,y,z-1)) ||
@@ -81,6 +105,11 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
     }
 
+    /// <summary></summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>True if the coordinate contains art</returns>
     public bool ContainsArt(int x, int y, int z) {
         foreach(MuseumArt a in art){
             if (a.x == x && a.y == y && a.z == z) return true;
@@ -88,6 +117,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return false;
     }
 
+    /// <summary>
+    /// Returns the art at position x,y,z. Returns null when there is none.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>Art at the coordinate, or null when there is none.</returns>
     public MuseumArt GetArt(int x, int y, int z) {
         foreach (MuseumArt a in art) {
             if (a.x == x && a.y == y && a.z == z) return a;
@@ -95,6 +131,12 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return null;
     }
 
+    /// <summary>
+    /// Removes the art at the coordinate.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public void RemoveArt(int x, int y, int z) {
         MuseumArt toRemove = null;
         foreach (MuseumArt a in art) {
@@ -110,6 +152,14 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
     }
 
+    /// <summary>
+    /// Add an object, only works if there is already a tile at the coordinate.
+    /// </summary>
+    /// <param name="objectID"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <param name="angle"></param>
     public void AddObject(int objectID, int x, int y, int z, float angle) {
         if (ContainsTile(x, y, z)) {
             RemoveObject(x, y, z);
@@ -124,6 +174,12 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
     }
 
+    /// <summary>
+    /// Removes the object at x,y,z if it exists.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public void RemoveObject(int x, int y, int z) {
         MuseumObject toRemove = null;
         foreach (MuseumObject o in objects) {
@@ -139,6 +195,11 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
     }
 
+    /// <summary></summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>True if the coordinate contains an object.</returns>
     public bool ContainsObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
             if (o.x == x && o.y == y && o.z == z) return true;
@@ -146,6 +207,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return false;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>The object at x,y,z if it exists, null otherwise.</returns>
     public MuseumObject GetObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
             if (o.x == x && o.y == y && o.z == z) return o;
@@ -153,6 +221,15 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return null;
     }
 
+    /// <summary>
+    /// Sets a tile using a wall, floor and ceiling-style at a position.
+    /// </summary>
+    /// <param name="wallStyle"></param>
+    /// <param name="floorStyle"></param>
+    /// <param name="ceilingStyle"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
         RemoveTile(x, y, z);
         GameObject tileObject = new GameObject();
@@ -186,6 +263,12 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         if (frontTile != null) frontTile.UpdateEdges();
     }
 
+    /// <summary>
+    /// Remove the tile at x,y,z and everything it might contain.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public void RemoveTile(int x, int y, int z) {
         var tile = GetTile(x, y, z);
         if (tile != null) {
@@ -209,18 +292,27 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>True if there is a tile at x,y,z.</returns>
     public bool ContainsTile(int x, int y, int z) {
         return GetTile(x, y, z) != null;
     }
 
+    /// <summary>
+    /// Returns the tile at position x,y,z.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>The tile at position x,y,z if it exists, null otherwise.</returns>
     public MuseumTile GetTile(int x, int y, int z) {
         foreach (MuseumTile tile in tiles) {
             if (tile.x == x && tile.y == y && tile.z == z) return tile;
         }
         return null;
     }
-	
-	void Update () {
-	
-	}
 }
