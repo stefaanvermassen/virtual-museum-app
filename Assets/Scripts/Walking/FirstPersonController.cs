@@ -85,7 +85,7 @@ public class FirstPersonController : MonoBehaviour {
 			if(CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch)) {
 				// Mobile "thumbstick" controls
 				// Reduce right stick sensitivity
-				sensitivity = defaultSensitivity * 0.75f;
+				sensitivity = defaultSensitivity * 0.4f;
 			} else {
 				// Keyboard controls
 				// Clamp the movement magnitude in a circle instead of both axes separately
