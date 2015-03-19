@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Contains all information of a particular tile. Generally this should only be used inside Museum.
@@ -17,6 +17,8 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     private static float HEIGHT = 3;
     private static float METER_PER_UNIT = 2;
     private static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
+
+    private static Dictionary<string, GameObject> objects = new Dictionary<string, GameObject>();
 
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
@@ -42,10 +44,17 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         return quad;
     }
 
+    GameObject FastResource(string resource) {
+        if (!objects.ContainsKey(resource)) {
+            objects.Add(resource, (GameObject) Resources.Load(resource));
+        }
+        return objects[resource];
+    }
+
     GameObject CreateFace(Vector3 localPosition, Vector3 scale, Vector3 angles, string type){
         var ob = new GameObject();
         ob.transform.parent = gameObject.transform;
-        var frontSide = (GameObject)GameObject.Instantiate(Resources.Load(type));
+        var frontSide = (GameObject)GameObject.Instantiate(FastResource(type));
         frontSide.transform.parent = ob.transform;
         //frontSide.GetComponent<MeshRenderer>().material = frontMaterial;
         var backSide = ReversedQuad();
