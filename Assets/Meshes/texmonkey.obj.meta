@@ -12,8 +12,9 @@ ModelImporter:
     2300000: default
     3300000: default
     4300000: default
+    6400000: default
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
   animations:
@@ -33,7 +34,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: .00499999989
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
