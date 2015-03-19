@@ -20,7 +20,7 @@ public class AddMuseumInfo : MonoBehaviour {
     /// </summary>
     private void Start()
     {
-        museumAuthor.text = museum.author;
+        museumAuthor.text = museum.ownerID;
         museumName.text = museum.museumName;
         museumDescription.text = museum.description;
 	}
@@ -32,7 +32,7 @@ public class AddMuseumInfo : MonoBehaviour {
     /// <param name="useless">Does nothing but is needed to be seen as a ClickListener</param>
     public void save(int useless)
     {
-        museum.author = museumAuthor.text;
+        museum.ownerID = museumAuthor.text;
         museum.museumName = museumName.text;
         museum.description = museumDescription.text;
 
