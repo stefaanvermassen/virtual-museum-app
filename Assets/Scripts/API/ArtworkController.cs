@@ -25,7 +25,7 @@ namespace API
 			}
 		}
 
-		public HTTP.Request getAllArtworksByName(string artistID, Action<ArrayList> success = null, Action<API.API_Error> error = null){
+		public HTTP.Request getAllArtworksByArtist(string artistID, Action<ArrayList> success = null, Action<API.API_Error> error = null){
 			return getArtworksByFilter ("?ArtistID=" + artistID, success, error);
 		}
 
