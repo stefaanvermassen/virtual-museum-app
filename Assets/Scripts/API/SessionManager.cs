@@ -7,7 +7,13 @@ namespace API {
 	/// </summary>
 	public class SessionManager : MonoBehaviour
 	{
-		
+		/// <summary>
+		/// Get the current access token to authenticate requests
+		/// </summary>
+		/// <returns>The access token.</returns>
+		public string getAccessToken() {
+			return API.UserController.Instance.user.accessToken;
+		}
 	}
 	
 }

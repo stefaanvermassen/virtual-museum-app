@@ -42,8 +42,8 @@ public class ArtRest : MonoBehaviour
 	}
 	public void postArt(ArtGUIInterface art){
 		API.ArtWork artWork = new API.ArtWork () {
-			ArtWorkID = "1",
-			ArtistID = "1",
+			ArtWorkID = 1,
+			ArtistID = 1,
 			Name = "Feliciaan"
 		};
 		API.ArtworkController ac = API.ArtworkController.Instance;
