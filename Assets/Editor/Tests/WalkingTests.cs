@@ -3,6 +3,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEditor;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 [TestFixture]
@@ -45,21 +46,21 @@ public class WalkingTests {
 	[SetUp]
 	public void LoadWalkingController() {
 		CreateTestPlatform ();
-		GameObject player = (GameObject)MonoBehaviour.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
+		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
 		player.transform.localPosition = new Vector3(0, 0, 0);
-		//GameObject eventSystem = (GameObject)MonoBehaviour.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/EventSystem.prefab", typeof(GameObject)));
-		//GameObject dualSticks = (GameObject)MonoBehaviour.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/MobileDualStickControl.prefab", typeof(GameObject)));
+		GameObject eventSystem = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/EventSystem.prefab", typeof(GameObject)));
+		GameObject dualSticks = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/MobileDualStickControl.prefab", typeof(GameObject)));
 	}
 	
 	[Test]
-	public void TestEnvironment_ObjectsLoaded() {
+	public void TestEnvironment_LoadObjects_ObjectsLoaded() {
 		Assert.NotNull (GameObject.FindObjectOfType<FirstPersonController> (), "First person controller component should be active");
-		//Assert.NotNull (GameObject.FindObjectOfType<EventSystem> (), "Event system component should be active");
-		//Assert.NotNull (GameObject.FindObjectOfType<MobileControlRig> (), "Mobile control component rig should be active");
+		Assert.NotNull (GameObject.FindObjectOfType<EventSystem> (), "Event system component should be active");
+		Assert.NotNull (GameObject.FindObjectOfType<MobileControlRig> (), "Mobile control component rig should be active");
 	}
 
 	[Test]
-	public void TestEnvironment_PlayerTestMode() {
+	public void TestEnvironment_StartPlayerInTestMode_PlayerStarted() {
 		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
 		Assert.IsFalse (player.started, "Player shouldn't have started yet");
 		player.testMode = true;
@@ -68,7 +69,7 @@ public class WalkingTests {
 	}
 
 	[Test]
-	public void PlayerCharacter_Move() {
+	public void PlayerCharacter_Move_Moved() {
 		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
 		player.testMode = true;
 		player.TestStart ();
@@ -86,37 +87,69 @@ public class WalkingTests {
 	}
 
 	[Test]
-	public void PlayerCharacter_Respawn() {
+	public void PlayerCharacter_MoveFall_Falling() {
 		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
 		player.testMode = true;
 		player.TestStart ();
-		for(int i = 0; i < 20; i++) player.TestUpdate();
+		for(int i = 0; i < 30; i++) player.TestUpdate();
 		Vector3 startPos = player.transform.position;
-		for(int i = 0; i < 60; i++) player.Move (0, 1, player.defaultMovementSpeed);
-		for(int i = 0; i < 300; i++) player.TestUpdate();
-		Assert.AreEqual (player.transform.position, startPos, "Respawn: Player character should have respawned on test platform after falling off");
+		for(int i = 0; i < 40; i++) player.Move (0, 1, player.defaultMovementSpeed);
+		startPos = player.transform.position;
+		for(int i = 0; i < 5; i++) player.TestUpdate();
+		Assert.That(player.transform.position.x, Is.EqualTo(startPos.x).Within(0.005), "Fall: Player character should remain at same horizontal position while falling");
+		Assert.Less(player.transform.position.y, startPos.y, "Fall: Player character should be falling down after stepping off test platform");
+		Assert.That(player.transform.position.z, Is.EqualTo(startPos.z).Within(0.005), "Fall: Player character should remain at same horizontal position while falling");
 	}
 
 	[Test]
-	public void PlayerCharacter_Rotate() {
+	public void PlayerCharacter_MoveFallRespawn_Respawned() {
+		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
+		player.testMode = true;
+		player.TestStart ();
+		for(int i = 0; i < 30; i++) player.TestUpdate();
+		Vector3 startPos = player.transform.position;
+		for(int i = 0; i < 60; i++) player.Move (0, 1, player.defaultMovementSpeed);
+		for(int i = 0; i < 300; i++) player.TestUpdate();
+		Assert.That(player.transform.position.x, Is.EqualTo(startPos.x).Within(0.005), "Respawn: Player character should have respawned on test platform after falling off");
+		Assert.That(player.transform.position.y, Is.EqualTo(startPos.y).Within(0.005), "Respawn: Player character should have respawned on test platform after falling off");
+		Assert.That(player.transform.position.z, Is.EqualTo(startPos.z).Within(0.005), "Respawn: Player character should have respawned on test platform after falling off");
+	}
+
+	[Test]
+	public void PlayerCharacter_Rotate_Rotated() {
 		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
 		player.testMode = true;
 		player.TestStart ();
 		for(int i = 0; i < 20; i++) player.TestUpdate();
 		Vector3 startPos = player.transform.position;
 		Vector3 startRot = player.transform.localRotation.eulerAngles;
+		Camera camera = player.GetComponentInChildren<Camera> ();
+		Vector3 cameraRot = camera.transform.localRotation.eulerAngles;
 		for(int i = 0; i < 10; i++) player.Move (0, 1, player.defaultMovementSpeed);
 		player.RotateHorizontal (180);
+		Assert.AreEqual(player.transform.localRotation.eulerAngles.x, startRot.x, "180 Degrees Rotation: X value should be equal");
+		Assert.AreNotEqual (player.transform.localRotation.eulerAngles.y, startRot.y, "180 Degrees Rotation: Y value should have changed");
+		Assert.AreEqual (player.transform.localRotation.eulerAngles.z, startRot.z, "180 Degrees Rotation: Z value should be equal");
+		startRot = player.transform.localRotation.eulerAngles;
 		for(int i = 0; i < 10; i++) player.Move (0, 1, player.defaultMovementSpeed);
-		Assert.That(player.transform.position.x, Is.EqualTo(startPos.x).Within(0.00001), "Rotation X: Player should have walked back to initial position after turning 180 degrees.", 0.1);
-		Assert.That(player.transform.position.y, Is.EqualTo(startPos.y).Within(0.00001), "Rotation Y: Player should have walked back to initial position after turning 180 degrees.", 0.1);
-		Assert.That(player.transform.position.z, Is.EqualTo(startPos.z).Within(0.00001), "Rotation Z: Player should have walked back to initial position after turning 180 degrees.", 0.1);
+		Assert.That(player.transform.position.x, Is.EqualTo(startPos.x).Within(0.00001), "Rotation X: Player should have walked back to initial position after turning 180 degrees.");
+		Assert.That(player.transform.position.y, Is.EqualTo(startPos.y).Within(0.00001), "Rotation Y: Player should have walked back to initial position after turning 180 degrees.");
+		Assert.That(player.transform.position.z, Is.EqualTo(startPos.z).Within(0.00001), "Rotation Z: Player should have walked back to initial position after turning 180 degrees.");
+		Assert.AreEqual (camera.transform.localRotation.eulerAngles, cameraRot, "Local camera rotation should not have changed before vertical rotation.");
 		player.RotateVertical (50);
-		Assert.AreEqual
+		Assert.AreEqual (player.transform.localRotation.eulerAngles, startRot, "Vertical rotation: Player rotation should not have changed");
+		Assert.AreNotEqual(camera.transform.localRotation.eulerAngles.x, cameraRot.x, "Vertical Rotation: Camera X value should have changed");
+		Assert.AreEqual (camera.transform.localRotation.eulerAngles.y, cameraRot.y, "Vertical Rotation: Camera Y value should be equal");
+		Assert.AreEqual (camera.transform.localRotation.eulerAngles.z, cameraRot.z, "Vertical Rotation: Camera Z value should be equal");
+		cameraRot = camera.transform.localRotation.eulerAngles;
+		Assert.That(cameraRot.x, Is.EqualTo(50).Within(0.005), "Camera should have reached target rotation of 50");
+		player.RotateVertical (player.upDownRange+1);
+		cameraRot = camera.transform.localRotation.eulerAngles;
+		Assert.That (cameraRot.x, Is.EqualTo (player.upDownRange).Within (0.005), "Camera should have rotated only until vertical camera rotation range");
 	}
 
 	[Test]
-	public void PlayerCharacter_CameraSwitch() {
+	public void PlayerCharacter_SwitchActiveCamera_CameraSwitched() {
 		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
 		player.testMode = true;
 		player.TestStart ();
@@ -133,6 +166,32 @@ public class WalkingTests {
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active after switching stereoscopic mode off.");
 	}
 
-	//[Test]
-	//public void PlayerCharacter_
+	[Test]
+	public void MobileControlRig_MoveLeftStick_PlayerMoved() {
+		// Init player, stabilize and get start position
+		FirstPersonController player = GameObject.FindObjectOfType<FirstPersonController> ();
+		player.testMode = true;
+		player.TestStart ();
+		for(int i = 0; i < 20; i++) player.TestUpdate();
+		Vector3 startPos = player.transform.position;
+
+		// Activate mobile input
+		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
+		foreach (Transform t in rig.transform) {
+			t.gameObject.SetActive(true);
+		}
+		// Get left joystick
+		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
+		Joystick lj = null;
+		foreach(Joystick j in joysticks) {
+			if(j.horizontalAxisName.Equals("Horizontal")) {
+				lj = j;
+				break;
+			}
+		}
+		Assert.NotNull (lj, "Left Joystick should be found");
+		//lj.
+		//CrossPlatformInputManager.ActiveInputMethod originalInput = CrossPlatformInputManager.GetActiveInputMethod ();
+		//CrossPlatformInputManager.SwitchActiveInputMethod (CrossPlatformInputManager.ActiveInputMethod.Touch);
+	}
 }
