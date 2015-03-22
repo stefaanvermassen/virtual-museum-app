@@ -1,18 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MuseumArt : MonoBehaviour {
+/// <summary>
+/// Contains all information of a art piece, already inside a museum. Generally this should only be used inside Museum.
+/// </summary>
+public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
 
     public int x, y, z;
     public int orientation;
+    public int artID;
 
     public Texture2D texture;
     public Material material;
 
     private GameObject ob;
 
-	// Use this for initialization
+    public MuseumArtData Save(){
+        return new MuseumArtData(artID, x, y, z, orientation);
+    }
+
+    public void Load(MuseumArtData data) {
+        artID = data.ArtID;
+        x = data.X;
+        y = data.Y;
+        z = data.Z;
+        orientation = data.Orientation;
+        Start();
+    }
+
 	void Start () {
+        Remove();
         ob = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var renderer = ob.GetComponent<MeshRenderer>();
         renderer.material = material;
@@ -23,12 +40,10 @@ public class MuseumArt : MonoBehaviour {
         ob.transform.Rotate(new Vector3(0,90*orientation,0));
         ob.transform.Translate(new Vector3(0, 0, -0.5f));
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
+    /// <summary>
+    /// Should be called before destroying this GameObject.
+    /// </summary>
     public void Remove() {
         Destroy(ob);
     }
