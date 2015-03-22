@@ -25,7 +25,7 @@ namespace UnityStandardAssets.CrossPlatformInput
 		CrossPlatformInputManager.VirtualAxis m_HorizontalVirtualAxis; // Reference to the joystick in the cross platform input
 		CrossPlatformInputManager.VirtualAxis m_VerticalVirtualAxis; // Reference to the joystick in the cross platform input
 		
-		void Start() {
+		public void Start() {
 			m_StartPos = transform.position;
 			CreateVirtualAxes();
 		}
@@ -83,7 +83,9 @@ namespace UnityStandardAssets.CrossPlatformInput
 				//delta = Mathf.Clamp(delta, -MovementRange, MovementRange);
 				newPos.y = delta;
 			}
+			print (m_StartPos + "+" + Vector3.ClampMagnitude(newPos, MovementRange));
 			transform.position = m_StartPos + Vector3.ClampMagnitude(newPos, MovementRange);
+			print (transform.position);
 			UpdateVirtualAxes(transform.position);
 		}
 

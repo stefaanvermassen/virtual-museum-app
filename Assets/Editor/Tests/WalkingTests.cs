@@ -176,6 +176,10 @@ public class WalkingTests {
 		Vector3 startPos = player.transform.position;
 
 		// Activate mobile input
+		CrossPlatformInputManager.ActiveInputMethod originalInput = CrossPlatformInputManager.GetActiveInputMethod ();
+		CrossPlatformInputManager.SwitchActiveInputMethod (CrossPlatformInputManager.ActiveInputMethod.Touch);
+		CrossPlatformInputManager.UnRegisterVirtualAxis ("Vertical");
+		CrossPlatformInputManager.UnRegisterVirtualAxis ("Horizontal");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
 		foreach (Transform t in rig.transform) {
 			t.gameObject.SetActive(true);
@@ -190,8 +194,35 @@ public class WalkingTests {
 			}
 		}
 		Assert.NotNull (lj, "Left Joystick should be found");
-		//lj.
+		lj.Start();
+		EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem> ();
+
+
+		PointerEventData pedata = new PointerEventData (eventSystem);
+		pedata.position = new Vector2(lj.transform.position.x, lj.transform.position.y - 100);
+		Vector3 pos = lj.transform.position;
+		lj.OnDrag (pedata); // Drag joystick up
+		Assert.AreEqual (pos, lj.transform.position);
+		float horizontalAxis = CrossPlatformInputManager.GetAxis("Horizontal"); // Controls sideways movement
+		float verticalAxis = CrossPlatformInputManager.GetAxis("Vertical"); // Controls forward/backward movement
+		Assert.IsNull (pedata, "Axes are: " + horizontalAxis + " " + verticalAxis);
+		for(int i = 0; i < 10; i++) player.TestUpdate ();
+		Assert.AreEqual (player.transform.position.x, startPos.x, "Forward movement: X value should be equal, player has not moved horizontally");
+		Assert.AreEqual (player.transform.position.y, startPos.y, "Forward movement: Y value should be equal, player has not moved vertically");
+		Assert.Greater (player.transform.position.z, startPos.z, "Forward movement: Z value should be greater, player has moved forward on this axis");
+		lj.OnPointerUp (pedata); // Release joystick
+		for(int i = 0; i < 10; i++) player.TestUpdate (); // Stabilize position
+		startPos = player.transform.position;
+
+
+		pedata = new PointerEventData(eventSystem);
+		pedata.position = new Vector2(lj.transform.position.x - 100, lj.transform.position.y);
+		lj.OnDrag (pedata); // Drag joystick left
+		for(int i = 0; i < 10; i++) player.TestUpdate ();
+		Assert.Less(player.transform.position.x, startPos.x, "Sideways movement: X value should be less, player has moved left");
+		Assert.AreEqual (player.transform.position.y, startPos.y, "Sideways movement: Y value should be equal, player has not moved vertically");
+		Assert.AreEqual (player.transform.position.z, startPos.z, "Sideways movement: Z value should be equal, player has not moved forward");
 		//CrossPlatformInputManager.ActiveInputMethod originalInput = CrossPlatformInputManager.GetActiveInputMethod ();
-		//CrossPlatformInputManager.SwitchActiveInputMethod (CrossPlatformInputManager.ActiveInputMethod.Touch);
+		CrossPlatformInputManager.SwitchActiveInputMethod (CrossPlatformInputManager.ActiveInputMethod.Hardware);
 	}
 }
