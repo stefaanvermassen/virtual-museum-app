@@ -17,7 +17,7 @@ public class AddMuseumInfo : MonoBehaviour {
     /// This method initializes the values from the UI
     /// with the values available in the Museum
     /// </summary>
-    private void Start()
+    public void Start()
     {
         museumName.text = museum.museumName;
         museumDescription.text = museum.description;
