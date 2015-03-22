@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 /// <summary>
 /// Controller that handles all input and uses it to modify both the scene and the
@@ -50,14 +48,14 @@ public class DrawController : MonoBehaviour {
     /// <param name="tool">The int representation of a Tools enum value.</param>
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
-		if (this.tool == Tools.PlacingArt) {
-			var data = currentMuseum.Save();
-			Stream TestFileStream = File.Create(Application.persistentDataPath + "/test.bin");
-			BinaryFormatter serializer = new BinaryFormatter();
-			serializer.Serialize(TestFileStream, data);
-			TestFileStream.Close();
-			Debug.Log("Done");
-		}
+    }
+
+    /// <summary>
+    /// Change the current object by using the object's id.
+    /// </summary>
+    /// <param name="objectID"></param>
+    public void SetCurrentObject(int objectID) {
+        this.currentObject = objectID;
     }
 
     bool IsPointerBusy() {
