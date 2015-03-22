@@ -51,6 +51,11 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	public float upDownRange = 60.0f;
 
+	/// <summary>
+	/// Whether or not test mode is active. This will allow the test to call the Start and Update methods manually
+	/// </summary>
+	public bool testMode = false;
+
 
 	float verticalVelocity = 0;
 	Vector3 startingPosition;
@@ -58,6 +63,8 @@ public class FirstPersonController : MonoBehaviour {
 	CharacterController characterController;
 	public Camera monoCamera;
 	public MuseumDiveSensor stereoCameraController;
+
+	public bool started = false;
 
 	/// <summary>
 	/// Initializes First Person Controller and gets necessary components.
@@ -68,6 +75,7 @@ public class FirstPersonController : MonoBehaviour {
 		   || activeVR != VR.None) Screen.lockCursor = true;
 		characterController = GetComponent<CharacterController>();
 		startingPosition = transform.position;
+		started = true;
 	}
 
 	/// <summary>
@@ -171,7 +179,7 @@ public class FirstPersonController : MonoBehaviour {
 	/// <param name="xAxis">Sideways movement strength between -1 (full speed left) and 1 (full speed right)</param>
 	/// <param name="yAxis">Forward/backward movement strength between - and 1.</param>
 	/// <param name="movementSpeed">Maximal movement speed that is reached when xAxis or yAxis is 1 or -1.</param>
-	void Move(float xAxis, float yAxis, float movementSpeed) {
+	public void Move(float xAxis, float yAxis, float movementSpeed) {
 		// Horizontal movement
 		float forwardSpeed = yAxis * movementSpeed;
 		float sideSpeed = xAxis * movementSpeed;
@@ -194,5 +202,19 @@ public class FirstPersonController : MonoBehaviour {
 	void JumpToStart() {
 		verticalVelocity = 0;
 		transform.position = startingPosition;
+	}
+
+	/// <summary>
+	/// Simulates the start method
+	/// </summary>
+	public void TestStart() {
+		if(testMode) Start ();
+	}
+
+	/// <summary>
+	/// Simulates the update method
+	/// </summary>
+	public void TestUpdate() {
+		if (testMode) Update ();
 	}
 }
