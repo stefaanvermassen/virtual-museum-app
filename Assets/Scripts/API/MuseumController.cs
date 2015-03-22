@@ -58,6 +58,26 @@ namespace API
 			}), error, true);
 		}
 
+
+		/// <summary>
+		/// Updates the museum.
+		/// </summary>
+		/// <returns>The museum.</returns>
+		/// <param name="museum">Museum.</param>
+		/// <param name="success">Success.</param>
+		/// <param name="error">Error.</param>
+		public HTTP.Request updateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
+		{
+			var form = museum.ToDictionary ();
+			
+			return put (BASE_URL + MUSEUM + "/" + museum.MuseumID.ToString(), form, ((response) => {
+				if(success != null) {
+					var m = Museum.FromDictionary(response.Object);
+					success(m);
+				}
+			}), error, true);
+		}
+
 		/// <summary>
 		/// Uploads the museum.
 		/// </summary>

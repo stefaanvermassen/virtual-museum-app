@@ -103,7 +103,7 @@ namespace API {
 
 		protected HTTP.Request postOrPutForm(string method, string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
-			HTTP.Request postRequest = new HTTP.Request ("post", url, form);
+			HTTP.Request postRequest = new HTTP.Request (method, url, form);
 
 			return sendRequest(postRequest, success, error, authToken);
 		}
