@@ -69,13 +69,18 @@ namespace API
 		/// </summary>
 		/// <returns>The artworks by filter.</returns>
 		/// <param name="filter">Filter.</param>
-		/// <param name="success">Success.</param>
+		/// <param name="success">Success. Returns an arrayList with Artwork objects</param>
 		/// <param name="error">Error.</param>
 		private HTTP.Request getArtworksByFilter(string filter, Action<ArrayList> success = null, Action<API.API_Error> error = null) {
 			//TODO: create filter class
 			return get (BASE_URL + ARTWORK + filter, ((response) => {
 				if(success != null) {
-					success((ArrayList)response.Object["ArtWorks"]);
+					var apiList = (ArrayList)response.Object["ArtWorks"];
+					var list = new ArrayList();
+					foreach(Hashtable val in apiList) {
+						list.Add(ArtWork.FromDictionary(val));
+					}
+					success(list);
 				}}), error);
 		}
 
@@ -103,13 +108,19 @@ namespace API
 		/// <param name="mime">MIME.</param>
 		/// <param name="imageLocation">Image location.</param>
 		/// <param name="image">Image.</param>
-		/// <param name="success">Success.</param>
+		/// <param name="success">Success. Returns an artwork</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request uploadImage(string name, string mime, string imageLocation, byte[] image, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request uploadImage(string name, string mime, string imageLocation, byte[] image, Action<ArtWork> success = null, Action<API.API_Error> error = null)
 		{
 			WWWForm form = new WWWForm();
 			form.AddBinaryData(imageLocation, image, name, MIME + mime);
-			return postForm(BASE_URL + ARTWORK, form, success, error, true);
+			return postForm(BASE_URL + ARTWORK, form, ((response) => {
+				if (success != null) {
+					ArrayList respArray = (ArrayList)response.Object["ArtWorks"];
+					ArtWork artWork = ArtWork.FromDictionary((Hashtable)respArray[0]);
+					success(artWork);
+				}
+			}), error, true);
 		}
 
 		/// <summary>
