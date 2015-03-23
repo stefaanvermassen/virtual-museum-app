@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UploadGui : GUIControl
+public class ArtworkImageLoader : GUIControl
 {
 	// For fileBrowser
 
@@ -15,10 +15,7 @@ public class UploadGui : GUIControl
 	private byte[] uploadableFile;
 	private IEnumerator www;
 	private string accessToken;
-	private const string BASE_URL = "http://api.awesomepeople.tv/";
-	private const string TOKEN = "Token";
-	private const string ARTWORK = "api/artwork";
-	private const string MIME = "image/";
+
 	private string selectedImagePath;
 
 	// Use this for initialization
@@ -29,8 +26,6 @@ public class UploadGui : GUIControl
 	public override void replace (GUIControl control)
 	{
 		base.replace (control);
-		Debug.Log ("open");
-
 		//update thumbnail and path label
 		update ();
 	}

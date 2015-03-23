@@ -41,12 +41,10 @@ namespace API
 				}}), error);
 		}
 
-		public HTTP.Request getArtwork(string id, Action<Texture2D> success = null, Action<API.API_Error> error = null) {
+		public HTTP.Request getArtwork(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
 			return get (BASE_URL + ARTWORK + "/" + id, ((response) => {
 				if(success != null) {
-					Texture2D tex = new Texture2D(2,2);
-					tex.LoadImage(response.bytes);
-					success(tex);
+					success(response.bytes);
 				}}), error);
 		}
 

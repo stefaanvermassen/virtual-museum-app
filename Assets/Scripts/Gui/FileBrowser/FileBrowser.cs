@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using System.IO;
@@ -17,8 +17,10 @@ public class FileBrowser: GUIControl
 	public string prevSearch = "";
 	public string[] fileExtensions;
 	private string directoryUp = "..";
-	private static int maxNrOfNameChars=60;
+	private static int maxNrOfNameChars=50;
 	private string selectedFilePath;
+	public GUIControl placeHolder;
+	private FileBrowserListener listener;
 	private enum Type
 	{
 		FOLDER,
@@ -31,7 +33,15 @@ public class FileBrowser: GUIControl
 	{
 		return fileExtensions;
 	}
+	public void open(FileBrowserListener listener){
+		this.listener = listener;
+		placeHolder.replace (this);
+	}
+	public override void close(){
+		placeHolder.replace (this);
+		listener.fileIsSelected ();
 
+	}
 	void Start ()
 	{
 		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
@@ -47,8 +57,7 @@ public class FileBrowser: GUIControl
 		}
 		//only show last 100 chars
 		directoryLabel.text = cropString(currentDirectory.FullName);
-		string search = getSearch ();
-		drawFiles (search);
+		drawFiles ();
 		drawDirectories ();
 	}
 
@@ -62,8 +71,9 @@ public class FileBrowser: GUIControl
 		return searchField.text;
 	}
 
-	private void drawFiles (string search)
+	public void drawFiles ()
 	{
+		string search =getSearch();
 		if (previousDirectory == currentDirectory && prevSearch == search) {
 			return;
 		}
@@ -109,8 +119,6 @@ public class FileBrowser: GUIControl
 
 
 	}
-	//TODO search file doesn't wokr yet
-	//TODO show file name in header, but save full path for file uploading
 	private void setSelectedFile(String fullPath){
 		selectedFilePath = fullPath;
 		fileLabel.text = cropString (fullPath);
@@ -159,6 +167,7 @@ public class FileBrowser: GUIControl
 			break;
 		}
 	}
+	//TODO search file doesn't wokr yet
 
 	// Only returns directories, drives and images
 	private IEnumerable<FileInfo> getFileList (bool recursive, string searchPattern)
