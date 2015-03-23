@@ -51,6 +51,11 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	public float upDownRange = 60.0f;
 
+	/// <summary>
+	/// Whether or not test mode is active. This will allow the test to call the Start and Update methods manually
+	/// </summary>
+	public bool testMode = false;
+
 
 	float verticalVelocity = 0;
 	Vector3 startingPosition;
@@ -58,6 +63,8 @@ public class FirstPersonController : MonoBehaviour {
 	CharacterController characterController;
 	public Camera monoCamera;
 	public MuseumDiveSensor stereoCameraController;
+
+	bool started = false;
 
 	/// <summary>
 	/// Initializes First Person Controller and gets necessary components.
@@ -68,6 +75,7 @@ public class FirstPersonController : MonoBehaviour {
 		   || activeVR != VR.None) Screen.lockCursor = true;
 		characterController = GetComponent<CharacterController>();
 		startingPosition = transform.position;
+		started = true;
 	}
 
 	/// <summary>
@@ -171,13 +179,17 @@ public class FirstPersonController : MonoBehaviour {
 	/// <param name="xAxis">Sideways movement strength between -1 (full speed left) and 1 (full speed right)</param>
 	/// <param name="yAxis">Forward/backward movement strength between - and 1.</param>
 	/// <param name="movementSpeed">Maximal movement speed that is reached when xAxis or yAxis is 1 or -1.</param>
-	void Move(float xAxis, float yAxis, float movementSpeed) {
+	public void Move(float xAxis, float yAxis, float movementSpeed) {
+		// Calculate delta time
+		float deltaTime = Time.deltaTime;
+		if(testMode) deltaTime = 1f / 60f;
+
 		// Horizontal movement
 		float forwardSpeed = yAxis * movementSpeed;
 		float sideSpeed = xAxis * movementSpeed;
 
 		// Vertical movement
-		verticalVelocity += Physics.gravity.y * Time.deltaTime;
+		verticalVelocity += Physics.gravity.y * deltaTime;
 		if(characterController.isGrounded && CrossPlatformInputManager.GetButtonDown("Jump") && jumpEnabled) {
 			verticalVelocity = jumpSpeed;
 		}
@@ -185,7 +197,7 @@ public class FirstPersonController : MonoBehaviour {
 		Vector3 speed = new Vector3( sideSpeed, verticalVelocity, forwardSpeed );
 		speed = transform.rotation * speed;
 		
-		characterController.Move( speed * Time.deltaTime );
+		characterController.Move( speed * deltaTime );
 	}
 
 	/// <summary>
@@ -194,5 +206,27 @@ public class FirstPersonController : MonoBehaviour {
 	void JumpToStart() {
 		verticalVelocity = 0;
 		transform.position = startingPosition;
+	}
+
+	/// <summary>
+	/// Simulates the start method (testing mode only)
+	/// </summary>
+	public void TestStart() {
+		if(testMode) Start ();
+	}
+
+	/// <summary>
+	/// Simulates the update method (testing mode only)
+	/// </summary>
+	public void TestUpdate() {
+		if (testMode) Update ();
+	}
+
+	/// <summary>
+	/// Tests if the player's Start method has been called yet. For use in the test environment.
+	/// </summary>
+	/// <returns><c>true</c>, if Start method has been called, <c>false</c> otherwise.</returns>
+	public bool HasStarted() {
+		return started;
 	}
 }
