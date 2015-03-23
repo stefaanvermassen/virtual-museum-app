@@ -23,6 +23,8 @@ public class GUIControl : MonoBehaviour
 	void Start () {
 		//dynamic child is edited in Unity editor but not shown
 		if (dynamicChild != null) {
+			//detach dynmic child, because else it will be removed if children are removed
+			transform.DetachChildren();
 			dynamicChild.close ();
 		}
 	}
@@ -48,8 +50,10 @@ public class GUIControl : MonoBehaviour
 	public GUIControl addDynamicChild(){
 		if (dynamicChild != null) {
 			GUIControl newDynamicChild = GUIControl.init (dynamicChild);
+
 			newDynamicChild.open();
 			this.add (newDynamicChild);
+
 			return newDynamicChild;
 		}
 		return null;
@@ -65,7 +69,7 @@ public class GUIControl : MonoBehaviour
 	public static GUIControl init (GUIControl control)
 	{
 		GUIControl instance = Instantiate (control);
-		//activateAllChildScripts (instance.transform);
+		activateAllChildScripts (instance.transform);
 		return instance;
 	}
 

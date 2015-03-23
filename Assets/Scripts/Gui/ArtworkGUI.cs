@@ -8,24 +8,29 @@ public class ArtworkGUI : FileBrowserListener
 {
 
 	private API.ArtWork artWork;
-	private byte[] imageFile;
-	public InputField name;
+	public InputField nameInput;
+	public Image thumbNail;
 	//TODO
 	//not input field with ID but just the artistID of the current user
-	public InputField artist;
-	public Image thumbNail;
+	//set load image button to non interactable if an image binary is present
+	public InputField artistInput;
+
+	//upload image fields
+	private string imagePathSource;
+	private byte[] imageFile;
 
 	public override void fileIsSelected ()
 	{
+		imagePathSource = fileBrowser.getSelectedFile ();
 		imageFile = File.ReadAllBytes (fileBrowser.getSelectedFile ());
 		update ();
+
 	}
 
 	public void update ()
 	{
 		//update properties
-		name.text = Name;
-		artist.text = ArtistID;
+		Name = nameInput.text;
 		//update image
 		if (imageFile != null) {
 			thumbNail.enabled = true;
@@ -36,38 +41,25 @@ public class ArtworkGUI : FileBrowserListener
 
 
 	}
-
-	public ArtworkGUI (string ArtWorkID, string ArtistID, string Name, byte[] imageFile)
-	{
+	public ArtworkGUI(){
 		artWork = new API.ArtWork ();
-		artWork.ArtWorkID = ArtWorkID;
-		artWork.ArtistID = ArtistID;
-		artWork.Name = Name;
+	}
+	public void init(API.ArtWork artWork, byte[] ImageFile){
+		this.artWork = artWork;
 		this.imageFile = imageFile;
 	}
 
-	public ArtworkGUI ()
-	{
-		artWork = new API.ArtWork ();
-		artWork.ArtWorkID = "";
-		artWork.ArtistID = "";
-		artWork.Name = "";
 
-	}
+
 
 	private bool hasID(){
-		return ArtWorkID != "";
+		return ArtWorkID != 0;
 	}
 	public byte[] ImageFile {
 		get {
 			return this.ImageFile;
 		}
-		set {
-			if(hasID()){
-				throw new IllegalOperationException("An image of an artwork can't be edited.");
-			}
-			ImageFile = value;
-		}
+
 	}
 
 	public API.ArtWork ArtWork {
@@ -86,26 +78,25 @@ public class ArtworkGUI : FileBrowserListener
 		}
 	}
 
-	public string ArtWorkID {
+	public int ArtWorkID {
 		get {
 			return this.artWork.ArtWorkID;
 		}
 
 	}
 
-	public string ArtistID {
+	public int ArtistID {
 		get {
 			return this.artWork.ArtistID;
 		}
-		set {
-			artWork.ArtistID = value;
-		}
+
 	}
 
 	public void upload ()
 	{
 		StartCoroutine (postArt ());
 	}
+	//Warning: still crashes Unity
 	//post the edited art 
 	IEnumerator postArt ()
 	{
@@ -115,11 +106,14 @@ public class ArtworkGUI : FileBrowserListener
 
 		if (!hasID()) {
 			//upload artwork image
-			
-			ac.uploadImage (Name, "", "", ImageFile, 
-			                ((response) => {
-				Debug.Log (response.Text);
-				artWork.ArtWorkID=response.Text;
+			string[] splitted = imagePathSource.Split(new char[]{'.'});
+			string mime = splitted[splitted.Length - 1];
+			splitted = imagePathSource.Split(new char[] { '/', '\\' });
+			string name = splitted[splitted.Length - 1];
+			ac.uploadImage (name, mime, imagePathSource, ImageFile, 
+			                ((artworkResponse) => {
+				//set id received from server
+				artWork.ArtWorkID=artworkResponse.ArtWorkID;
 				Debug.Log ("Upload was succesfull");}), 
 			                ((error) => {
 				throw new UploadFailedException("Failed to upload artwork image.");
@@ -139,10 +133,5 @@ public class ArtworkGUI : FileBrowserListener
 
 	}
 
-	public void copy (ArtworkGUI artToCopy)
-	{
-		artWork = artToCopy.ArtWork;
-		ImageFile = artToCopy.ImageFile;
 
-	}
 }

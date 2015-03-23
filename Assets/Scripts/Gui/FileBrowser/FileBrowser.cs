@@ -131,12 +131,11 @@ public class FileBrowser: GUIControl
 	private void addButton (string name, string fullName, GUIControl content, Type type, bool interactable)
 	{
 		//create a clone of the contents child
-		GUIControl buttonControl = GUIControl.init (content.getChild(0));
+		GUIControl buttonControl = content.addDynamicChild ();
 		Button button = buttonControl.GetComponent<Button> ();
 		button.interactable = interactable;
 		//change button label
 		button.GetComponentsInChildren<Text> () [0].text = name;
-		content.add (buttonControl);
 		string info = fullName;
 		button.onClick.AddListener (() => handleClick (info, type));
 
