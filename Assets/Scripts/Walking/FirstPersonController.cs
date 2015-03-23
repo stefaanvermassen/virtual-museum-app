@@ -57,14 +57,14 @@ public class FirstPersonController : MonoBehaviour {
 	public bool testMode = false;
 
 
-	public float verticalVelocity = 0;
+	float verticalVelocity = 0;
 	Vector3 startingPosition;
 	
 	CharacterController characterController;
 	public Camera monoCamera;
 	public MuseumDiveSensor stereoCameraController;
 
-	public bool started = false;
+	bool started = false;
 
 	/// <summary>
 	/// Initializes First Person Controller and gets necessary components.
@@ -220,5 +220,13 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	public void TestUpdate() {
 		if (testMode) Update ();
+	}
+
+	/// <summary>
+	/// Tests if the player's Start method has been called yet. For use in the test environment.
+	/// </summary>
+	/// <returns><c>true</c>, if Start method has been called, <c>false</c> otherwise.</returns>
+	public bool HasStarted() {
+		return started;
 	}
 }
