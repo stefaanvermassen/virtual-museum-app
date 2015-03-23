@@ -18,12 +18,12 @@ public class ArtRest : MonoBehaviour
 		ArtGUIInterface newArtCatalogItem;
 		content.removeAllChildren ();
 		ac.getAllArtworks (success: (response) => {
-			foreach(Hashtable child in response) {
-				ac.getArtwork(child["ArtWorkID"].ToString(), success:(texture) => {
-					newArtCatalogItem = new ArtGUIInterface (child ["ArtWorkID"].ToString(), child ["ArtistID"].ToString(), child ["Name"].ToString(), texture);
+			foreach(API.ArtWork child in response) {
+				ac.getArtwork(child.ArtWorkID.ToString(), success:(texture) => {
+					newArtCatalogItem = new ArtGUIInterface (child.ArtWorkID.ToString(), child.ArtistID.ToString(), child.Name, texture);
 					allArt.Add (newArtCatalogItem);
 					catalogItemFromGUIInterface (newArtCatalogItem,content);
-				}, error:(error) => {Debug.Log("An error occured while loading artwork with ID: " + child["ArtWorkID"]);});
+				}, error:(error) => {Debug.Log("An error occured while loading artwork with ID: " + child.ArtWorkID.ToString());});
 
 			}
 		},
@@ -40,13 +40,13 @@ public class ArtRest : MonoBehaviour
 	}
 	public void postArt(ArtGUIInterface art){
 		API.ArtWork artWork = new API.ArtWork () {
-			ArtWorkID = "1",
-			ArtistID = "1",
+			ArtWorkID = 1,
+			ArtistID = 1,
 			Name = "Feliciaan"
 		};
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		ac.updateArtWork (artWork, ((response) => {
-			Debug.Log ("Adding Artwork successfull");}), 
+			Debug.Log ("Updating Artwork successfull");}), 
 		                  ((error) => {
 			Debug.Log ("An error occured");}));
 	}
