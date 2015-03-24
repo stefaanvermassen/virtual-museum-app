@@ -13,7 +13,7 @@ public class ArtTest : MonoBehaviour {
         var user = ob.AddComponent<User>();
         UserData userData = new UserData(6, "Rudy");
         user.Load(userData);
-        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", user, new List<string>(), new List<string>());
+        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", user, new List<string>(), new List<string>(), null);
         var art = ob.AddComponent<Art>();
         art.Load(data);
 
@@ -24,6 +24,7 @@ public class ArtTest : MonoBehaviour {
         Assert.AreEqual(art.owner.name, user.name, "OwnerName should be " + user.name + " but it's " + art.owner.name);
         Assert.IsEmpty(art.tags, "Tags should be empty");
         Assert.IsEmpty(art.genres, "Genres should be empty");
+        Assert.IsNull(art.image, "Image should be null");
     }
 
     [Test]
@@ -33,7 +34,7 @@ public class ArtTest : MonoBehaviour {
         var user = ob.AddComponent<User>();
         UserData userData = new UserData(6, "Rudy");
         user.Load(userData);
-        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", user, new List<string>(), new List<string>());
+        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", user, new List<string>(), new List<string>(), null);
         var art = ob.AddComponent<Art>();
         art.Load(data);
 
@@ -59,5 +60,6 @@ public class ArtTest : MonoBehaviour {
         Assert.AreEqual(newData.Tags[0], tag, "Tag should be " + tag + " but it's " + newData.Tags[0]);
         Assert.AreEqual(newData.Genres[0], genre1, "Genre1 should be " + genre1 + " but it's " + newData.Genres[0]);
         Assert.AreEqual(newData.Genres[1], genre2, "Genre2 should be " + genre2 + " but it's " + newData.Genres[1]);
+        Assert.IsNull(art.image, "Image should be null");
     }
 }

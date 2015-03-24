@@ -11,6 +11,7 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
     public User owner;
     public List<string> tags = new List<string>();
     public List<string> genres = new List<string>();
+    public byte[] image { get; private set; }
 
     /// <summary>
     /// Create an ArtData for serialization.
@@ -18,7 +19,7 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
     /// <returns>The ArtData</returns>
     public ArtData Save()
     {
-        return new ArtData(ID, name, description, owner, tags, genres);
+        return new ArtData(ID, name, description, owner, tags, genres, image);
     }
 
     /// <summary>
@@ -33,5 +34,6 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
         owner = data.Owner;
         tags = data.Tags;
         genres = data.Genres;
+        image = data.Image;
     }
 }

@@ -10,8 +10,9 @@ public class ArtData : Data<Art> {
     public User Owner { get; private set; }
     public List<string> Tags { get; private set; }
     public List<string> Genres { get; private set; }
+    public byte[] Image { get; private set; }
 
-    public ArtData(int id, string name, string description, User owner, List<string> tags, List<string> genres)
+    public ArtData(int id, string name, string description, User owner, List<string> tags, List<string> genres, byte[] image)
     {
         ID = id;
         Name = name;
@@ -19,5 +20,6 @@ public class ArtData : Data<Art> {
         Owner = owner;
         Tags = tags;
         Genres = genres;
+        Image = image;
     }
 }
