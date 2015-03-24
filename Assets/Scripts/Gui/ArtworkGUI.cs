@@ -23,14 +23,14 @@ public class ArtworkGUI : FileBrowserListener
 	{
 		imagePathSource = fileBrowser.getSelectedFile ();
 		imageFile = File.ReadAllBytes (fileBrowser.getSelectedFile ());
-		update ();
+		updateGUI ();
 
 	}
 
-	public void update ()
+	public void updateGUI ()
 	{
 		//update properties
-		Name = nameInput.text;
+		nameInput.text=Name ;
 		//update image
 		if (imageFile != null) {
 			thumbNail.enabled = true;
@@ -41,12 +41,19 @@ public class ArtworkGUI : FileBrowserListener
 
 
 	}
+
+	public void readFromGUI(){
+		Name = nameInput.text;
+	}
 	public ArtworkGUI(){
 		artWork = new API.ArtWork ();
 	}
-	public void init(API.ArtWork artWork, byte[] ImageFile){
+	public void init(API.ArtWork artWork, byte[] imageFile){
+		Debug.Log (artWork.Name + " " + imageFile);
 		this.artWork = artWork;
+
 		this.imageFile = imageFile;
+		updateGUI ();
 	}
 
 
@@ -114,7 +121,7 @@ public class ArtworkGUI : FileBrowserListener
 			                ((artworkResponse) => {
 				//set id received from server
 				artWork.ArtWorkID=artworkResponse.ArtWorkID;
-				Debug.Log ("Upload was succesfull");}), 
+				Debug.Log ("Upload image was succesfull");}), 
 			                ((error) => {
 				throw new UploadFailedException("Failed to upload artwork image.");
 				}));
@@ -123,9 +130,9 @@ public class ArtworkGUI : FileBrowserListener
 
 		//once id present update art info
 		ac.updateArtWork (artWork, ((response) => {
-			Debug.Log ("Adding Artwork successfull");}), 
+			Debug.Log ("Update Artwork info successfull");}), 
 		                  ((error) => {
-			throw new UploadFailedException("Failed to upload artwork image.");
+			throw new UploadFailedException("Failed to update artwork info.");
 			}));
 
 

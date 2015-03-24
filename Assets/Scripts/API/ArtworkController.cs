@@ -141,7 +141,8 @@ namespace API
 	public class ArtWork {
 		public int ArtWorkID;
 		public int ArtistID;
-		public string Name;
+		//make sure string is not null
+		public string Name="";
 
 		public Dictionary<string, string> ToDictionary() {
 			Dictionary<string, string> dict = new Dictionary<string, string>();
