@@ -183,7 +183,6 @@ public class DrawController : MonoBehaviour {
         if (Vector3.Magnitude(anchorNormalWorld) < 0.5) return;
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
         var scale = 0.5f + 4*diff / Display.main.renderingWidth;
-        Debug.Log(diff);
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale);
     }
 }
