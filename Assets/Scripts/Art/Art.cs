@@ -4,7 +4,7 @@ using System.Collections;
 public class Art : MonoBehaviour, Storable<Art, ArtData>
 {
 
-    public int ID;
+    public int ID { get; private set; }
     public string name;
     public string description;
     public User owner;
