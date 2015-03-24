@@ -47,7 +47,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         foreach (var tileData in data.Tiles)
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         foreach (var artData in data.Art)
-            AddArt(artData.Art.ID, artData.X, artData.Y, artData.Z, artData.Orientation);
+            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
         foreach (var objectData in data.Objects)
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
         ownerID = data.OwnerID;
@@ -77,35 +77,31 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     }
 
     /// <summary>
-    /// Add art, only works when it is placed on a wall.
+    /// Adds an artwork with an exact position and rotation
     /// </summary>
     /// <param name="artID"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="z"></param>
-    /// <param name="orientation">0, 1, 2 or 3, decides direction of painting</param>
-    public void AddArt(int artID, int x, int y, int z, int orientation) {
-        if (ContainsTile(x, y, z) && (
-                    (orientation == 0 && !ContainsTile(x,y,z-1)) ||
-                    (orientation == 1 && !ContainsTile(x-1,y,z)) ||
-                    (orientation == 2 && !ContainsTile(x,y,z+1)) ||
-                    (orientation == 3 && !ContainsTile(x+1,y,z))
-                )
-            ) {
-            RemoveArt(x, y, z);
-            MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
-            Art a = new Art();
-            a.ID = artID;
-
-            ma.x = x;
-            ma.y = y;
-            ma.z = z;
-            ma.orientation = orientation;
-            ma.material = frontMaterial;
-            ma.texture = debugTexture;
-            ma.art = a;
-            art.Add(ma);
-        }
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale) {
+        var normal = Quaternion.Euler(rotation) * Vector3.forward;
+        int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+        int y = 0;
+        int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+        RemoveArt(x, y, z);
+        MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
+        Art a = new Art();
+        a.ID = artID;
+        
+        ma.position = position;
+        ma.rotation = rotation;
+        ma.material = frontMaterial;
+        ma.texture = debugTexture;
+        ma.art = a;
+        ma.tileX = x;
+        ma.tileY = y;
+        ma.tileZ = z;
+        ma.scale = scale;
+        art.Add(ma);
     }
 
     /// <summary></summary>
@@ -115,7 +111,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>True if the coordinate contains art</returns>
     public bool ContainsArt(int x, int y, int z) {
         foreach(MuseumArt a in art){
-            if (a.x == x && a.y == y && a.z == z) return true;
+            if (a.tileX == x && a.tileZ == z) return true;
         }
         return false;
     }
@@ -129,7 +125,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>Art at the coordinate, or null when there is none.</returns>
     public MuseumArt GetArt(int x, int y, int z) {
         foreach (MuseumArt a in art) {
-            if (a.x == x && a.y == y && a.z == z) return a;
+            if (a.tileX == x && a.tileZ == z) return a;
         }
         return null;
     }
@@ -143,7 +139,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public void RemoveArt(int x, int y, int z) {
         MuseumArt toRemove = null;
         foreach (MuseumArt a in art) {
-            if (a.x == x && a.y == y && a.z == z) {
+            if (a.tileX == x && a.tileZ == z) {
                 toRemove = a;
                 break;
             }
