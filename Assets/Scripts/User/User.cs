@@ -3,7 +3,7 @@ using System.Collections;
 
 public class User : MonoBehaviour, Storable<User, UserData> {
 
-    public int ID;
+    private int ID;
     public string name;
 
     /// <summary>
@@ -23,5 +23,14 @@ public class User : MonoBehaviour, Storable<User, UserData> {
     {
         ID = data.ID;
         name = data.Name;
+    }
+
+    /// <summary>
+    /// Returns the id, no setter as we don't want the id of a user to change
+    /// </summary>
+    /// <returns>The id of the user</returns>
+    public int getID()
+    {
+        return ID;
     }
 }
