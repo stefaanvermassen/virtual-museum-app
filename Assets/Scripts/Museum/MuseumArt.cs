@@ -8,7 +8,8 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
 
     public int x, y, z;
     public int orientation;
-    public int artID;
+
+    public Art art;
 
     public Texture2D texture;
     public Material material;
@@ -16,15 +17,18 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
     private GameObject ob;
 
     public MuseumArtData Save(){
-        return new MuseumArtData(artID, x, y, z, orientation);
+        var artData = art.Save();
+        return new MuseumArtData(artData, x, y, z, orientation);
     }
 
     public void Load(MuseumArtData data) {
-        artID = data.ArtID;
+        art.Load(data.Art);
         x = data.X;
         y = data.Y;
         z = data.Z;
-        orientation = data.Orientation;
+        orientation = data.Orientation ;
+        //texture = new Texture2D(1, 1);
+        //texture.LoadImage(art.image);
         Start();
     }
 

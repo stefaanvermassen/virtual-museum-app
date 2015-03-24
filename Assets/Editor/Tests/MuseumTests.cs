@@ -282,7 +282,7 @@ public class MuseumTests {
         Assert.AreEqual(museum.GetTile(1, 0, 1).ceilingStyle, 6);
         Assert.AreEqual(museum.GetObject(0, 0, 0).objectID, 123);
         Assert.AreEqual(museum.GetObject(0, 0, 0).angle, 0.5f);
-        Assert.AreEqual(museum.GetArt(1, 0, 1).artID, 456);
+        Assert.AreEqual(museum.GetArt(1, 0, 1).art.ID, 456);
         Assert.AreEqual(museum.GetArt(1, 0, 1).orientation, 3);
         DestroyEverything();
     }

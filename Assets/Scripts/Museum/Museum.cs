@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using API;
 
 /// <summary>
 /// Internal museum representation. This can load and save museum 
@@ -46,7 +47,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         foreach (var tileData in data.Tiles)
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         foreach (var artData in data.Art)
-            AddArt(artData.ArtID, artData.X, artData.Y, artData.Z, artData.Orientation);
+            AddArt(artData.Art.ID, artData.X, artData.Y, artData.Z, artData.Orientation);
         foreach (var objectData in data.Objects)
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
         ownerID = data.OwnerID;
@@ -92,16 +93,18 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
                 )
             ) {
             RemoveArt(x, y, z);
-            GameObject o = new GameObject();
-            MuseumArt a = o.AddComponent<MuseumArt>();
-            a.x = x;
-            a.y = y;
-            a.z = z;
-            a.orientation = orientation;
-            a.material = frontMaterial;
-            a.texture = debugTexture;
-            a.artID = artID;
-            art.Add(a);
+            MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
+            Art a = new Art();
+            a.ID = artID;
+
+            ma.x = x;
+            ma.y = y;
+            ma.z = z;
+            ma.orientation = orientation;
+            ma.material = frontMaterial;
+            ma.texture = debugTexture;
+            ma.art = a;
+            art.Add(ma);
         }
     }
 

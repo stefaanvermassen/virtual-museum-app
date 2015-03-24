@@ -10,11 +10,11 @@ public class ArtTest : MonoBehaviour {
     public void LoadArtInformation_LoadingArtData_ArtDataLoaded()
     {
         var ob = new GameObject();
-        var user = ob.AddComponent<User>();
+        var user = new User();
         UserData userData = new UserData(6, "Rudy");
         user.Load(userData);
-        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", user, new List<string>(), new List<string>(), null);
-        var art = ob.AddComponent<Art>();
+        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", userData, new List<string>(), new List<string>(), null);
+        var art = new Art();
         art.Load(data);
 
         Assert.AreEqual(art.ID, data.ID, "ID should be " + data.ID + " but it's " + art.ID);
@@ -31,11 +31,11 @@ public class ArtTest : MonoBehaviour {
     public void SaveArtInformation_SaveArtData_ArtDataSaved()
     {
         var ob = new GameObject();
-        var user = ob.AddComponent<User>();
+        var user = new User();
         UserData userData = new UserData(6, "Rudy");
         user.Load(userData);
-        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", user, new List<string>(), new List<string>(), null);
-        var art = ob.AddComponent<Art>();
+        ArtData data = new ArtData(5, "Tekening", "Mooie tekening van Rudy.", userData, new List<string>(), new List<string>(), null);
+        var art = new Art();
         art.Load(data);
 
         string tag = "Kabouter Wesley";
@@ -54,7 +54,7 @@ public class ArtTest : MonoBehaviour {
         Assert.AreEqual(newName, newData.Name, "Name should be " + newName + " but it's " + newData.Name);
         Assert.AreEqual(art.name, newData.Name, "Description should be " + art.description + " but it's " + newData.Description);
         Assert.AreEqual(newData.Owner.ID, user.ID, "UserID should be " + user.ID + " but it's " + newData.Owner.ID);
-        Assert.AreEqual(newData.Owner.name, user.name, "OwnerName should be " + user.name + " but it's " + newData.Owner.name);
+        Assert.AreEqual(newData.Owner.Name, user.name, "OwnerName should be " + user.name + " but it's " + newData.Owner.Name);
         Assert.NotNull(art.tags, "Tags should not be null");
         Assert.NotNull(art.genres, "Genres should not be null");
         Assert.AreEqual(newData.Tags[0], tag, "Tag should be " + tag + " but it's " + newData.Tags[0]);
