@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Art : MonoBehaviour, Storable<Art, ArtData>
 {
@@ -8,6 +9,8 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
     public string name;
     public string description;
     public User owner;
+    public List<string> tags = new List<string>();
+    public List<string> genres = new List<string>();
 
     /// <summary>
     /// Create an ArtData for serialization.
@@ -15,7 +18,7 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
     /// <returns>The ArtData</returns>
     public ArtData Save()
     {
-        return new ArtData(ID, name, description, owner);
+        return new ArtData(ID, name, description, owner, tags, genres);
     }
 
     /// <summary>
@@ -28,5 +31,7 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
         name = data.Name;
         description = data.Description;
         owner = data.Owner;
+        tags = data.Tags;
+        genres = data.Genres;
     }
 }
