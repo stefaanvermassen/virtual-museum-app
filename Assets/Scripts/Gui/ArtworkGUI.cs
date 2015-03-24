@@ -81,7 +81,7 @@ public class ArtworkGUI : FileBrowserListener
 
 	public byte[] ImageFile {
 		get {
-			return this.ImageFile;
+			return this.imageFile;
 		}
 
 	}
@@ -98,7 +98,7 @@ public class ArtworkGUI : FileBrowserListener
 			return this.artWork.Name;
 		}
 		set {
-			artWork.Name = value;
+			this.artWork.Name = value;
 		}
 	}
 
@@ -118,6 +118,14 @@ public class ArtworkGUI : FileBrowserListener
 
 	public void upload ()
 	{
+		if (Name == "" ) {
+			Debug.Log("Empty name not allowed");
+			return;
+		}
+		if (imageFile == null || imagePathSource=="" || imagePathSource==null) {
+			Debug.Log("No image selected.");
+			return;
+		}
 		StartCoroutine (postArt ());
 	}
 	//Warning: still crashes Unity
@@ -134,19 +142,20 @@ public class ArtworkGUI : FileBrowserListener
 			string mime = splitted [splitted.Length - 1];
 			splitted = imagePathSource.Split (new char[] { '/', '\\' });
 			string name = splitted [splitted.Length - 1];
-			ac.uploadImage (name, mime, imagePathSource, ImageFile, 
+			ac.uploadImage (name, mime, imagePathSource, this.imageFile, 
 			                ((artworkResponse) => {
 				//set id received from server
-				artWork.ArtWorkID = artworkResponse.ArtWorkID;
+				Debug.Log("receivedId "+artworkResponse.ArtWorkID);
+				this.artWork = artworkResponse;
 				Debug.Log ("Upload image was succesfull");}), 
 			                ((error) => {
 				throw new UploadFailedException ("Failed to upload artwork image.");
 			}));
 
 		} 
-
+		Debug.Log("to send name "+Name);
 		//once id present update art info
-		ac.updateArtWork (ArtWork, ((response) => {
+		ac.updateArtWork (this.artWork, ((response) => {
 			Debug.Log ("Update Artwork info successfull");}), 
 		                  ((error) => {
 			throw new UploadFailedException ("Failed to update artwork info.");
