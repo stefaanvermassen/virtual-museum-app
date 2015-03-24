@@ -35,7 +35,7 @@ public class ArtworkGUITests
 	[Test]
 	public void ChangingArtworkInformation_ChangingArtworkdName_NameChanged() {
 		GameObject ob = new GameObject();
-		ArtworkGUI artwork = ob.AddComponent<ArtworkGUI>();
+		ArtworkData artwork = ob.AddComponent<ArtworkData>();
 		for (int i = 0; i < TEST_CASES; i++) {
 			var name = RandomString(1, 100);
 			artwork.Name = name;

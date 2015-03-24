@@ -39,13 +39,13 @@ public class ArtRest : MonoBehaviour
 		//add to content of catalog
 		content.add (item);
 		//update UI elements
-		item.GetComponent<ArtworkGUI> ().updateGUI ();
+		item.GetComponent<ArtworkData> ().updateGUI ();
 	}
 	
 	public void postArt (GUIControl content)
 	{
 		for (int i=0; i<content.transform.childCount; i++) {
-			content.getChild (i).GetComponent<ArtworkGUI> ().upload ();
+			content.getChild (i).GetComponent<ArtworkData> ().upload ();
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class ArtRest : MonoBehaviour
 		//add new item to catalog
 		GUIControl item = content.addDynamicChild ();
 		//copy info in item
-		item.GetComponent<ArtworkGUI> ().init (art,texture);
+		item.GetComponent<ArtworkData> ().init (art,texture);
 
 		
 	}

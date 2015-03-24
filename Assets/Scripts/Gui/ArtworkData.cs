@@ -5,7 +5,7 @@ using System.IO;
 using AssemblyCSharp;
 
 //class responsible for synchronizing user input data and local data
-public class ArtworkGUI : FileBrowserListener
+public class ArtworkData : FileBrowserListener
 {
 
 	//GUI fields
@@ -52,7 +52,7 @@ public class ArtworkGUI : FileBrowserListener
 		Name = nameInput.text;
 	}
 
-	public ArtworkGUI ()
+	public ArtworkData ()
 	{
 		artWork = new API.ArtWork ();
 	}
@@ -134,7 +134,6 @@ public class ArtworkGUI : FileBrowserListener
 	{
 		//check if ID present
 		API.ArtworkController ac = API.ArtworkController.Instance;
-
 		Debug.Log ("tesete" + artWork.Name + " " + ArtWorkID);
 		if (!hasID ()) {
 			//upload artwork image
@@ -142,24 +141,34 @@ public class ArtworkGUI : FileBrowserListener
 			string mime = splitted [splitted.Length - 1];
 			splitted = imagePathSource.Split (new char[] { '/', '\\' });
 			string name = splitted [splitted.Length - 1];
-			ac.uploadImage (name, mime, imagePathSource, this.imageFile, 
+			HTTP.Request request= ac.uploadImage (name, mime, imagePathSource, this.imageFile, 
 			                ((artworkResponse) => {
 				//set id received from server
-				Debug.Log("receivedId "+artworkResponse.ArtWorkID);
-				this.artWork = artworkResponse;
+				Debug.Log ("receivedId " + artworkResponse.ArtWorkID);
+				//only save arwork id
+				this.artWork.ArtWorkID = artworkResponse.ArtWorkID;
+				//upload new artwork info in closure
+
 				Debug.Log ("Upload image was succesfull");}), 
 			                ((error) => {
 				throw new UploadFailedException ("Failed to upload artwork image.");
 			}));
+			//wait for image to be uploaded
+			while (!request.isDone){
+				//wait
+				//TODO does not work
+			}
 
 		} 
-		Debug.Log("to send name "+Name);
-		//once id present update art info
-		ac.updateArtWork (this.artWork, ((response) => {
-			Debug.Log ("Update Artwork info successfull");}), 
-		                  ((error) => {
-			throw new UploadFailedException ("Failed to update artwork info.");
-		}));
+			Debug.Log("to send name "+Name);
+			//once id present update art info
+			ac.updateArtWork (this.artWork, ((response) => {
+				Debug.Log ("Update Artwork info successfull");}), 
+			                  ((error) => {
+				throw new UploadFailedException ("Failed to update artwork info.");
+			}));
+
+
 
 
 		yield return null;
