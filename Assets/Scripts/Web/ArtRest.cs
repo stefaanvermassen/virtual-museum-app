@@ -15,10 +15,11 @@ public class ArtRest : MonoBehaviour
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		ac.getAllArtworks (success: (response) => {
 			foreach (API.ArtWork child in response) {
-				ac.getArtwork (child.ArtWorkID.ToString (), success: (texture) => {
-					Debug.Log (child.Name);
-
-					addArtToCatalog (child,texture, content);
+				//we save the child, because else it is overwwritten in the loval scope of the closure
+				var artwork = child;
+				ac.getArtwork (artwork.ArtWorkID.ToString(), success: (texture) => {
+					//the id is differen between th 2 calls
+					addArtToCatalog (artwork,texture, content);
 				}, error: (error) => {
 					Debug.Log ("An error occured while loading artwork with ID: " + child.ArtWorkID.ToString ());});
 				

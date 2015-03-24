@@ -3,17 +3,22 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 using AssemblyCSharp;
+
 //class responsible for synchronizing user input data and local data
 public class ArtworkGUI : FileBrowserListener
 {
 
-	private API.ArtWork artWork;
+	//GUI fields
 	public InputField nameInput;
+	public InputField artistInput;
 	public Image thumbNail;
+
+	//internal values fields
+	private API.ArtWork artWork;
+
 	//TODO
 	//not input field with ID but just the artistID of the current user
 	//set load image button to non interactable if an image binary is present
-	public InputField artistInput;
 
 	//upload image fields
 	private string imagePathSource;
@@ -30,7 +35,7 @@ public class ArtworkGUI : FileBrowserListener
 	public void updateGUI ()
 	{
 		//update properties
-		nameInput.text=Name ;
+		nameInput.text = Name;
 		//update image
 		if (imageFile != null) {
 			thumbNail.enabled = true;
@@ -42,26 +47,38 @@ public class ArtworkGUI : FileBrowserListener
 
 	}
 
-	public void readFromGUI(){
+	public void readFromGUI ()
+	{
 		Name = nameInput.text;
 	}
-	public ArtworkGUI(){
+
+	public ArtworkGUI ()
+	{
 		artWork = new API.ArtWork ();
 	}
-	public void init(API.ArtWork artWork, byte[] imageFile){
+
+	public void init (API.ArtWork artWork, byte[] imageFile)
+	{
 		Debug.Log (artWork.Name + " " + imageFile);
-		this.artWork = artWork;
+		copyArtWork (artWork);
 
 		this.imageFile = imageFile;
 		updateGUI ();
 	}
 
+	private void copyArtWork (API.ArtWork artWork)
+	{
+		this.artWork = new API.ArtWork ();
+		this.artWork.ArtWorkID = artWork.ArtWorkID;
+		this.artWork.Name = artWork.Name;
+		this.artWork.ArtistID = artWork.ArtistID;
+	}
 
-
-
-	private bool hasID(){
+	private bool hasID ()
+	{
 		return ArtWorkID != 0;
 	}
+
 	public byte[] ImageFile {
 		get {
 			return this.ImageFile;
@@ -110,30 +127,30 @@ public class ArtworkGUI : FileBrowserListener
 		//check if ID present
 		API.ArtworkController ac = API.ArtworkController.Instance;
 
-
-		if (!hasID()) {
+		Debug.Log ("tesete" + artWork.Name + " " + ArtWorkID);
+		if (!hasID ()) {
 			//upload artwork image
-			string[] splitted = imagePathSource.Split(new char[]{'.'});
-			string mime = splitted[splitted.Length - 1];
-			splitted = imagePathSource.Split(new char[] { '/', '\\' });
-			string name = splitted[splitted.Length - 1];
+			string[] splitted = imagePathSource.Split (new char[]{'.'});
+			string mime = splitted [splitted.Length - 1];
+			splitted = imagePathSource.Split (new char[] { '/', '\\' });
+			string name = splitted [splitted.Length - 1];
 			ac.uploadImage (name, mime, imagePathSource, ImageFile, 
 			                ((artworkResponse) => {
 				//set id received from server
-				artWork.ArtWorkID=artworkResponse.ArtWorkID;
+				artWork.ArtWorkID = artworkResponse.ArtWorkID;
 				Debug.Log ("Upload image was succesfull");}), 
 			                ((error) => {
-				throw new UploadFailedException("Failed to upload artwork image.");
-				}));
+				throw new UploadFailedException ("Failed to upload artwork image.");
+			}));
 
 		} 
 
 		//once id present update art info
-		ac.updateArtWork (artWork, ((response) => {
+		ac.updateArtWork (ArtWork, ((response) => {
 			Debug.Log ("Update Artwork info successfull");}), 
 		                  ((error) => {
-			throw new UploadFailedException("Failed to update artwork info.");
-			}));
+			throw new UploadFailedException ("Failed to update artwork info.");
+		}));
 
 
 		yield return null;
