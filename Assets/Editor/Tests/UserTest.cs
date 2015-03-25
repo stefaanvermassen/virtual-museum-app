@@ -3,7 +3,7 @@ using System.Collections;
 using NUnit.Framework;
 
 [TestFixture]
-public class UserTest : MonoBehaviour {
+public class UserTest {
 
     [Test]
     public void LoadUserInformation_LoadingUserData_UserDataLoaded()
