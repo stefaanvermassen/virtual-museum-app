@@ -33,6 +33,20 @@ namespace API
 		}
 
 		/// <summary>
+		/// Gets the artwork.
+		/// </summary>
+		/// <returns>The artwork.</returns>
+		/// <param name="id">Identifier.</param>
+		/// <param name="success">Success.</param>
+		/// <param name="error">Error.</param>
+		public HTTP.Request getArtwork(string id, Action<ArtWork> success = null, Action<API.API_Error> error = null) {
+			return get (BASE_URL + ARTWORK + "/" + id, ((response) => {
+				if(success != null) {
+					success(ArtWork.FromDictionary(response.Object));
+				}}), error);
+		}
+
+		/// <summary>
 		/// Gets all artworks by artist.
 		/// </summary>
 		/// <returns>The all artworks by artist.</returns>
@@ -85,14 +99,14 @@ namespace API
 		}
 
 		/// <summary>
-		/// Gets the artwork.
+		/// Gets the artwork data.
 		/// </summary>
-		/// <returns>The artwork.</returns>
+		/// <returns>The artwork data.</returns>
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getArtwork(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + ARTWORK + "/" + id, ((response) => {
+		public HTTP.Request getArtworkData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
+			return get (BASE_URL + ARTWORK + "/" + id + "/data", ((response) => {
 				if(success != null) {
 					success(response.bytes);
 				}}), error);
