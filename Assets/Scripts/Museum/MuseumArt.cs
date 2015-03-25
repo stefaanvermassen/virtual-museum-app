@@ -18,6 +18,7 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
     public Material material;
 
     private GameObject ob;
+    private MuseumPlaque plaque;
 
     public MuseumArtData Save(){
         var artData = art.Save();
@@ -49,12 +50,19 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         tileX = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
         tileY = 0;
         tileZ = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+        plaque = new GameObject().AddComponent<MuseumPlaque>();
+        plaque.size = new Vector2(2, 1);
+        plaque.transform.localScale = new Vector3(0.2f, 0.2f, 2f);
+        plaque.plaqueText = art.description;
+        plaque.transform.localPosition = position - new Vector3(0, 0.2f + scale * 0.25f * texture.height / texture.width, 0);
+        plaque.transform.Rotate(rotation);
 	}
 
     /// <summary>
     /// Should be called before destroying this GameObject.
     /// </summary>
     public void Remove() {
+        if(plaque != null) Util.Destroy(plaque.gameObject);
 		Util.Destroy(ob);
     }
 }

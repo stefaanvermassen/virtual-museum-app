@@ -91,6 +91,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
         Art a = new Art();
         a.ID = artID;
+        a.description = "Dit is een helehoop informatie over het hierboven hangende supercoole kunstwerk. \nNewline FTW!";
         
         ma.position = position;
         ma.rotation = rotation;
