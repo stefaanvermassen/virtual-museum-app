@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ArtData : Data<Art> {
+public class ArtData : Data<Art>
+{
 
     public int ID { get; private set; }
     public string Name { get; private set; }
