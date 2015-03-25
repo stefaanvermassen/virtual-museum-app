@@ -29,7 +29,7 @@ namespace API {
 		/// </summary>
 		/// <returns>The access token.</returns>
 		public string getAccessToken() {
-			return loggedInUser.AccessToken.AccessToken;
+			return loggedInUser.AccessToken().AccessToken();
 		}
 
 		public void loginUser(User user) {
@@ -41,27 +41,31 @@ namespace API {
 	{
 		private string Name;
 
-		public Token AccessToken { get; }
+		private Token accessToken;
 		private int CurrentArtist = 1;
 
 		public User(string name, Token accessToken) {
 			Name = name;
-			this.AccessToken = accessToken;
+			this.accessToken = accessToken;
 		}
 		
 		public void clearToken() {
-			AccessToken = null;
+			accessToken = null;
+		}
+
+		public Token AccessToken() {
+			return accessToken;
 		}
 	}
 
 	public class Token
 	{
-		public string AccessToken{get;};
-		DateTime expires;
+		private string accessToken;
+		private DateTime expires;
 
 		private Token(string token, DateTime expires)
 		{
-			this.AccessToken = token;
+			this.accessToken = token;
 			this.expires = expires;
 		}
 		public static Token createFromDictionary(Hashtable hash) 
@@ -72,8 +76,12 @@ namespace API {
 		public bool needsRefreshing() {
 			//TODO: implement
 			var newExpireDate = expires;
-			newExpireDate.AddDays (-5);
+			newExpireDate.AddDays (-5.0);
 			return  newExpireDate < DateTime.Now;
+		}
+
+		public string AccessToken() {
+			return accessToken;
 		}
 	}
 }

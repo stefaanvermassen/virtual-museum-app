@@ -43,7 +43,7 @@ namespace API {
 			     new string[] { "password", username, password }, 
 			((response) => {
 				Token token = Token.createFromDictionary(response.Object);
-				User user = new User((string)response.Object["userName"]);
+				User user = new User((string)response.Object["userName"], null);
 				if (succes != null) {
 					succes(user);
 				}

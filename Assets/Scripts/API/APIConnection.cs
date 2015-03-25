@@ -129,7 +129,7 @@ namespace API {
 		private HTTP.Request sendRequest(HTTP.Request sendRequest, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) 
 		{
 			if (authToken) {
-				sendRequest.AddHeader("Authorization", "Bearer " + UserController.Instance.user.accessToken);
+				sendRequest.AddHeader("Authorization", "Bearer " + SessionManager.Instance.getAccessToken());
 			}
 
 			sendRequest.Send ((request) => {
