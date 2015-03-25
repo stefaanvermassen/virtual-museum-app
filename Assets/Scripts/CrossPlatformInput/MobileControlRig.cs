@@ -10,6 +10,8 @@ namespace UnityStandardAssets.CrossPlatformInput
     [ExecuteInEditMode]
     public class MobileControlRig : MonoBehaviour
     {
+
+		public bool testMode = false;
         // this script enables or disables the child objects of a control rig
         // depending on whether the USE_MOBILE_INPUT define is declared.
 
@@ -41,7 +43,7 @@ namespace UnityStandardAssets.CrossPlatformInput
 
         private void Update()
         {
-            CheckEnableControlRig();
+            if(!testMode) CheckEnableControlRig();
         }
 #endif
 
@@ -56,7 +58,7 @@ namespace UnityStandardAssets.CrossPlatformInput
         }
 
 
-        private void EnableControlRig(bool enabled)
+        public void EnableControlRig(bool enabled)
         {
             foreach (Transform t in transform)
             {
