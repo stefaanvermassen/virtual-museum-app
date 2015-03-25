@@ -73,7 +73,17 @@ public class Storage : MonoBehaviour {
     }
 
     /// <summary>
-    /// Method to load a Storable object from storage
+    /// Method to load a storable object from storage which uses integers for identification
+    /// </summary>
+    /// <param name="st">Object where data will be loaded to</param>
+    /// <param name="identification">idintifier</param>
+    public void Load<T>(Savable<T, Data<T>> st, int identification)
+    {
+        Load<T>(st, ""+identification);
+    }
+
+    /// <summary>
+    /// Method to load a Storable object from storage which uses strings for identification
     /// </summary>
     /// <param name="st">The object where data will be loaded to.</param>
     /// <param name="identification">unique string identification of the object</param>
@@ -158,6 +168,21 @@ public class Storage : MonoBehaviour {
 
         }
     }
+
+
+    /// <summary>
+    /// Method that reads data from storage and loads it into an object, this method is only used for objects that are not monobehaviors
+    /// </summary>
+    /// 
+    /// <param name="data">Object where data should be loaded to (this is needed to get the type)</param>
+    /// <param name="identification">unique string identification of the object (eg: "objectX:id:01")</param>
+    /// <returns>object with the loaded data in its fields</returns>
+    public SavableData Load(SavableData data, int identification)
+    {
+        return Load(data, "" + identification);
+    }
+
+
     /// <summary>
     /// Method that reads data from storage and loads it into an object, this method is only used for objects that are not monobehaviors
     /// </summary>
