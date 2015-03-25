@@ -84,6 +84,9 @@ namespace API
 				}}), error);
 		}
 
+<<<<<<< HEAD
+		public HTTP.Request getArtwork(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
+=======
 		/// <summary>
 		/// Gets the artwork.
 		/// </summary>
@@ -91,7 +94,8 @@ namespace API
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getArtwork(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
+		public HTTP.Request getArtwork(string id, Action<Texture2D> success = null, Action<API.API_Error> error = null) {
+>>>>>>> master
 			return get (BASE_URL + ARTWORK + "/" + id, ((response) => {
 				if(success != null) {
 					success(response.bytes);
@@ -141,8 +145,7 @@ namespace API
 	public class ArtWork {
 		public int ArtWorkID;
 		public int ArtistID;
-		//make sure string is not null
-		public string Name="";
+		public string Name;
 
 		public Dictionary<string, string> ToDictionary() {
 			Dictionary<string, string> dict = new Dictionary<string, string>();

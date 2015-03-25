@@ -7,9 +7,9 @@ using System.Collections;
 /// </summary>
 public class GUIControl : MonoBehaviour
 {
-
+	public GUIControl dynamicChild;
 	//Todo
-	////create prefab for: , radio buttons, 
+	//add field for dynamic child, wich will be used to populate a gui control that has a dynamic amount of children eg file browser , catalog,..., 
 	public enum types
 	{
 		Button,
@@ -17,7 +17,16 @@ public class GUIControl : MonoBehaviour
 		Label,
 		Panel,
 		CatalogItem,
-		Catalog
+		Catalog,
+		FileBrowser
+	}
+	void Start () {
+		//dynamic child is edited in Unity editor but not shown
+		if (dynamicChild != null) {
+			//detach dynmic child, because else it will be removed if children are removed
+			transform.DetachChildren();
+			dynamicChild.close ();
+		}
 	}
 
 	//both show and hide can be overriden to add extra close and open logic
@@ -30,14 +39,31 @@ public class GUIControl : MonoBehaviour
 	public virtual void open ()
 	{
 		gameObject.SetActive (true);
-		Debug.Log ("opeetet");
+	}
+	public void flipCloseOpen(){
+		if (isOpen ()) {
+			close ();
+		} else {
+			open ();
+		}
 	}
 	//add gui control to children
 	public void add (GUIControl control)
 	{
-		control.gameObject.transform.SetParent (this.gameObject.transform);
+		control.gameObject.transform.SetParent (this.gameObject.transform,false);
 		//when an transform is added to it's parent it is scaled, for the sake of layout, performance and graphics all GUIControls are scale 1
 		control.normalise ();
+	}
+	public GUIControl addDynamicChild(){
+		if (dynamicChild != null) {
+			GUIControl newDynamicChild = GUIControl.init (dynamicChild);
+
+			newDynamicChild.open();
+			this.add (newDynamicChild);
+
+			return newDynamicChild;
+		}
+		return null;
 	}
 	//return an instantiatec prefab
 //	//Transform.SetParent method with the worldPositionStays parameter set to false
@@ -112,12 +138,16 @@ public class GUIControl : MonoBehaviour
 		return this.transform.GetChild (index).GetComponent<GUIControl> ();
 	}
 	//on initialisation sometimes a gameobject is scaled
+	//or even rotated if working with multiple camera's
 	public void normalise ()
 	{
 		transform.localScale = Vector3.one;
+		transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+
 	}
 
-	public bool isHidden ()
+	public bool isOpen ()
 	{
 		return this.gameObject.activeSelf;
 	}
