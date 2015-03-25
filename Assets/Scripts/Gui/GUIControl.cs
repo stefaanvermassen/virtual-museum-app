@@ -40,6 +40,13 @@ public class GUIControl : MonoBehaviour
 	{
 		gameObject.SetActive (true);
 	}
+	public void flipCloseOpen(){
+		if (isOpen ()) {
+			close ();
+		} else {
+			open ();
+		}
+	}
 	//add gui control to children
 	public void add (GUIControl control)
 	{
@@ -131,12 +138,16 @@ public class GUIControl : MonoBehaviour
 		return this.transform.GetChild (index).GetComponent<GUIControl> ();
 	}
 	//on initialisation sometimes a gameobject is scaled
+	//or even rotated if working with multiple camera's
 	public void normalise ()
 	{
 		transform.localScale = Vector3.one;
+		transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+
 	}
 
-	public bool isHidden ()
+	public bool isOpen ()
 	{
 		return this.gameObject.activeSelf;
 	}
