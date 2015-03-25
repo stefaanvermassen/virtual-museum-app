@@ -153,17 +153,6 @@ public class Storage : MonoBehaviour {
         throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// This method saves a file to a path, this will be used to save generated QR codes the user wants to print.
-    /// </summary>
-    /// <param name="f">File to be saved</param>
-    /// <param name="path">Path where the file should be saved</param>
-    public void SaveFile(File f, string path)
-    {
-        //TODO
-        throw new NotImplementedException();
-    }
-
     /* ******************
      * Storage Settings *
      *********************/
