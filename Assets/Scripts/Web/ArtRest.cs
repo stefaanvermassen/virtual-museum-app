@@ -17,7 +17,7 @@ public class ArtRest : MonoBehaviour
 			foreach (API.ArtWork child in response) {
 				//we save the child, because else it is overwwritten in the loval scope of the closure
 				var artwork = child;
-				ac.getArtwork (artwork.ArtWorkID.ToString(), success: (texture) => {
+				ac.getArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
 					//the id is differen between th 2 calls
 					addArtToCatalog (artwork,texture, content);
 				}, error: (error) => {
