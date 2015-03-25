@@ -94,7 +94,7 @@ public class GUIControl : MonoBehaviour
 	//show guicontrol on top of all siblings
 	public void onTop ()
 	{
-		this.gameObject.transform.SetSiblingIndex (0);
+		this.gameObject.transform.SetSiblingIndex (0);//qsmdjkfsjqdfi
 	}
 
 	public void setRelativePosition (float x, float y)
