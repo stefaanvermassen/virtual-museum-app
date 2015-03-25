@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using API;
 
 /// <summary>
@@ -53,6 +54,34 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
+    }
+
+
+    public string getFolder()
+    {
+        return "museums";
+    }
+
+    public string getFileName()
+    {
+        return museumName.Replace(' ','_');
+    }
+
+    public string getExtension()
+    {
+        return "mus";
+    }
+
+    void SaveRemote()
+    {   //TODO
+    }
+    void LoadRemote(string identifier)
+    {   //TODO
+    }
+    DateTime LastModified(string identifier)
+    {
+        //TODO
+        return new DateTime();
     }
 
     /// <summary>
@@ -315,4 +344,10 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         }
         return null;
     }
+
+	
+	void Update () {
+	
+	}
+
 }

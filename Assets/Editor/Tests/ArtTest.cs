@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 
 [TestFixture]
-public class ArtTest : MonoBehaviour {
+public class ArtTest {
 
     [Test]
     public void LoadArtInformation_LoadingArtData_ArtDataLoaded()
