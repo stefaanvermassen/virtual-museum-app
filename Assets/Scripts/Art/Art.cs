@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Art : MonoBehaviour, Storable<Art, ArtData>
+public class Art : Storable<Art, ArtData>
 {
 
-    public int ID { get; private set; }
+    public int ID { get; set; }
     public string name;
     public string description;
     public User owner;
@@ -13,13 +13,18 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
     public List<string> genres = new List<string>();
     public byte[] image { get; private set; }
 
+    public Art() {
+        owner = new User();
+    }
+
     /// <summary>
     /// Create an ArtData for serialization.
     /// </summary>
     /// <returns>The ArtData</returns>
     public ArtData Save()
     {
-        return new ArtData(ID, name, description, owner, tags, genres, image);
+        var userData = owner.Save();
+        return new ArtData(ID, name, description, userData, tags, genres, image);
     }
 
     /// <summary>
@@ -31,7 +36,7 @@ public class Art : MonoBehaviour, Storable<Art, ArtData>
         ID = data.ID;
         name = data.Name;
         description = data.Description;
-        owner = data.Owner;
+        owner.Load(data.Owner);
         tags = data.Tags;
         genres = data.Genres;
         image = data.Image;
