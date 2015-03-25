@@ -3,14 +3,14 @@ using System.Collections;
 using NUnit.Framework;
 
 [TestFixture]
-public class UserTest : MonoBehaviour {
+public class UserTest {
 
     [Test]
     public void LoadUserInformation_LoadingUserData_UserDataLoaded()
     {
         UserData data = new UserData(5, "Bert");
         var ob = new GameObject();
-        var user = ob.AddComponent<User>();
+        var user = new User();
         user.Load(data);
         Assert.AreEqual(user.ID, data.ID, "ID should be " + data.ID + " but it's " + user.ID);
         Assert.AreEqual(user.name, data.Name, "Name should be " + data.Name + " but it's " + user.name);
@@ -21,7 +21,7 @@ public class UserTest : MonoBehaviour {
     {
         UserData data = new UserData(5, "Bert");
         var ob = new GameObject();
-        var user = ob.AddComponent<User>();
+        var user = new User();
         user.Load(data);
         string newName = "Rudyniet";
         user.name = newName;

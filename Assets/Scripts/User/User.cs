@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class User : MonoBehaviour, Storable<User, UserData>
+public class User : Storable<User, UserData>
 {
 
     public int ID { get; private set; }

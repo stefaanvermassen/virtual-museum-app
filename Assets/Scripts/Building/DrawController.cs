@@ -33,13 +33,16 @@ public class DrawController : MonoBehaviour {
     private Vector3 centerPointWorld = Vector3.zero;
     private Vector3 anchorPointScreen = Vector3.zero;
     private Vector3 anchorPointWorld = Vector3.zero;
+    private Vector3 anchorNormalWorld = Vector3.zero;
     private Vector3 lastDragPointScreen = Vector3.zero;
     private Vector3 cameraAnchor = Vector3.zero;
 
     private LayerMask groundLayerMask;
+    private LayerMask wallLayerMask;
 
 	void Start () {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
+        wallLayerMask = (1 << LayerMask.NameToLayer("Walls"));
 	}
 
     /// <summary>
@@ -66,12 +69,12 @@ public class DrawController : MonoBehaviour {
         return EventSystem.current.IsPointerOverGameObject(0) || EventSystem.current.IsPointerOverGameObject();
     }
 
-    Vector3 raycast(Vector3 origin, Vector3 direction, float maxDistance = Mathf.Infinity, int layermask = 1 << 8) {
-        RaycastHit info;
-        if (Physics.Raycast(origin, direction, out info, Mathf.Infinity, groundLayerMask)) {
-            return info.point;
+    RaycastHit raycast(Vector3 origin, Vector3 direction, float maxDistance, LayerMask layerMask) {
+        RaycastHit info = new RaycastHit();
+        if (Physics.Raycast(origin, direction, out info, maxDistance, layerMask)) {
+            return info;
         }
-        return Vector3.zero;
+        return new RaycastHit();
     }
 
     void Update() {
@@ -91,13 +94,17 @@ public class DrawController : MonoBehaviour {
         var mouse2D = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
         var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
         Debug.DrawRay(mouse3D, Camera.main.transform.forward * 100, Color.white, 0.1f);
+        var mask = groundLayerMask;
+        if(tool == Tools.PlacingArt) mask = wallLayerMask;
         if (Input.GetMouseButtonDown(mouseButton) && !IsPointerBusy()) {
             cameraAnchor = Camera.main.transform.position;
             dragging[mouseButton] = true;
             anchorPointScreen = mouse2D;
-            anchorPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
+            var anchorWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, mask);
+            anchorPointWorld = anchorWorld.point;
+            anchorNormalWorld = anchorWorld.normal;
             lastDragPointScreen = anchorPointScreen;
-            centerPointWorld = raycast(cameraAnchor, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
+            centerPointWorld = raycast(cameraAnchor, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask).point;
         }
         if (Input.GetMouseButtonUp(mouseButton)) {
             dragging[mouseButton] = false;
@@ -106,7 +113,7 @@ public class DrawController : MonoBehaviour {
             var dragPointScreen = Vector3.zero;
             var dragPointWorld = Vector3.zero;
             dragPointScreen = mouse2D;
-            dragPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask);
+            dragPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask).point;
             var dragOffsetScreen = anchorPointScreen - dragPointScreen;
             var dragOffsetWorld = anchorPointWorld - dragPointWorld;
             var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
@@ -117,7 +124,7 @@ public class DrawController : MonoBehaviour {
             else if (tool == Tools.Erasing)         Erase(dragPointWorld);
             else if (tool == Tools.Scaling)         Scale(Mathf.Pow(2, -frameOffsetScreen.y / Display.main.renderingHeight));
             else if (tool == Tools.PlacingObject)   PlaceObject(dragPointWorld, anchorPointWorld);
-            else if (tool == Tools.PlacingArt)      PlaceArt(dragPointWorld, anchorPointWorld);
+            else if (tool == Tools.PlacingArt)      PlaceArt(dragPointWorld, anchorPointWorld, anchorNormalWorld,dragPointScreen, anchorPointScreen);
 
             lastDragPointScreen = dragPointScreen;
         }
@@ -172,11 +179,10 @@ public class DrawController : MonoBehaviour {
         currentMuseum.AddObject(currentObject, (int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), angle);
     }
 
-    void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
-        var diff = (dragPointWorld - anchorPointWorld).normalized;
-        var angle = -(Mathf.Atan2(diff.z, diff.x) + Mathf.PI/4) / Mathf.PI * 180;
-        if (angle < 0) angle = 360 + angle;
-        var orientation = (int)angle / 90;
-        currentMuseum.AddArt(currentArt, (int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), orientation);
+    void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld, Vector3 anchorNormalWorld, Vector3 dragPointScreen, Vector3 anchorPointScreen) {
+        if (Vector3.Magnitude(anchorNormalWorld) < 0.5) return;
+        var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
+        var scale = 0.5f + 4*diff / Display.main.renderingWidth;
+        currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale);
     }
 }

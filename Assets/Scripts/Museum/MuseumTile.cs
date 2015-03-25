@@ -51,11 +51,12 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         return objects[resource];
     }
 
-    GameObject CreateFace(Vector3 localPosition, Vector3 scale, Vector3 angles, string type){
+    GameObject CreateFace(Vector3 localPosition, Vector3 scale, Vector3 angles, string type, bool wall = false){
         var ob = new GameObject();
         ob.transform.parent = gameObject.transform;
         var frontSide = (GameObject)GameObject.Instantiate(FastResource(type));
         frontSide.transform.parent = ob.transform;
+        if (wall) frontSide.layer = LayerMask.NameToLayer("Walls");
         //frontSide.GetComponent<MeshRenderer>().material = frontMaterial;
         var backSide = ReversedQuad();
         backSide.transform.parent = ob.transform;
@@ -88,28 +89,28 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     /// </summary>
     public void UpdateEdges() {
         if (left && leftObject == null) {
-            leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0), "WallQuad");
+            leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0), "WallQuad", true);
         }
         if (!left && leftObject != null) {
 			Util.Destroy(leftObject);
             leftObject = null;
         }
         if (right && rightObject == null) {
-            rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0), "WallQuad");
+            rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0), "WallQuad", true);
         }
         if (!right && rightObject != null) {
 			Util.Destroy(rightObject);
             rightObject = null;
         }
         if (front && frontObject == null) {
-            frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0), "WallQuad");
+            frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0), "WallQuad", true);
         }
         if (!front && frontObject != null) {
 			Util.Destroy(frontObject);
             frontObject = null;
         }
         if (back && backObject == null) {
-            backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0), "WallQuad");
+            backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0), "WallQuad", true);
         }
         if (!back && backObject != null) {
 			Util.Destroy(backObject);
