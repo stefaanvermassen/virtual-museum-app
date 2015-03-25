@@ -6,18 +6,24 @@ using System.Text;
 [Serializable]
 public class MuseumArtData: Data<MuseumArt>{
 
-    public int ArtID { get; private set; }
-    public int X { get; private set; }
-    public int Y { get; private set; }
-    public int Z { get; private set; }
-    public int Orientation { get; private set; }
+    public ArtData Art { get; private set; }
+    public float X { get; private set; }
+    public float Y { get; private set; }
+    public float Z { get; private set; }
+    public float RX { get; private set; }
+    public float RY { get; private set; }
+    public float RZ { get; private set; }
+    public float Scale { get; private set; }
 
-    public MuseumArtData(int artID, int x, int y, int z, int orientation){
-        ArtID = artID;
+    public MuseumArtData(ArtData art, float x, float y, float z, float rx, float ry, float rz, float scale) {
+        Art = art;
         X = x;
         Y = y;
         Z = z;
-        Orientation = orientation;
+        RX = rx;
+        RY = ry;
+        RZ = rz;
+        Scale = scale;
     }
 
 }

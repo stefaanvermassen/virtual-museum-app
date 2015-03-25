@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Contains all information of a particular object already inside a museum. Generally this should only be used inside Museum.
+/// </summary>
 public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectData> {
 
     public int x, y, z;
@@ -24,16 +27,13 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
 
     void Start() {
         Remove();
-        var master = Resources.Load<GameObject>("texmonkey");
-
-        ob = (GameObject) Instantiate(master, new Vector3(x, y + 0.5f, z), Quaternion.Euler(new Vector3(0, angle, 0)));
+        var master = Catalog.GetObject(objectID);
+        ob = (GameObject) Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
+    /// <summary>
+    /// Should be called before destroying this GameObject.
+    /// </summary>
     public void Remove() {
         if(ob != null) Destroy(ob);
     }

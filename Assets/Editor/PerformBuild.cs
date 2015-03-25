@@ -28,6 +28,11 @@ class PerformBuild
 		return "C:\\WebServer\\teamsite\\build.apk";
     }
 
+	static string GetBuildPathUnityWeb()
+	{
+		return "C:\\WebServer\\teamsite\\unity-web";
+	}
+
     [UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Android")]
     static void CommandLineBuildAndroid()
     {
@@ -50,4 +55,9 @@ class PerformBuild
         BuildPipeline.BuildPlayer(scenes, path, BuildTarget.Android, BuildOptions.None);
 		//file.Close();
     }
+
+	[UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Unity Web Player")]
+	static void CommandLineBuildUnityWeb() {
+		BuildPipeline.BuildPlayer (GetBuildScenes (), GetBuildPathUnityWeb (), BuildTarget.WebPlayer, BuildOptions.InstallInBuildFolder);
+	}
 }
