@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 /// <summary>
 /// Contains all information of a art piece, already inside a museum. Generally this should only be used inside Museum.
@@ -43,6 +44,7 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         ob.transform.position = position;
         ob.transform.localScale = new Vector3(0.5f * scale, scale * 0.5f * texture.height / texture.width, 0.05f);
         ob.transform.Rotate(rotation);
+
         var normal = Quaternion.Euler(rotation) * Vector3.forward;
         tileX = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
         tileY = 0;
