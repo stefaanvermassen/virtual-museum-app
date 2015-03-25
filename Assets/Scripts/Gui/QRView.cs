@@ -31,5 +31,22 @@ public class QRView : MonoBehaviour
         }
     }
 
-    // TODO: Implement save
+    /// <summary>
+    /// Closes the panel
+    /// </summary>
+    /// <param name="useless">Useless parameter, needed for onClickListener</param>
+    public void Close(int useless)
+    {
+        panel.SetActive(false);
+    }
+
+    /// <summary>
+    /// Closes the panel and saves the QRcode
+    /// </summary>
+    /// <param name="useless">Useless parameter, needed for onClickListener</param>
+    public void Save(int useless)
+    {
+        // TODO: Implement save
+        Close(useless);
+    }
 }
