@@ -91,28 +91,28 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
             leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0), "WallQuad");
         }
         if (!left && leftObject != null) {
-            Destroy(leftObject);
+			Util.Destroy(leftObject);
             leftObject = null;
         }
         if (right && rightObject == null) {
             rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0), "WallQuad");
         }
         if (!right && rightObject != null) {
-            Destroy(rightObject);
+			Util.Destroy(rightObject);
             rightObject = null;
         }
         if (front && frontObject == null) {
             frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0), "WallQuad");
         }
         if (!front && frontObject != null) {
-            Destroy(frontObject);
+			Util.Destroy(frontObject);
             frontObject = null;
         }
         if (back && backObject == null) {
             backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0), "WallQuad");
         }
         if (!back && backObject != null) {
-            Destroy(backObject);
+			Util.Destroy(backObject);
             backObject = null;
         }
     }

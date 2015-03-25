@@ -60,17 +60,17 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public void Clear() {
         foreach (var t in tiles) {
             t.Remove();
-            Destroy(t.gameObject);
+            Util.Destroy(t.gameObject);
         }
         tiles.Clear();
         foreach (var a in art) {
             a.Remove();
-            Destroy(a.gameObject);
+			Util.Destroy(a.gameObject);
         }
         art.Clear();
         foreach (var o in objects) {
             o.Remove();
-            Destroy(o.gameObject);
+			Util.Destroy(o.gameObject);
         }
         objects.Clear();
     }
@@ -148,7 +148,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         if (toRemove != null) {
             art.Remove(toRemove);
             toRemove.Remove();
-            Destroy(toRemove.gameObject);
+			Util.Destroy(toRemove.gameObject);
         }
     }
 
@@ -191,7 +191,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         if (toRemove != null) {
             objects.Remove(toRemove);
             toRemove.Remove();
-            Destroy(toRemove.gameObject);
+			Util.Destroy(toRemove.gameObject);
         }
     }
 
@@ -276,7 +276,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             RemoveObject(x, y, z);
             tiles.Remove(tile);
             tile.Remove();
-            Destroy(tile.gameObject);
+			Util.Destroy(tile.gameObject);
             var leftTile = GetTile(x - 1, y, z);
             var rightTile = GetTile(x + 1, y, z);
             var frontTile = GetTile(x, y, z + 1);
