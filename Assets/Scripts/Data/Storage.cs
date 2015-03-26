@@ -352,7 +352,7 @@ public class Storage : MonoBehaviour {
     /// Helper function used to save a Savable object (Data from a MonoBehavior) Remotely
     /// </summary>
     /// <param name="st">The object to be saved remotely</param>
-    private void SaveRemote<T>(Savable<T, Data<T>> st)
+    public void SaveRemote<T>(Savable<T, Data<T>> st)
     {
         st.SaveRemote();
         Debug.Log("Data Saved Remotely.");
@@ -362,13 +362,16 @@ public class Storage : MonoBehaviour {
     /// Helper function to save a savable object (Data from a MonoBehavior) locally
     /// </summary>
     /// <param name="st">The object to be saved</param>
-    private void SaveLocal<T>(Savable<T, Data<T>> st)
+    public void SaveLocal<T>(Savable<T, Data<T>> st)
     {
         //Require data to save
         var data = st.Save();
         //Build path where to save
-        string path = RootFolder + st.getFolder() + "/" + st.getFileName() +"." +st.getExtension();
+        string path = RootFolder + st.getFolder();
+        bool folderExists = Directory.Exists(path);
+        if (!folderExists) Directory.CreateDirectory(path);
         //create file and save data
+        path += "/" + st.getFileName() + "." + st.getExtension();
         Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
@@ -380,7 +383,7 @@ public class Storage : MonoBehaviour {
     /// Helper function to save SavableData (non Monobehaviour object) remotely
     /// </summary>
     /// <param name="data">data to be saved</param>
-    private void SaveRemote(SavableData data)
+    public void SaveRemote(SavableData data)
     {
         data.SaveRemote();
         Debug.Log("Data Saved Remotely.");
@@ -391,11 +394,14 @@ public class Storage : MonoBehaviour {
     /// Helper function to save SavableData (non Monobehaviour object) locally
     /// </summary>
     /// <param name="data">data to be saved</param>
-    private void SaveLocal(SavableData data)
+    public void SaveLocal(SavableData data)
     {
         //Build path where to save
-        string path = RootFolder + data.getFolder() + "/" + data.getFileName() + "." + data.getExtension();
+        string path = RootFolder + data.getFolder();
+        bool folderExists = Directory.Exists(path);
+        if (!folderExists) Directory.CreateDirectory(path);
         //create file and save data
+        path += "/" + data.getFileName() + "." + data.getExtension();
         Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
@@ -410,7 +416,7 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">Object where the data should be loaded to</param>
     /// <param name="identifier">string to identify the object on the backend</param>
-    private void LoadRemote<T>(Savable<T, Data<T>> st, string identifier)
+    public void LoadRemote<T>(Savable<T, Data<T>> st, string identifier)
     {
         st.LoadRemote(identifier);
     }
@@ -420,11 +426,11 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">The object where the data will be loaded to</param>
     /// <param name="path">the path of the file to load from</param>
-    private void LoadLocal<T>(Savable<T, Data<T>> st, string path)
+    public void LoadLocal<T>(Savable<T, Data<T>> st, string path)
     {
         if (File.Exists(path))
         {
-            Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
+            Stream TestFileStream = File.OpenRead(path);
             BinaryFormatter deserializer = new BinaryFormatter();
             Data<T> data = (Data<T>)deserializer.Deserialize(TestFileStream);
             TestFileStream.Close();
@@ -439,7 +445,7 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">Object where the data should be loaded to</param>
     /// <param name="identifier">string to identify the object on the backend</param>
-    private SavableData LoadRemote(SavableData data, string identifier)
+    public SavableData LoadRemote(SavableData data, string identifier)
     {
         data.LoadRemote(identifier);
         Debug.Log("Data Loaded Remotely.");
@@ -451,11 +457,11 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">The object where the data will be loaded to</param>
     /// <param name="path">the path of the file to load from</param>
-    private SavableData LoadLocal(SavableData data, string path)
+    public SavableData LoadLocal(SavableData data, string path)
     {
         if (File.Exists(path))
         {
-            Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
+            Stream TestFileStream = File.OpenRead(path);
             BinaryFormatter deserializer = new BinaryFormatter();
             data = (SavableData)deserializer.Deserialize(TestFileStream);
             TestFileStream.Close();
