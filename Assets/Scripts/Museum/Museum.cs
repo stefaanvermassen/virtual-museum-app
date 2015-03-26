@@ -22,6 +22,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public Texture2D debugTexture;
 
+    private Art debugArt;
+
+    /*void Start() {
+        debugArt = new Art();
+        debugArt.LoadRemote("1");
+    }*/
+
     /// <summary>
     /// Create a MuseumData for serialization.
     /// </summary>
@@ -121,7 +128,7 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         Art a = new Art();
         a.ID = artID;
         a.description = "Dit is een helehoop informatie over het hierboven hangende supercoole kunstwerk. \nNewline FTW!";
-        
+
         ma.position = position;
         ma.rotation = rotation;
         ma.material = frontMaterial;

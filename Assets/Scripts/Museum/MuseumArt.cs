@@ -30,8 +30,6 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         position = new Vector3(data.X, data.Y, data.Z);
         rotation = new Vector3(data.RX, data.RY, data.RZ);
         scale = data.Scale;
-        //texture = new Texture2D(1, 1);
-        //texture.LoadImage(art.image);
         Start();
     }
 
