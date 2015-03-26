@@ -43,20 +43,12 @@ namespace API {
 			     new string[] { "password", username, password }, 
 			((response) => {
 				Token token = Token.createFromDictionary(response.Object);
-				User user = new User((string)response.Object["userName"], null);
+				Debug.Log(token.AccessToken());
+				User user = new User((string)response.Object["userName"], token);
 				if (succes != null) {
 					succes(user);
 				}
 			}), error, false);
-		}
-
-		public void stubLogin()
-		{	
-			var request = login ("VirtualMuseum", "@wesomePeople_20", ((user)=>{
-				SessionManager.Instance.loginUser(user);
-			}), ((error)=>{
-				Debug.Log("An error occured when logging in");
-			}));
 		}
 	}
 

@@ -13,7 +13,12 @@ namespace API {
 		private User loggedInUser;
 
 		protected SessionManager() {
-			UserController.Instance.stubLogin (); //TODO: remove this when we have a login view
+			//TODO: remove this when we have a login view
+			var request = UserController.Instance.login ("VirtualMuseum", "@wesomePeople_20", ((user)=>{
+				loginUser(user);
+			}), ((error)=>{
+				Debug.Log("An error occured when logging in");
+			}));
 		}
 		
 		private static readonly SessionManager _instance = new SessionManager();
@@ -29,7 +34,13 @@ namespace API {
 		/// </summary>
 		/// <returns>The access token.</returns>
 		public string getAccessToken() {
-			return loggedInUser.AccessToken().AccessToken();
+			//Debug.Log (loggedInUser.AccessToken());
+			if (loggedInUser != null && loggedInUser.AccessToken () != null) {
+				return loggedInUser.AccessToken ().AccessToken ();
+			} else {
+				Debug.LogWarning("No user token available, actions which require authorization will not work.");
+				return "";
+			}
 		}
 
 		public void loginUser(User user) {

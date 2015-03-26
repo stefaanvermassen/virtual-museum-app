@@ -11,7 +11,7 @@ public class ArtRest : MonoBehaviour
 	{
 		Debug.Log ("t");
 		string imageArtworkUrl;
-		API.UserController uc = API.UserController.Instance;
+		API.SessionManager sm = API.SessionManager.Instance;
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		ac.getAllArtworks (success: (response) => {
 			foreach (API.ArtWork child in response) {
