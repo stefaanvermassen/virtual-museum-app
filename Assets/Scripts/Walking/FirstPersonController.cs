@@ -71,8 +71,8 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	/// <remarks>Also locks screen cursor.</remarks>
 	void Start() {
-		if(!CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch)
-		   || activeVR != VR.None) Screen.lockCursor = true;
+		if((!testMode) && ((!CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch))
+		   || (activeVR != VR.None))) Screen.lockCursor = true;
 		characterController = GetComponent<CharacterController>();
 		startingPosition = transform.position;
 		started = true;
