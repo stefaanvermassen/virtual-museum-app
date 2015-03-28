@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 6f29724a248f69f4e9b81a6a9bc75d4f
-timeCreated: 1427331449
+timeCreated: 1427503666
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -41,15 +41,15 @@ ModelImporter:
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
-    secondaryUVAngleDistortion: 1
-    secondaryUVAreaDistortion: 1
-    secondaryUVHardAngle: 60
-    secondaryUVPackMargin: 16
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     splitTangentsAcrossUV: 1
-    normalImportMode: 1
+    normalImportMode: 0
     tangentImportMode: 1
   importAnimation: 1
   copyAvatar: 0
