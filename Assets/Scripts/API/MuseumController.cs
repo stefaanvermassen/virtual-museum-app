@@ -141,10 +141,10 @@ namespace API
 	/// </summary>
 	public class Museum
 	{
-		public int MuseumID;
-		public string Description;
-		public DateTime LastModified;
-		public Level Privacy;
+        public int MuseumID { get; set; }
+        public string Description { get; set; }
+        public DateTime LastModified { get; set; }
+        public Level Privacy { get; set; }
 
 		public Dictionary<string, string> ToDictionary(){
 			Dictionary<string, string> dict = new Dictionary<string, string>();

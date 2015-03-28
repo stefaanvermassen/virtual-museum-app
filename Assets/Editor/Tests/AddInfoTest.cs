@@ -91,7 +91,7 @@ public class AddInfoTest
 
     private Museum createMuseum(string name, string description)
     {
-        MuseumData data = new MuseumData(new List<MuseumTileData>(), new List<MuseumArtData>(), new List<MuseumObjectData>(), RandomString(0, 5), name, description);
+        MuseumData data = new MuseumData(new List<MuseumTileData>(), new List<MuseumArtData>(), new List<MuseumObjectData>(), RandomString(0, 5), name, description, 1, API.Level.PUBLIC);
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
         museum.Load(data);

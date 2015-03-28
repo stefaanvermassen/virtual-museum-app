@@ -4,20 +4,24 @@ using System.Linq;
 using System;
 using API;
 using System.Threading;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 /// <summary>
 /// Internal museum representation. This can load and save museum 
 /// representations and has methods to modify the museum.
 /// </summary>
-public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
+public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
+{
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
-    public string museumID;
+    public int museumID;
     public string description;
+    public API.Level privacy;
 
     public Material frontMaterial;
     public Material backMaterial;
@@ -25,7 +29,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
     public Texture2D debugTexture;
 
     private API.MuseumController cont;
-    private HTTP.Request req;
+    public HTTP.Request req;
 
     /// <summary>
     /// Create a MuseumData for serialization.
@@ -317,7 +321,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
 
     string SavableData.getFileName()
     {
-        if (museumID != null) return "id_" + museumID + "_name_";
+        if (museumID != null) return "id_" + museumID + "_name_" + museumName.Replace(' ', '_');
         else return "name_" + museumName.Replace(' ', '_');
     }
 
@@ -328,28 +332,87 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
 
     void SavableData.SaveRemote()
     {
-        //TODO
-        throw new NotImplementedException();
+        Debug.Log("Start saving Remote");
+        cont = API.MuseumController.Instance;
+        byte[] data;
+        BinaryFormatter bf = new BinaryFormatter();
+        using (MemoryStream ms = new MemoryStream())
+        {
+            MuseumData md = Save();
+            bf.Serialize(ms, md);
+            data = ms.ToArray();
+        }
+        API.Museum apiM = new API.Museum();
+        apiM.Description = this.description;
+        apiM.LastModified = DateTime.Now;
+        apiM.Privacy = this.privacy;
+        Debug.Log("Start Preparing Request");
+        if (museumID == null)
+        {
+            Debug.Log("Start Request");
+            req = cont.createMuseum(apiM, (mus) =>
+            {
+                museumID = mus.MuseumID;
+                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, "museum", data);
+            });
+        }
+        else
+        {
+            Debug.Log("Start Request");
+            apiM.MuseumID = museumID;
+            req = cont.updateMuseum(apiM, (mus) =>
+            {
+                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, "museum", data);
+            });
+        }
+        //log when done
+        Debug.Log("Start Monitoring if done.");
+        Thread requestThread = new Thread(SavedMuseumThread);
+        requestThread.Start();
+    }
+
+    private void SavedMuseumThread()
+    {
+        Debug.Log("Request started.");
+        while (true)
+        {
+            if (req.isDone)
+            {
+                Debug.Log("Request done.");
+                if (req.response.status == 200)
+                {
+                    Debug.Log("Request was 200 OK.");
+                    //TODO: alert user? -> e.g. Toast in Android
+                }
+                else
+                {
+                    //TODO: retry? throw exception? alert user?
+                }
+                break;
+            }
+            Debug.Log("Request not done, sleep and check again");
+            Thread.Sleep(200);
+        }
     }
 
     void SavableData.LoadRemote(string identifier)
     {
-        //for museums identifier is an integer
-        museumID = identifier;
+        museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
-        req = cont.getMuseum(museumID); //dit gebruikt denk ik de unityVersion check
+        req = cont.getMuseum(""+museumID); //dit gebruikt denk ik de unityVersion check -> confirmed
         Thread requestThread = new Thread(LoadMuseumThread);
         requestThread.Start();
     }
 
     private void LoadMuseumThread()
     {
-        Debug.Log("Request started.: error weg?");
+        Debug.Log("Request started.");
         while (true)
         {
-            if (req.isDone)//
+            if (req.isDone)
             {
-                Debug.Log("Request done, copy data here");
+                Debug.Log("Request done, copy data here.");
+                //TODO: copy data from request into variables
                 break;
             }
             Debug.Log("Request not done, sleep and check again");
@@ -374,7 +437,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
         var objectData = new List<MuseumObjectData>();
         foreach (var o in objects)
             objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description, museumID, privacy);
     }
 
     void Storable<Museum, MuseumData>.Load(MuseumData data)
@@ -389,5 +452,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
         ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
+        museumID = data.MuseumId;
+        privacy = data.Privacy;
     }
 }
