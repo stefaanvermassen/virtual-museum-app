@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using API;
+using System.Threading;
 
 /// <summary>
 /// Internal museum representation. This can load and save museum 
 /// representations and has methods to modify the museum.
 /// </summary>
-public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
+public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
+    public string museumID;
     public string description;
 
     public Material frontMaterial;
@@ -22,21 +24,16 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public Texture2D debugTexture;
 
+    private API.MuseumController cont;
+    private HTTP.Request req;
+
     /// <summary>
     /// Create a MuseumData for serialization.
     /// </summary>
     /// <returns>The MuseumData</returns>
     public MuseumData Save() {
-        var tileData = new List<MuseumTileData>();
-        foreach (var t in tiles)
-            tileData.Add(t.Save());
-        var artData = new List<MuseumArtData>();
-        foreach (var a in art)
-            artData.Add(a.Save());
-        var objectData = new List<MuseumObjectData>();
-        foreach (var o in objects)
-            objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
+        //die kak methode kan ni public zijn in een interface, bullshit
+        return ((Storable<Museum, MuseumData>)this).Save();
     }
 
     /// <summary>
@@ -44,45 +41,8 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// </summary>
     /// <param name="data"></param>
     public void Load(MuseumData data) {
-        Clear();
-        foreach (var tileData in data.Tiles)
-            SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
-        foreach (var artData in data.Art)
-            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
-        foreach (var objectData in data.Objects)
-            AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
-        ownerID = data.OwnerID;
-        museumName = data.MuseumName;
-        description = data.Description;
-    }
-
-
-    public string getFolder()
-    {
-        return "museums";
-    }
-
-    public string getFileName()
-    {
-        return museumName.Replace(' ','_');
-    }
-
-    public string getExtension()
-    {
-        return "mus";
-    }
-
-    void SaveRemote()
-    {   //TODO
-    }
-    void LoadRemote(string identifier)
-    {   //TODO
-    }
-    DateTime LastModified(string identifier)
-    {
-        //TODO
-        return new DateTime();
-    }
+        ((Storable<Museum, MuseumData>)this).Load(data);
+    } 
 
     /// <summary>
     /// Remove everything inside this museum.
@@ -349,4 +309,85 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 	
 	}
 
+
+    string SavableData.getFolder()
+    {
+        return "museums/" + ownerID;
+    }
+
+    string SavableData.getFileName()
+    {
+        if (museumID != null) return "id_" + museumID + "_name_";
+        else return "name_" + museumName.Replace(' ', '_');
+    }
+
+    string SavableData.getExtension()
+    {
+        return "mus";
+    }
+
+    void SavableData.SaveRemote()
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
+
+    void SavableData.LoadRemote(string identifier)
+    {
+        //for museums identifier is an integer
+        museumID = identifier;
+        cont = API.MuseumController.Instance;
+        req = cont.getMuseum(museumID); //dit gebruikt denk ik de unityVersion check
+        Thread requestThread = new Thread(LoadMuseumThread);
+        requestThread.Start();
+    }
+
+    private void LoadMuseumThread()
+    {
+        Debug.Log("Request started.: error weg?");
+        while (true)
+        {
+            if (req.isDone)//
+            {
+                Debug.Log("Request done, copy data here");
+                break;
+            }
+            Debug.Log("Request not done, sleep and check again");
+            Thread.Sleep(200);
+        }
+    }
+
+    DateTime SavableData.LastModified(string identifier)
+    {
+        //TODO
+        return new DateTime();
+    }
+
+    MuseumData Storable<Museum, MuseumData>.Save()
+    {
+        var tileData = new List<MuseumTileData>();
+        foreach (var t in tiles)
+            tileData.Add(t.Save());
+        var artData = new List<MuseumArtData>();
+        foreach (var a in art)
+            artData.Add(a.Save());
+        var objectData = new List<MuseumObjectData>();
+        foreach (var o in objects)
+            objectData.Add(o.Save());
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
+    }
+
+    void Storable<Museum, MuseumData>.Load(MuseumData data)
+    {
+        Clear();
+        foreach (var tileData in data.Tiles)
+            SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
+        foreach (var artData in data.Art)
+            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
+        foreach (var objectData in data.Objects)
+            AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
+        ownerID = data.OwnerID;
+        museumName = data.MuseumName;
+        description = data.Description;
+    }
 }
