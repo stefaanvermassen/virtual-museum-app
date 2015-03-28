@@ -51,6 +51,47 @@ public class Local_SavableData {
         Assert.AreEqual(d.TestString, d2.TestString);
     }
 
+    [Test]
+    [ExpectedException(typeof(FileNotFoundException))]
+    public void Storage_LoadSavableDataFromNonExistingFile_IOException()
+    {
+        int testInt = 99;
+        string testString = "test_blabla spaties \n newline, leestekenshit !";
+
+        TestSavableData d = new TestSavableData();
+        d.TestInt = testInt;
+        d.TestString = testString;
+
+        Storage s = Storage.Instance;
+        s.SaveLocal(d);
+
+        string path = Application.persistentDataPath + "/3DVirtualMuseum/" + "NonExistingFile" + "." + "testdata"; //soe = some other extension
+        TestSavableData d2 = new TestSavableData();
+        d2 = (TestSavableData)s.LoadLocal(d2, path);
+
+    }
+
+    [Test]
+    [ExpectedException(typeof(FileLoadException))]
+    public void Storage_LoadSavableDataFromFileWithWrongExtension_FileLoadException()
+    {
+        int testInt = 99;
+        string testString = "test_blabla spaties \n newline, leestekenshit !";
+
+        TestSavableData d = new TestSavableData();
+        d.TestInt = testInt;
+        d.TestString = testString;
+
+        Storage s = Storage.Instance;
+        s.SaveLocal(d);
+
+        string path = Application.persistentDataPath + "/3DVirtualMuseum/" + d.getFolder() + "/" + d.getFileName() + "." + "soe"; //soe = some other extension
+        File.Create(path);
+        TestSavableData d2 = new TestSavableData();
+        d2 = (TestSavableData)s.LoadLocal(d2, path);
+
+    }
+
 }
 
 [Serializable]

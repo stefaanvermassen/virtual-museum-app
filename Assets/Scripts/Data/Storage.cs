@@ -102,12 +102,10 @@ public class Storage : MonoBehaviour {
         if (firstCase || secondCase || thirdCase)
         {
             path = findPath(identification);
-            if (checkFileExtension(st, path))
-            {
-                LoadLocal<T,D>(st, path);
-                return;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+
+            LoadLocal<T,D>(st, path);
+            return;
+
         }
 
         //if only stored remote
@@ -128,12 +126,10 @@ public class Storage : MonoBehaviour {
         //local file most recent
         if (dtLocal.CompareTo(dtRemote) <= 0)
         {
-            if (checkFileExtension(st, path))
-            {
-                LoadLocal<T,D>(st, path);
-                return;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+
+            LoadLocal<T,D>(st, path);
+            return;
+
         }
         //remote file most recent
         else
@@ -205,12 +201,10 @@ public class Storage : MonoBehaviour {
         if (firstCase || secondCase || thirdCase)
         {
             path = findPath(identification);
-            if (checkFileExtension(data, path))
-            {
-                data = LoadLocal(data, path);
-                return data;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+
+            data = LoadLocal(data, path);
+            return data;
+          
         }
 
         //if only stored remote
@@ -231,12 +225,10 @@ public class Storage : MonoBehaviour {
         //local file most recent
         if (dtLocal.CompareTo(dtRemote) <= 0)
         {
-            if (checkFileExtension(data, path))
-            {
-                data = LoadLocal(data, path);
-                return data;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+
+            data = LoadLocal(data, path);
+            return data;
+            
         }
         //remote file most recent
         else
@@ -430,11 +422,13 @@ public class Storage : MonoBehaviour {
     {
         if (File.Exists(path))
         {
-            Stream TestFileStream = File.OpenRead(path);
-            BinaryFormatter deserializer = new BinaryFormatter();
-            D data = (D)deserializer.Deserialize(TestFileStream);
-            TestFileStream.Close();
-            savable.Load(data);
+            if(checkFileExtension<T,D>(savable,path)){
+                Stream TestFileStream = File.OpenRead(path);
+                BinaryFormatter deserializer = new BinaryFormatter();
+                D data = (D)deserializer.Deserialize(TestFileStream);
+                TestFileStream.Close();
+                savable.Load(data);
+            }else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
         }
         else throw new FileNotFoundException("Could not load data because file does not exist. ("+path+")");
     }
@@ -461,12 +455,15 @@ public class Storage : MonoBehaviour {
     {
         if (File.Exists(path))
         {
-            Stream TestFileStream = File.OpenRead(path);
-            BinaryFormatter deserializer = new BinaryFormatter();
-            data = (SavableData)deserializer.Deserialize(TestFileStream);
-            TestFileStream.Close();
-            Debug.Log("Data Loaded Locally.");
-            return data;
+            if(checkFileExtension(data,path)){
+                Stream TestFileStream = File.OpenRead(path);
+                BinaryFormatter deserializer = new BinaryFormatter();
+                data = (SavableData)deserializer.Deserialize(TestFileStream);
+                TestFileStream.Close();
+                Debug.Log("Data Loaded Locally.");
+                return data;
+            }
+            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
         }
         else throw new FileNotFoundException("Could not load data because file does not exist. (" + path + ")");
     }
@@ -481,6 +478,7 @@ public class Storage : MonoBehaviour {
     /// <returns>if these are of the same type (file extension matches)</returns>
     private bool checkFileExtension<T, D>(Savable<T, D> savable, string path) where D : Data<T>
     {
+        Debug.Log("Checking file extension");
         string[] splitPath = path.Split('.');
         return splitPath[splitPath.Length - 1].Equals(savable.getExtension());
     }
@@ -493,6 +491,7 @@ public class Storage : MonoBehaviour {
     /// <returns>if these are of the same type (file extension matches)</returns>
     private bool checkFileExtension(SavableData data, string path)
     {
+        Debug.Log("Checking file extension");
         string[] splitPath = path.Split('.');
         return splitPath[splitPath.Length - 1].Equals(data.getExtension());
     }

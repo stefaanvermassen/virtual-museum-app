@@ -58,5 +58,50 @@ public class Local_Savable{
 
     }
 
+    [Test]
+    [ExpectedException(typeof(FileNotFoundException))]
+    public void Storage_LoadSavableDataFromNonExistingFile_IOException()
+    {
+        Museum museum = new Museum();
+        museum.ownerID = "testOwner";
+        museum.museumID = 10;
+        museum.museumName = "testMuseum";
+        museum.description = "test description";
+        museum.privacy = API.Level.PUBLIC;
+        Storage st = Storage.Instance;
+
+        SavableData m = (SavableData)museum; //stupid interfaces and their private methods
+
+        string path = Application.persistentDataPath + "/3DVirtualMuseum/" + m.getFolder() + "/" + "NonExistingFile" + "." + m.getExtension();
+        if (File.Exists(path)) File.Delete(path);
+        st.SaveLocal<Museum, MuseumData>(museum);
+
+        Museum museum2 = new Museum();
+        st.LoadLocal<Museum, MuseumData>(museum2, path);
+
+    }
+
+    [Test]
+    [ExpectedException(typeof(FileLoadException))]
+    public void Storage_LoadSavableDataFromFileWithWrongExtension_FileLoadException()
+    {
+        Museum museum = new Museum();
+        museum.ownerID = "testOwner";
+        museum.museumID = 10;
+        museum.museumName = "testMuseum";
+        museum.description = "test description";
+        museum.privacy = API.Level.PUBLIC;
+        Storage st = Storage.Instance;
+
+        SavableData m = (SavableData)museum; //stupid interfaces and their private methods
+
+        string path = Application.persistentDataPath + "/3DVirtualMuseum/" + m.getFolder() + "/" + "NonExistingFile" + "." + "soe"; //soe = some other extension
+        File.Create(path);
+
+        Museum museum2 = new Museum();
+        st.LoadLocal<Museum, MuseumData>(museum2, path);
+
+    }
+
    
 }
