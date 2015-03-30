@@ -27,41 +27,41 @@ public class GUIControl : MonoBehaviour
 		if (dynamicChild != null) {
 			//detach dynmic child, because else it will be removed if children are removed
 			transform.DetachChildren();
-			dynamicChild.close ();
+			dynamicChild.Close ();
 		}
 	}
 
 	//both show and hide can be overriden to add extra close and open logic
-	public virtual void close ()
+	public virtual void Close ()
 	{
 		gameObject.SetActive (false);
 	}
 
-	public virtual void open ()
+	public virtual void Open ()
 	{
 		gameObject.SetActive (true);
 	}
 	public void flipCloseOpen(){
-		if (isOpen ()) {
-			close ();
+		if (IsOpen ()) {
+			Close ();
 		} else {
-			open ();
+			Open ();
 		}
 	}
 	//add gui control to children
-	public void add (GUIControl control)
+	public void Add (GUIControl control)
 	{
 		control.gameObject.transform.SetParent (this.gameObject.transform,false);
 		//when an transform is added to it's parent it is scaled, for the sake of layout, performance and graphics all GUIControls are scale 1
-		control.normalise ();
+		control.Normalise ();
 	}
 
-	public GUIControl addDynamicChild(){
+	public GUIControl AddDynamicChild(){
 		if (dynamicChild != null) {
-			GUIControl newDynamicChild = GUIControl.init (dynamicChild);
+			GUIControl newDynamicChild = GUIControl.Init (dynamicChild);
 
-			newDynamicChild.open();
-			this.add (newDynamicChild);
+			newDynamicChild.Open();
+			this.Add (newDynamicChild);
 
 			return newDynamicChild;
 		}
@@ -70,19 +70,19 @@ public class GUIControl : MonoBehaviour
 	//return an instantiatec prefab
 	//Transform.SetParent method with the worldPositionStays parameter set to false
 	//the UI Element is a child of a Layout Group it will be automatically positioned and the positioning step can be skipped
-	public static GUIControl init (types controlType)
+	public static GUIControl Init (types controlType)
 	{
 		return (GUIControl)Instantiate ((GUIControl)Resources.Load ("gui/" + controlType.ToString (), typeof(GUIControl)));
 	}
 
-	public static GUIControl init (GUIControl control)
+	public static GUIControl Init (GUIControl control)
 	{
 		GUIControl instance = Instantiate (control);
-		activateAllChildScripts (instance.transform);
+		ActivateAllChildScripts (instance.transform);
 		return instance;
 	}
 
-	private static void activateAllChildScripts (Transform instance)
+	private static void ActivateAllChildScripts (Transform instance)
 	{
 		//activate all scripts
 		foreach (MonoBehaviour script in instance.GetComponents<MonoBehaviour>()) {
@@ -90,67 +90,68 @@ public class GUIControl : MonoBehaviour
 		}
 		//activate all children
 		for (int i=0; i<instance.childCount; i++) {
-			activateAllChildScripts(instance.GetChild (i));
+			ActivateAllChildScripts(instance.GetChild (i));
 		}
 	}
 
 	//show guicontrol on top of all siblings
-	public void onTop ()
+	public void OnTop ()
 	{
 		this.gameObject.transform.SetSiblingIndex (0);//qsmdjkfsjqdfi
 	}
 
-	public void setRelativePosition (float x, float y)
+	public void SetRelativePosition (float x, float y)
 	{
 		RectTransform rectTransform = (RectTransform)transform;
 		rectTransform.anchoredPosition = new Vector2 (x, y);
 	}
 
-	public float getRelativeX ()
+	public float GetRelativeX ()
 	{
 		RectTransform rectTransform = (RectTransform)transform;
-		return rectTransform.anchoredPosition.x;
 
+		return rectTransform.anchoredPosition.x;
 	}
 
-	public float getRelativeY ()
+	public float GetRelativeY ()
 	{
 		RectTransform rectTransform = (RectTransform)transform;
+
 		return rectTransform.anchoredPosition.y;
 	}
+
 	//switch place with GUIControl
-	public virtual void replace (GUIControl control)
+	public virtual void Replace (GUIControl control)
 	{
-		float x = control.getRelativeX ();
-		float y = control.getRelativeY ();
-		control.setRelativePosition (getRelativeX (), getRelativeY ());
-		setRelativePosition (x, y);
+		float x = control.GetRelativeX ();
+		float y = control.GetRelativeY ();
+		control.SetRelativePosition (GetRelativeX (), GetRelativeY ());
+		SetRelativePosition (x, y);
 	}
 
 	//Todo
 	//basic methods to be added for: color, text, position, behaviour, layout in panel
-
-	public void removeAllChildren ()
+	public void RemoveAllChildren ()
 	{
 		foreach (Transform child in this.transform) {
 			GameObject.Destroy (child.gameObject);
 		}
 	}
 
-	public GUIControl getChild (int index)
+	public GUIControl GetChild (int index)
 	{
 		return this.transform.GetChild (index).GetComponent<GUIControl> ();
 	}
 
 	//on initialisation sometimes a gameobject is scaled
 	//or even rotated if working with multiple camera's
-	public void normalise ()
+	public void Normalise ()
 	{
 		transform.localScale = Vector3.one;
         transform.localRotation = Quaternion.Euler(Vector3.zero);
 	}
 
-	public bool isOpen ()
+	public bool IsOpen ()
 	{
 		return this.gameObject.activeSelf;
 	}

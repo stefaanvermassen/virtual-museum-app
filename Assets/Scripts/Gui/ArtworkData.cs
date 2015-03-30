@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 using AssemblyCSharp;
+using System.Collections.Generic;
 
 //class responsible for synchronizing user input data and local data
 public class ArtworkData : FileBrowserListener
@@ -13,7 +14,7 @@ public class ArtworkData : FileBrowserListener
 	public Image thumbNail;
 
 	//internal values fields
-	private API.ArtWork artWork;
+	private Art artWork;
 
 	//TODO
 	//not input field with ID but just the artistID of the current user
@@ -23,14 +24,14 @@ public class ArtworkData : FileBrowserListener
 	private string imagePathSource;
 	private byte[] imageFile;
 
-	public override void fileIsSelected()
+	public override void FileIsSelected()
 	{
-		imagePathSource = fileBrowser.getSelectedFile();
-		imageFile = File.ReadAllBytes(fileBrowser.getSelectedFile ());
-		updateGUI();
+		imagePathSource = fileBrowser.GetSelectedFile();
+		imageFile = File.ReadAllBytes(fileBrowser.GetSelectedFile ());
+		UpdateGUI();
 	}
 
-	public void updateGUI()
+	public void UpdateGUI()
 	{
 		//update properties
 		nameInput.text = Name;
@@ -43,34 +44,36 @@ public class ArtworkData : FileBrowserListener
 		}
 	}
 
-	public void readFromGUI ()
+	public void ReadFromGUI ()
 	{
 		Name = nameInput.text;
 	}
 
 	public ArtworkData ()
 	{
-		artWork = new API.ArtWork ();
+		artWork = new Art();
 	}
 
-	public void init (API.ArtWork artWork, byte[] imageFile)
+	public void Init (Art artWork, byte[] imageFile)
 	{
-		Debug.Log(artWork.Name + " " + imageFile);
-		copyArtWork(artWork);
+		Debug.Log(artWork.name + " " + imageFile);
+		CopyArtWork(artWork);
 
 		this.imageFile = imageFile;
-		updateGUI();
+		UpdateGUI();
 	}
 
-	private void copyArtWork(API.ArtWork artWork)
+	private void CopyArtWork(Art artWork)
 	{
-		this.artWork = new API.ArtWork();
-		this.artWork.ArtWorkID = artWork.ArtWorkID;
-		this.artWork.Name = artWork.Name;
-		this.artWork.ArtistID = artWork.ArtistID;
+		this.artWork = new Art();
+		this.artWork.ID = artWork.ID;
+		this.artWork.name = artWork.name;
+		this.artWork.owner = artWork.owner;
+        this.artWork.tags = artWork.tags;
+        this.artWork.genres = artWork.genres;
 	}
 
-	private bool hasID()
+	private bool HasID()
 	{
 		return ArtWorkID != 0;
 	}
@@ -81,7 +84,7 @@ public class ArtworkData : FileBrowserListener
 		}
 	}
 
-	public API.ArtWork ArtWork {
+	public Art ArtWork {
 		get {
 			return this.artWork;
 		}
@@ -89,46 +92,46 @@ public class ArtworkData : FileBrowserListener
 
 	public string Name {
 		get {
-			return this.artWork.Name;
+			return this.artWork.name;
 		}
 		set {
-			this.artWork.Name = value;
+			this.artWork.name = value;
 		}
 	}
 
 	public int ArtWorkID {
 		get {
-			return this.artWork.ArtWorkID;
+			return this.artWork.ID;
 		}
 	}
 
 	public int ArtistID {
 		get {
-			return this.artWork.ArtistID;
+			return this.artWork.owner.ID;
 		}
 	}
 
-	public void upload()
+	public void Upload()
 	{
 		if (Name == "") {
 			Debug.Log("Empty name not allowed");
 			return;
 		}
-		if (imageFile == null || imagePathSource == null || imagePathSource == "") {
+		if (imageFile == null || string.IsNullOrEmpty(imagePathSource)) {
 			Debug.Log("No image selected.");
 			return;
 		}
-		StartCoroutine(postArt());
+		StartCoroutine(PostArt());
 	}
 
 	//Warning: still crashes Unity
 	//post the edited art 
-	private IEnumerator postArt()
+	private IEnumerator PostArt()
 	{
 		//check if ID present
 		API.ArtworkController ac = API.ArtworkController.Instance;
-		Debug.Log("test" + artWork.Name + " " + ArtWorkID);
-		if (!hasID()) {
+		Debug.Log("test" + artWork.name + " " + ArtWorkID);
+		if (!HasID()) {
 			//upload artwork image
 			string[] splitted = imagePathSource.Split(new char[]{'.'});
 			string mime = splitted[splitted.Length - 1];
@@ -139,7 +142,7 @@ public class ArtworkData : FileBrowserListener
 				//set id received from server
 				Debug.Log("receivedId " + artworkResponse.ArtWorkID);
 				//only save arwork id
-				this.artWork.ArtWorkID = artworkResponse.ArtWorkID;
+				this.artWork.ID = artworkResponse.ArtWorkID;
 				//upload new artwork info in closure
 
 				Debug.Log("Upload image was succesfull");}), 
@@ -155,11 +158,13 @@ public class ArtworkData : FileBrowserListener
 		
         Debug.Log("to send name " + Name);
 		//once id present update art info
-		ac.updateArtWork(this.artWork, 
-            ((response) => {
-		        Debug.Log("Update Artwork info successfull");
-            }), 
-		    ((error) => {
+        ac.updateArtWork(API.ArtWork.FromArt(artWork),
+            ((response) =>
+            {
+                Debug.Log("Update Artwork info successfull");
+            }),
+            ((error) =>
+            {
                 throw new UploadFailedException("Failed to update artwork info.");
             }));
 

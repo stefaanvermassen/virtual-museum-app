@@ -177,6 +177,16 @@ namespace API
 
 			return aw;
 		}
+
+        public static ArtWork FromArt(Art art)
+        {
+            return new ArtWork()
+            {
+                ArtWorkID = art.ID,
+                ArtistID = art.owner.ID,
+                Name = art.name
+            };
+        }
 	}
 }
 

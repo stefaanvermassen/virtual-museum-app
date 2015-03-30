@@ -5,12 +5,15 @@ using UnityEngine.UI;
 
 public class ArtRest : MonoBehaviour
 {
-	private WWW www;
+    private const string BASE_URL = "http://api.awesomepeople.tv/";
+    private const string TOKEN = "Token";
+    private const string ARTWORK = "api/artwork";
+
+    private WWW www;
+
 	//thread safe 
 	IEnumerator  getAllArt (GUIControl content)
 	{
-		Debug.Log ("t");
-		string imageArtworkUrl;
 		API.UserController uc = API.UserController.Instance;
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		ac.getAllArtworks (success: (response) => {
@@ -28,45 +31,44 @@ public class ArtRest : MonoBehaviour
 		error: (error) => {
 			Debug.Log ("An error occured while loading all artworks");
 		}); 
+
 		yield return null;
 	}
-	//show new art panel in catalog
+
+    //show new art panel in catalog
 	public void addNewArtToCatalog (GUIControl content)
 	{
 		//create a clone of the contents child
-		GUIControl item = content.addDynamicChild ();
+		GUIControl item = content.AddDynamicChild ();
 		
 		//add to content of catalog
-		content.add (item);
+		content.Add (item);
 		//update UI elements
-		item.GetComponent<ArtworkData> ().updateGUI ();
+		item.GetComponent<ArtworkData> ().UpdateGUI ();
 	}
 	
 	public void postArt (GUIControl content)
 	{
 		for (int i=0; i<content.transform.childCount; i++) {
-			content.getChild (i).GetComponent<ArtworkData> ().upload ();
+			content.GetChild (i).GetComponent<ArtworkData> ().Upload ();
 		}
 	}
 	
-	private void addArtToCatalog (API.ArtWork art,byte[] texture, GUIControl content)
+	private void addArtToCatalog (API.ArtWork art, byte[] texture, GUIControl content)
 	{
 		//add new item to catalog
-		GUIControl item = content.addDynamicChild ();
+		GUIControl item = content.AddDynamicChild ();
+        Art artwork = new Art();
+        artwork.name = art.Name;
+        artwork.ID = art.ArtWorkID;
+        artwork.owner = new User();
+        artwork.owner.ID = art.ArtistID;
 		//copy info in item
-		item.GetComponent<ArtworkData> ().init (art,texture);
-
-		
+		item.GetComponent<ArtworkData>().Init(artwork, texture);
 	}
 	
 	public void fillCatalogWithAllArt (GUIControl content)
 	{
-		
 		StartCoroutine (getAllArt (content));
-		
 	}
-	
-	private const string BASE_URL = "http://api.awesomepeople.tv/";
-	private const string TOKEN = "Token";
-	private const string ARTWORK = "api/artwork";
 }

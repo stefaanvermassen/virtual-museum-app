@@ -14,15 +14,15 @@ public class ObjectCatalogController : GUIControl {
 	
 	public void loadObjects(){
 		//empty catalog
-		catalogContent.removeAllChildren ();
+		catalogContent.RemoveAllChildren ();
 		//fill with objects from collection
 		for (int i = 0; i < getNrOfOwnedObjects(); i++) {
-			GUIControl item = catalogContent.addDynamicChild();
+			GUIControl item = catalogContent.AddDynamicChild();
 			ObjectCatalogItemController controller = item.GetComponent<ObjectCatalogItemController>();
 			controller.init(i);
 		}
 		//position content on top
-		setRelativePosition (0, 0);
+		SetRelativePosition (0, 0);
 	}
 	//the objects array should be loaded from the users collection of objects this is a stub
 

@@ -14,7 +14,7 @@ public class ObjectCatalogItemController : GUIControl {
 		// on click the index of the chosen object is saved and the catalog closed
 		button.onClick.AddListener(() => {
 			drawController.SetCurrentObject(index);
-			catalog.close();
+			catalog.Close();
 		});
 		var model = Instantiate(Catalog.GetObject(index));
 		model.transform.SetParent(button.transform, false);
@@ -23,7 +23,7 @@ public class ObjectCatalogItemController : GUIControl {
 		model.transform.localScale = new Vector3(100, 100, 100);
 		ChangeLayersRecursively(model.transform, LayerMask.NameToLayer("UI"));
 		//after transformation to show 3D object normalise back, it's rotated after adding
-		normalise ();
+		Normalise ();
 
 	}
 	void ChangeLayersRecursively(Transform trans, int layer) {
