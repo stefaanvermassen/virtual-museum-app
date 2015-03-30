@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading;
 using API;
 
 /// <summary>
@@ -22,12 +23,43 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
     public Texture2D debugTexture;
 
-    private Art debugArt;
+    private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
 
-    /*void Start() {
-        debugArt = new Art();
-        debugArt.LoadRemote("1");
-    }*/
+    void Start() {
+    }
+
+    Art GetArt(int id, MuseumArt ma = null) {
+        if (!artDictionary.ContainsKey(id)) {
+            //ManualResetEvent syncEvent = new ManualResetEvent(false);
+            Art art = new Art();
+            ArtworkController.Instance.getArtwork(
+                "" + id,
+                success: (artwork) => {
+                    art.name = artwork.Name;
+                    art.description = artwork.Name;
+                    art.ID = artwork.ArtWorkID;
+                    Debug.Log("Loaded");
+                },
+                error: (error) => {
+                });
+            ArtworkController.Instance.getArtworkData(
+                "" + id,
+                success: (artwork) => {
+                    art.image = new Texture2D(1, 1);
+                    art.image.LoadImage(artwork);
+                    Debug.Log("Loaded2");
+                    if(ma != null) ma.Reload();
+                    //syncEvent.Set();
+                },
+                error: (error) => {
+                    //syncEvent.Set();
+                });
+            //while (!done0 && !done1) { Thread.Sleep(10); };
+            //syncEvent.WaitOne();
+            artDictionary.Add(id, art);
+        }
+        return artDictionary[id];
+    }
 
     /// <summary>
     /// Create a MuseumData for serialization.
@@ -125,10 +157,8 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
         RemoveArt(x, y, z);
         MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
-        Art a = new Art();
-        a.ID = artID;
-        a.description = "Dit is een helehoop informatie over het hierboven hangende supercoole kunstwerk. \nNewline FTW!";
-
+        
+        Art a = GetArt(artID,ma);
         ma.position = position;
         ma.rotation = rotation;
         ma.material = frontMaterial;

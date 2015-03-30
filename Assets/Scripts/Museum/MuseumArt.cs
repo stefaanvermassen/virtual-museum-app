@@ -33,8 +33,15 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         Start();
     }
 
+    public void Reload() {
+        Start();
+    }
+
 	void Start () {
         Remove();
+        if (art.image != null) {
+            texture = art.image;
+        }
         ob = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var renderer = ob.GetComponent<MeshRenderer>();
         renderer.material = material;

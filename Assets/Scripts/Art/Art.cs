@@ -13,7 +13,7 @@ public class Art : Savable<Art, ArtData>
     public User owner;
     public List<string> tags = new List<string>();
     public List<string> genres = new List<string>();
-    public Texture2D image { get; private set; }
+    public Texture2D image { get; set; }
 
     public Art() {
         owner = new User();
