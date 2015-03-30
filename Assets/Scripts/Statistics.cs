@@ -12,7 +12,6 @@ public class Statistics
     private string lastScreen;
 
     private const string TIMING_CATEGORY = "SCREEN";
-    private const long TIMING_INTERVAL = 50L;
     private const string BUTTON_CATEGORY = "BUTTON";
     private const string BUTTON_EVENT = "BUTTON_CLICKED";
 
