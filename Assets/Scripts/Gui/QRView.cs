@@ -8,6 +8,8 @@ public class QRView : MonoBehaviour
     public Texture2D image;
     public Image QR;
     private bool set;
+    private Statistics statistics;
+    private string screenName = "QR";
 
     /// <summary>
     /// Initialize the QR view
@@ -16,6 +18,10 @@ public class QRView : MonoBehaviour
     {
         set = false;
         QR.enabled = false;
+        
+        // Register screen
+        statistics = Statistics.getInstance();
+        statistics.RegisterScreen(screenName);
     }
 
     /// <summary>
@@ -31,5 +37,31 @@ public class QRView : MonoBehaviour
         }
     }
 
-    // TODO: Implement save
+    /// <summary>
+    /// Closes the panel
+    /// </summary>
+    /// <param name="useless">Useless parameter, needed for onClickListener</param>
+    public void Close(int useless)
+    {
+        panel.SetActive(false);
+
+        // Remove screen and report the button clicked
+        statistics.ButtonClicked("Close");
+        statistics.RemoveScreen();
+
+    }
+
+    /// <summary>
+    /// Closes the panel and saves the QRcode
+    /// </summary>
+    /// <param name="useless">Useless parameter, needed for onClickListener</param>
+    public void Save(int useless)
+    {
+        // TODO: Implement save
+        panel.SetActive(false);
+
+        // Report button clicked
+        statistics.ButtonClicked("Save");
+        statistics.RemoveScreen();
+    }
 }

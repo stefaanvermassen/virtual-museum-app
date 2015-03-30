@@ -23,7 +23,7 @@ public class DrawController : MonoBehaviour {
     public float cameraSpeed = 10;
     public Tools tool = Tools.Drawing;
 
-    public int currentArt = 0;
+    public int currentArt = 1;
     public int currentObject = 0;
     public int currentFloor = 0;
     public int currentWall = 0;
