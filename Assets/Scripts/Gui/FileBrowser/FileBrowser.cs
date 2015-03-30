@@ -80,7 +80,7 @@ public class FileBrowser: GUIControl
 
 	public void drawFiles ()
 	{
-		string search =getSearch();
+		string search = getSearch();
 		if (previousDirectory == currentDirectory && prevSearch == search) {
 			return;
 		}
