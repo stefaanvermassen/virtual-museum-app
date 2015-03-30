@@ -21,27 +21,33 @@ public class FileBrowser: GUIControl
 	private string selectedFilePath;
 	public GUIControl placeHolder;
 	private FileBrowserListener listener;
-	private enum Type
-	{
-		FOLDER,
-		FILE    }
-	;
+
+    private enum Type
+    {
+        FOLDER,
+        FILE
+    };
+
 	public static string cropString(string s){
 		return s.Substring (Math.Max (0, s.Length - maxNrOfNameChars));
 	}
+
 	public string[] getFileExtensions ()
 	{
 		return fileExtensions;
 	}
+
 	public void open(FileBrowserListener listener){
 		this.listener = listener;
 		placeHolder.replace (this);
 	}
+
 	public override void close(){
 		placeHolder.replace (this);
 		listener.fileIsSelected ();
 
 	}
+
 	void Start ()
 	{
 		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
@@ -55,6 +61,7 @@ public class FileBrowser: GUIControl
 		} else if (currentDirectory == null) {
 			Debug.Log ("CurrentDirectory is null.");
 		}
+
 		//only show last 100 chars
 		directoryLabel.text = cropString(currentDirectory.FullName);
 		drawFiles ();
@@ -99,7 +106,6 @@ public class FileBrowser: GUIControl
 
 		// Remove the buttons
 		directoryView.removeAllChildren ();
-
 		if (currentDirectory.Parent != null) {
 			addButton (directoryUp, currentDirectory.Parent.FullName, directoryView, Type.FOLDER, true);
 		}
@@ -114,18 +120,17 @@ public class FileBrowser: GUIControl
 
 	private void addFileButton (FileInfo file, bool enabled)
 	{
-
-		addButton (file.Name, file.FullName, fileView, Type.FILE, enabled);
-
-
+		addButton(file.Name, file.FullName, fileView, Type.FILE, enabled);
 	}
+
 	private void setSelectedFile(String fullPath){
 		selectedFilePath = fullPath;
 		fileLabel.text = cropString (fullPath);
 	}
+
 	private void addDirectoryButton (DirectoryInfo dir)
 	{
-		addButton (dir.Name, dir.FullName, directoryView, Type.FOLDER, true);
+		addButton(dir.Name, dir.FullName, directoryView, Type.FOLDER, true);
 	}
 
 	private void addButton (string name, string fullName, GUIControl content, Type type, bool interactable)
@@ -138,7 +143,6 @@ public class FileBrowser: GUIControl
 		button.GetComponentsInChildren<Text> () [0].text = name;
 		string info = fullName;
 		button.onClick.AddListener (() => handleClick (info, type));
-
 	}
 
 	private bool fileIsSelectable (FileInfo file)
@@ -147,6 +151,7 @@ public class FileBrowser: GUIControl
 			if (file.Name.EndsWith (ext))
 				return true;
 		}
+
 		return false;
 	}
 
@@ -166,21 +171,21 @@ public class FileBrowser: GUIControl
 			break;
 		}
 	}
-	//TODO search file doesn't wokr yet
+	//TODO search file doesn't work yet
 
 	// Only returns directories, drives and images
 	private IEnumerable<FileInfo> getFileList (bool recursive, string searchPattern)
 	{
 		IEnumerable<FileInfo> files = Enumerable.Empty<FileInfo> ();
 		FileComparer comparer = new FileComparer ();
+
 		if (searchPattern.Length == 0) {
 			searchPattern = "*";
 		} else if (!searchPattern.Contains ("*")) {
 			searchPattern = "*" + searchPattern + "*";
 		}
+
 		files = files.Union (searchDirectory (currentDirectory, searchPattern, recursive), comparer);
-
-
 
 		return files;
 	}
