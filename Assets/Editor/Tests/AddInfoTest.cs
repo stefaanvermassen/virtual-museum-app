@@ -15,6 +15,12 @@ public class AddInfoTest
         Random.seed = SEED;
 	}
 
+    private void DestroyEverything()
+    {
+        var objects = GameObject.FindObjectsOfType<GameObject>();
+        foreach (var o in objects) GameObject.DestroyImmediate(o);
+    }
+    
     [Test]
     public void Initialize_InitializeInputFields_InitializedFields()
     {
@@ -26,6 +32,7 @@ public class AddInfoTest
 
             Assert.AreEqual(script.museumName.text, name, "TitleField should be " + name + " but it's " + script.museumName.text);
             Assert.AreEqual(script.museumDescription.text, description, "DescriptionField should be " + description + " but it's " + script.museumDescription.text);
+            DestroyEverything();
         }
     }
 
@@ -41,6 +48,10 @@ public class AddInfoTest
             script.save(RandomInt(0, int.MaxValue));
             Assert.AreEqual(script.museum.museumName, name, "MuseumName should be " + name + " but it's " + script.museum.museumName);
             Assert.AreEqual(script.museum.description, description, "MuseumDescription should be " + description + " but it's " + script.museum.description);
+            
+            // Destroy
+            script.panel.SetActive(true);
+            DestroyEverything();
         }
     }
 
@@ -59,6 +70,10 @@ public class AddInfoTest
 
             Assert.AreEqual(script.museum.museumName, name, "MuseumName should be " + name + " but it's " + script.museum.museumName);
             Assert.AreEqual(script.museum.description, description, "MuseumDescription should be " + description + " but it's " + script.museum.description);
+            
+            // Destroy
+            script.panel.SetActive(true);
+            DestroyEverything();
         }
     }
 
