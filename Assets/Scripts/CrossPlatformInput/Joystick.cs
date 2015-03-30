@@ -20,13 +20,15 @@ namespace UnityStandardAssets.CrossPlatformInput
 		public string verticalAxisName = "Vertical"; // The name given to the vertical axis for the cross platform input
 
 		Vector3 m_StartPos;
+		Vector3 m_ParentOffset;
 		bool m_UseX; // Toggle for using the x axis
 		bool m_UseY; // Toggle for using the Y axis
 		CrossPlatformInputManager.VirtualAxis m_HorizontalVirtualAxis; // Reference to the joystick in the cross platform input
 		CrossPlatformInputManager.VirtualAxis m_VerticalVirtualAxis; // Reference to the joystick in the cross platform input
-		
+
 		public void Start() {
 			m_StartPos = transform.localPosition;
+			m_ParentOffset = GetComponentInParent<Canvas> ().transform.position;
 			CreateVirtualAxes();
 		}
 
@@ -70,13 +72,13 @@ namespace UnityStandardAssets.CrossPlatformInput
 			Vector3 newPos = Vector3.zero;
 
 			if (m_UseX) {
-				int delta = (int)(data.position.x - m_StartPos.x);
+				int delta = (int)(data.position.x - m_StartPos.x - m_ParentOffset.x);
 				//delta = Mathf.Clamp(delta, - MovementRange, MovementRange);
 				newPos.x = delta;
 			}
 
 			if (m_UseY) {
-				int delta = (int)(data.position.y - m_StartPos.y);
+				int delta = (int)(data.position.y - m_StartPos.y - m_ParentOffset.y);
 				//delta = Mathf.Clamp(delta, -MovementRange, MovementRange);
 				newPos.y = delta;
 			}
