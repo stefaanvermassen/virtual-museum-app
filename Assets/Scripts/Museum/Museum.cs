@@ -9,7 +9,7 @@ using API;
 /// Internal museum representation. This can load and save museum 
 /// representations and has methods to modify the museum.
 /// </summary>
-public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
+public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
@@ -113,15 +113,14 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return "mus";
     }
 
-    void SaveRemote()
+    public void SaveRemote()
     {   //TODO
     }
-    void LoadRemote(string identifier)
+    public void LoadRemote(string identifier)
     {   //TODO
     }
-    DateTime LastModified(string identifier)
+    public DateTime LastModified(string identifier)
     {
-        //TODO
         return new DateTime();
     }
 
