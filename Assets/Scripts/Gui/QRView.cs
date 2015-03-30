@@ -46,8 +46,8 @@ public class QRView : MonoBehaviour
         panel.SetActive(false);
 
         // Remove screen and report the button clicked
-        statistics.RemoveScreen();
         statistics.ButtonClicked("Close");
+        statistics.RemoveScreen();
 
     }
 
@@ -58,8 +58,10 @@ public class QRView : MonoBehaviour
     public void Save(int useless)
     {
         // TODO: Implement save
-        Close(useless);
+        panel.SetActive(false);
+
         // Report button clicked
         statistics.ButtonClicked("Save");
+        statistics.RemoveScreen();
     }
 }

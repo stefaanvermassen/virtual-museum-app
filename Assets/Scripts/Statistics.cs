@@ -72,10 +72,6 @@ public class Statistics
         StartSession();
 
         googleAnalytics.LogScreen(screenName);
-        googleAnalytics.LogTiming(new TimingHitBuilder()
-            .SetTimingCategory(TIMING_CATEGORY)
-            .SetTimingInterval(TIMING_INTERVAL)
-            .SetTimingName(buildName(screenName)));
     }
 
     /// <summary>
@@ -116,8 +112,7 @@ public class Statistics
     {
         googleAnalytics.LogEvent(new EventHitBuilder()
             .SetEventCategory(BUTTON_CATEGORY)
-            .SetEventAction(BUTTON_EVENT)
-            .SetEventLabel(buildName(buttonName)));
+            .SetEventAction(BUTTON_EVENT + ": " + buildName(buttonName)));
     }
 
     /// <summary>
