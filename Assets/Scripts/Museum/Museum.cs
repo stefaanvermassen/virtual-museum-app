@@ -9,7 +9,7 @@ using API;
 /// Internal museum representation. This can load and save museum 
 /// representations and has methods to modify the museum.
 /// </summary>
-public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
+public class Museum : MonoBehaviour, Savable<Museum, MuseumData> {
 
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
@@ -26,9 +26,6 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
     private List<MuseumArt> artWaitingForDownload = new List<MuseumArt>();
     private HashSet<int> artIDsDownloading = new HashSet<int>(); 
-
-    void Start() {
-    }
 
     Art GetArt(int id, MuseumArt ma = null) {
         if (!artDictionary.ContainsKey(id)) {
@@ -69,14 +66,17 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>The MuseumData</returns>
     public MuseumData Save() {
         var tileData = new List<MuseumTileData>();
-        foreach (var t in tiles)
+        foreach (var t in tiles) {
             tileData.Add(t.Save());
+        }
         var artData = new List<MuseumArtData>();
-        foreach (var a in art)
+        foreach (var a in art) {
             artData.Add(a.Save());
+        }
         var objectData = new List<MuseumObjectData>();
-        foreach (var o in objects)
+        foreach (var o in objects) {
             objectData.Add(o.Save());
+        }
         return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
     }
 
@@ -86,12 +86,15 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <param name="data"></param>
     public void Load(MuseumData data) {
         Clear();
-        foreach (var tileData in data.Tiles)
+        foreach (var tileData in data.Tiles) {
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
-        foreach (var artData in data.Art)
+        }
+        foreach (var artData in data.Art) {
             AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
-        foreach (var objectData in data.Objects)
+        }
+        foreach (var objectData in data.Objects) {
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
+        }
         ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
@@ -113,15 +116,14 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         return "mus";
     }
 
-    void SaveRemote()
+    public void SaveRemote()
     {   //TODO
     }
-    void LoadRemote(string identifier)
+    public void LoadRemote(string identifier)
     {   //TODO
     }
-    DateTime LastModified(string identifier)
+    public DateTime LastModified(string identifier)
     {
-        //TODO
         return new DateTime();
     }
 
@@ -185,7 +187,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>True if the coordinate contains art</returns>
     public bool ContainsArt(int x, int y, int z) {
         foreach(MuseumArt a in art){
-            if (a.tileX == x && a.tileZ == z) return true;
+            if (a.tileX == x && a.tileZ == z) {
+                return true;
+            }
         }
         return false;
     }
@@ -199,7 +203,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>Art at the coordinate, or null when there is none.</returns>
     public MuseumArt GetArt(int x, int y, int z) {
         foreach (MuseumArt a in art) {
-            if (a.tileX == x && a.tileZ == z) return a;
+            if (a.tileX == x && a.tileZ == z) {
+                return a;
+            }
         }
         return null;
     }
@@ -215,7 +221,6 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         foreach (MuseumArt a in art) {
             if (a.tileX == x && a.tileZ == z) {
                 toRemove = a;
-                break;
             }
         }
         if (toRemove != null) {
@@ -258,7 +263,6 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         foreach (MuseumObject o in objects) {
             if (o.x == x && o.y == y && o.z == z) {
                 toRemove = o;
-                break;
             }
         }
         if (toRemove != null) {
@@ -275,7 +279,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>True if the coordinate contains an object.</returns>
     public bool ContainsObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
-            if (o.x == x && o.y == y && o.z == z) return true;
+            if (o.x == x && o.y == y && o.z == z) {
+                return true;
+            }
         }
         return false;
     }
@@ -289,7 +295,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>The object at x,y,z if it exists, null otherwise.</returns>
     public MuseumObject GetObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
-            if (o.x == x && o.y == y && o.z == z) return o;
+            if (o.x == x && o.y == y && o.z == z) {
+                return o;
+            }
         }
         return null;
     }
@@ -322,18 +330,38 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         var rightTile = GetTile(x + 1, y, z);
         var frontTile = GetTile(x, y, z + 1);
         var backTile = GetTile(x, y, z - 1);
-        if (leftTile == null) tile.left = true;
-        else leftTile.right = false;
-        if (rightTile == null) tile.right = true;
-        else rightTile.left = false;
-        if (frontTile == null) tile.front = true;
-        else frontTile.back = false;
-        if (backTile == null) tile.back = true;
-        else backTile.front = false;
-        if (leftTile != null) leftTile.UpdateEdges();
-        if (rightTile != null) rightTile.UpdateEdges();
-        if (backTile != null) backTile.UpdateEdges();
-        if (frontTile != null) frontTile.UpdateEdges();
+        if (leftTile == null) {
+            tile.left = true;
+        } else {
+            leftTile.right = false;
+        }
+        if (rightTile == null) {
+            tile.right = true;
+        } else {
+            rightTile.left = false;
+        }
+        if (frontTile == null) {
+            tile.front = true;
+        } else {
+            frontTile.back = false;
+        }
+        if (backTile == null) {
+            tile.back = true;
+        } else {
+            backTile.front = false;
+        }
+        if (leftTile != null){ 
+            leftTile.UpdateEdges();
+        }
+        if (rightTile != null){ 
+            rightTile.UpdateEdges();
+        }
+        if (backTile != null){ 
+            backTile.UpdateEdges();
+        }
+        if (frontTile != null) {
+            frontTile.UpdateEdges();
+        }
     }
 
     /// <summary>
@@ -354,14 +382,30 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             var rightTile = GetTile(x + 1, y, z);
             var frontTile = GetTile(x, y, z + 1);
             var backTile = GetTile(x, y, z - 1);
-            if (leftTile != null) leftTile.right = true;
-            if (rightTile != null) rightTile.left = true;
-            if (frontTile != null) frontTile.back = true;
-            if (backTile != null) backTile.front = true;
-            if (leftTile != null) leftTile.UpdateEdges();
-            if (rightTile != null) rightTile.UpdateEdges();
-            if (backTile != null) backTile.UpdateEdges();
-            if (frontTile != null) frontTile.UpdateEdges();
+            if (leftTile != null) {
+                leftTile.right = true;
+            }
+            if (rightTile != null){ 
+                rightTile.left = true;
+            }
+            if (frontTile != null){ 
+                frontTile.back = true;
+            }
+            if (backTile != null){ 
+                backTile.front = true;
+            }
+            if (leftTile != null){ 
+                leftTile.UpdateEdges();
+            }
+            if (rightTile != null){ 
+                rightTile.UpdateEdges();
+            }
+            if (backTile != null){
+                backTile.UpdateEdges();
+            }
+            if (frontTile != null){ 
+                frontTile.UpdateEdges();
+            }
         }
     }
 
@@ -384,7 +428,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>The tile at position x,y,z if it exists, null otherwise.</returns>
     public MuseumTile GetTile(int x, int y, int z) {
         foreach (MuseumTile tile in tiles) {
-            if (tile.x == x && tile.y == y && tile.z == z) return tile;
+            if (tile.x == x && tile.y == y && tile.z == z) {
+                return tile;
+            }
         }
         return null;
     }
