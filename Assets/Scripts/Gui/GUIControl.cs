@@ -29,8 +29,10 @@ public class GUIControl : MonoBehaviour
 		}
 	}
 
-	//both show and hide can be overriden to add extra close and open logic
-	
+	/// <summary>
+	/// Close this instance.
+	/// both show and hide can be overriden to add extra close and open logic
+	/// </summary>
 	public virtual void close ()
 	{
 		gameObject.SetActive (false);
@@ -40,6 +42,9 @@ public class GUIControl : MonoBehaviour
 	{
 		gameObject.SetActive (true);
 	}
+	/// <summary>
+	/// Flips the close open.
+	/// </summary>
 	public void flipCloseOpen(){
 		if (isOpen ()) {
 			close ();
@@ -47,13 +52,20 @@ public class GUIControl : MonoBehaviour
 			open ();
 		}
 	}
-	//add gui control to children
+	/// <summary>
+	/// Add the specified control.
+	/// </summary>
+	/// <param name="control">Control.</param>
 	public void add (GUIControl control)
 	{
 		control.gameObject.transform.SetParent (this.gameObject.transform,false);
 		//when an transform is added to it's parent it is scaled, for the sake of layout, performance and graphics all GUIControls are scale 1
 		control.normalise ();
 	}
+	/// <summary>
+	/// Adds the dynamic child.
+	/// </summary>
+	/// <returns>The dynamic child.</returns>
 	public GUIControl addDynamicChild(){
 		if (dynamicChild != null) {
 			GUIControl newDynamicChild = GUIControl.init (dynamicChild);
@@ -65,9 +77,14 @@ public class GUIControl : MonoBehaviour
 		}
 		return null;
 	}
+
 	//return an instantiatec prefab
-//	//Transform.SetParent method with the worldPositionStays parameter set to false
-//	//the UI Element is a child of a Layout Group it will be automatically positioned and the positioning step can be skipped
+	//Transform.SetParent method with the worldPositionStays parameter set to false
+	//the UI Element is a child of a Layout Group it will be automatically positioned and the positioning step can be skipped
+	/// <summary>
+	/// Init the specified controlType.
+	/// </summary>
+	/// <param name="controlType">Control type.</param>
 	public static GUIControl init (types controlType)
 	{
 		return (GUIControl)Instantiate ((GUIControl)Resources.Load ("gui/" + controlType.ToString (), typeof(GUIControl)));
@@ -99,25 +116,35 @@ public class GUIControl : MonoBehaviour
 
 	public void setRelativePosition (float x, float y)
 	{
-		RectTransform rectTransform = (RectTransform)transform;
+		RectTransform rectTransform = GetComponent<RectTransform> ();
+		if (rectTransform == null) {
+			rectTransform=this.gameObject.AddComponent<RectTransform>();
+		}
 		rectTransform.anchoredPosition = new Vector2 (x, y);
 	}
 
 	public float getRelativeX ()
 	{
-		RectTransform rectTransform = (RectTransform)transform;
+		RectTransform rectTransform = GetComponent<RectTransform> ();
+		if (rectTransform == null) {
+			rectTransform=this.gameObject.AddComponent<RectTransform>();
+		}
 		return rectTransform.anchoredPosition.x;
 
 	}
 
 	public float getRelativeY ()
 	{
-		RectTransform rectTransform = (RectTransform)transform;
+		RectTransform rectTransform = GetComponent<RectTransform> ();
+		if (rectTransform == null) {
+			rectTransform=this.gameObject.AddComponent<RectTransform>();
+		}
 		return rectTransform.anchoredPosition.y;
 	}
-	//switch place with GUIControl
+	//switch place with GUIControl, TODO use absolute coordinates
 	public virtual void replace (GUIControl control)
 	{
+
 		float x = control.getRelativeX ();
 		float y = control.getRelativeY ();
 		control.setRelativePosition (getRelativeX (), getRelativeY ());
@@ -128,8 +155,9 @@ public class GUIControl : MonoBehaviour
 
 	public void removeAllChildren ()
 	{
-		foreach (Transform child in this.transform) {
-			GameObject.Destroy (child.gameObject);
+		int children = this.transform.childCount;
+		for (int i = 0; i < children; i++) {
+			GameObject.DestroyImmediate(this.transform.GetChild (0).gameObject);
 		}
 	}
 
