@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -8,6 +8,7 @@ using System.Collections;
 public class GUIControl : MonoBehaviour
 {
 	public GUIControl dynamicChild;
+
 	//Todo
 	//add field for dynamic child, wich will be used to populate a gui control that has a dynamic amount of children eg file browser , catalog,..., 
 	public enum types
@@ -30,11 +31,16 @@ public class GUIControl : MonoBehaviour
 		}
 	}
 
+<<<<<<< HEAD
 	/// <summary>
 	/// Close this instance.
 	/// both show and hide can be overriden to add extra close and open logic
 	/// </summary>
 	public virtual void close ()
+=======
+	//both show and hide can be overriden to add extra close and open logic
+	public virtual void Close ()
+>>>>>>> origin/fix/filebrowserimprovements
 	{
 		gameObject.SetActive (false);
 	}
@@ -53,15 +59,31 @@ public class GUIControl : MonoBehaviour
 			Open ();
 		}
 	}
+<<<<<<< HEAD
+	/// <summary>
+	/// Add the specified control.
+	/// </summary>
+	/// <param name="control">Control.</param>
+	public void add (GUIControl control)
+=======
 	//add gui control to children
 	public void Add (GUIControl control)
+>>>>>>> origin/fix/filebrowserimprovements
 	{
 		control.gameObject.transform.SetParent (this.gameObject.transform,false);
 		//when an transform is added to it's parent it is scaled, for the sake of layout, performance and graphics all GUIControls are scale 1
 		control.Normalise ();
 	}
+<<<<<<< HEAD
+	/// <summary>
+	/// Adds the dynamic child.
+	/// </summary>
+	/// <returns>The dynamic child.</returns>
+	public GUIControl addDynamicChild(){
+=======
 
 	public GUIControl AddDynamicChild(){
+>>>>>>> origin/fix/filebrowserimprovements
 		if (dynamicChild != null) {
 			GUIControl newDynamicChild = GUIControl.Init (dynamicChild);
 
@@ -76,7 +98,15 @@ public class GUIControl : MonoBehaviour
 	//return an instantiatec prefab
 	//Transform.SetParent method with the worldPositionStays parameter set to false
 	//the UI Element is a child of a Layout Group it will be automatically positioned and the positioning step can be skipped
+<<<<<<< HEAD
+	/// <summary>
+	/// Init the specified controlType.
+	/// </summary>
+	/// <param name="controlType">Control type.</param>
+	public static GUIControl init (types controlType)
+=======
 	public static GUIControl Init (types controlType)
+>>>>>>> origin/fix/filebrowserimprovements
 	{
 		return (GUIControl)Instantiate ((GUIControl)Resources.Load ("gui/" + controlType.ToString (), typeof(GUIControl)));
 	}
@@ -117,19 +147,39 @@ public class GUIControl : MonoBehaviour
 
 	public float GetRelativeX ()
 	{
+<<<<<<< HEAD
 		RectTransform rectTransform = GetComponent<RectTransform> ();
 		if (rectTransform == null) {
 			rectTransform=this.gameObject.AddComponent<RectTransform>();
 		}
 		return rectTransform.anchoredPosition.x;
+=======
+		RectTransform rectTransform = (RectTransform)transform;
+>>>>>>> origin/fix/filebrowserimprovements
+
+		return rectTransform.anchoredPosition.x;
 	}
 
 	public float GetRelativeY ()
 	{
+<<<<<<< HEAD
 		RectTransform rectTransform = GetComponent<RectTransform> ();
 		if (rectTransform == null) {
 			rectTransform=this.gameObject.AddComponent<RectTransform>();
 		}
+		return rectTransform.anchoredPosition.y;
+	}
+	//switch place with GUIControl, TODO use absolute coordinates
+	public virtual void replace (GUIControl control)
+	{
+
+		float x = control.getRelativeX ();
+		float y = control.getRelativeY ();
+		control.setRelativePosition (getRelativeX (), getRelativeY ());
+		setRelativePosition (x, y);
+=======
+		RectTransform rectTransform = (RectTransform)transform;
+
 		return rectTransform.anchoredPosition.y;
 	}
 
@@ -140,6 +190,7 @@ public class GUIControl : MonoBehaviour
 		float y = control.GetRelativeY ();
 		control.SetRelativePosition (GetRelativeX (), GetRelativeY ());
 		SetRelativePosition (x, y);
+>>>>>>> origin/fix/filebrowserimprovements
 	}
 
 	//Todo
