@@ -67,7 +67,9 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
     /// Should be called before destroying this GameObject.
     /// </summary>
     public void Remove() {
-        if(plaque != null) Util.Destroy(plaque.gameObject);
+        if (plaque != null) {
+            Util.Destroy(plaque.gameObject);
+        }
 		Util.Destroy(ob);
     }
 }

@@ -56,8 +56,9 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         ob.transform.parent = gameObject.transform;
         var frontSide = (GameObject)GameObject.Instantiate(FastResource(type));
         frontSide.transform.parent = ob.transform;
-        if (wall) frontSide.layer = LayerMask.NameToLayer("Walls");
-        //frontSide.GetComponent<MeshRenderer>().material = frontMaterial;
+        if (wall) {
+            frontSide.layer = LayerMask.NameToLayer("Walls");
+        }
         var backSide = ReversedQuad();
         backSide.transform.parent = ob.transform;
         backSide.GetComponent<MeshRenderer>().material = backMaterial;
@@ -76,44 +77,72 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 	}
 
     public void Remove() {
-        if (upObject != null)       Destroy(upObject);
-        if (downObject != null)     Destroy(downObject);
-        if (leftObject != null)     Destroy(leftObject);
-        if (rightObject != null)    Destroy(rightObject);
-        if (frontObject != null)    Destroy(frontObject);
-        if (backObject != null)     Destroy(backObject);
+        if (upObject != null) {
+            Destroy(upObject);
+        }
+        if (downObject != null) {
+            Destroy(downObject);
+        }
+        if (leftObject != null) {
+            Destroy(leftObject);
+        }
+        if (rightObject != null){
+            Destroy(rightObject);
+        }
+        if (frontObject != null){
+            Destroy(frontObject);
+        }
+        if (backObject != null) {
+            Destroy(backObject);
+        }
     }
 
     /// <summary>
     /// Checks the neighbour booleans and creates or removes faces accordingly.
     /// </summary>
     public void UpdateEdges() {
+        UpdateLeftEdge();
+        UpdateRightEdge();
+        UpdateFrontEdge();
+        UpdateBackEdge();
+    }
+
+    void UpdateLeftEdge() {
         if (left && leftObject == null) {
             leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0), "WallQuad", true);
         }
         if (!left && leftObject != null) {
-			Util.Destroy(leftObject);
+            Util.Destroy(leftObject);
             leftObject = null;
         }
+    }
+
+    void UpdateRightEdge() {
         if (right && rightObject == null) {
             rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0), "WallQuad", true);
         }
         if (!right && rightObject != null) {
-			Util.Destroy(rightObject);
+            Util.Destroy(rightObject);
             rightObject = null;
         }
+    }
+
+    void UpdateFrontEdge() {
         if (front && frontObject == null) {
             frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0), "WallQuad", true);
         }
         if (!front && frontObject != null) {
-			Util.Destroy(frontObject);
+            Util.Destroy(frontObject);
             frontObject = null;
         }
+    }
+
+    void UpdateBackEdge() {
         if (back && backObject == null) {
             backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0), "WallQuad", true);
         }
         if (!back && backObject != null) {
-			Util.Destroy(backObject);
+            Util.Destroy(backObject);
             backObject = null;
         }
     }
