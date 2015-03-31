@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading;
 using API;
 
 /// <summary>
@@ -21,6 +22,46 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     public Material backMaterial;
 
     public Texture2D debugTexture;
+
+    private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
+    private List<MuseumArt> artWaitingForDownload = new List<MuseumArt>();
+    private HashSet<int> artIDsDownloading = new HashSet<int>(); 
+
+    void Start() {
+    }
+
+    Art GetArt(int id, MuseumArt ma = null) {
+        if (!artDictionary.ContainsKey(id)) {
+            if (artIDsDownloading.Contains(id)) {
+                return null;
+            }
+            artIDsDownloading.Add(id);
+            Art art = new Art();
+            ArtworkController.Instance.getArtwork(
+                "" + id,
+                success: (artwork) => {
+                    art.name = artwork.Name;
+                    art.description = artwork.Name;
+                    art.ID = artwork.ArtWorkID;
+                    Debug.Log("Loaded");
+                },
+                error: (error) => {
+                });
+            ArtworkController.Instance.getArtworkData(
+                "" + id,
+                success: (artwork) => {
+                    art.image = new Texture2D(1, 1);
+                    art.image.LoadImage(artwork);
+                    Debug.Log("Loaded2");
+                    artDictionary.Add(id, art);
+                    artIDsDownloading.Remove(id);
+                },
+                error: (error) => {
+                });
+            return null;
+        }
+        return artDictionary[id];
+    }
 
     /// <summary>
     /// Create a MuseumData for serialization.
@@ -118,9 +159,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
         RemoveArt(x, y, z);
         MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
-        Art a = new Art();
-        a.ID = artID;
         
+        Art a = GetArt(artID,ma);
+        if (a == null) {
+            a = new Art();
+            a.ID = artID;
+            artWaitingForDownload.Add(ma);
+        }
         ma.position = position;
         ma.rotation = rotation;
         ma.material = frontMaterial;
@@ -346,7 +391,19 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
 
 	
 	void Update () {
-	
+        List<MuseumArt> toUpdate = new List<MuseumArt>();
+        foreach (MuseumArt museumArt in artWaitingForDownload) {
+            if (artDictionary.ContainsKey(museumArt.art.ID)) {
+                toUpdate.Add(museumArt);
+            }
+        }
+        foreach (MuseumArt museumArt in toUpdate) {
+            if (art.Contains(museumArt)) {
+                museumArt.art = artDictionary[museumArt.art.ID];
+                museumArt.Reload();
+            }
+            artWaitingForDownload.Remove(museumArt);
+        }
 	}
 
 }

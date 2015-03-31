@@ -10,6 +10,7 @@ public class MuseumPlaque : MonoBehaviour {
 
     private GameObject plaqueObject;
     private GameObject textObject;
+    private GameObject cubeObject;
 
     void Start() {
         plaqueObject = new GameObject();
@@ -20,7 +21,8 @@ public class MuseumPlaque : MonoBehaviour {
         var rect = plaqueObject.GetComponent<RectTransform>();
         rect.sizeDelta = detail*size;
         rect.localScale = new Vector3(1, 1, 1) / detail;
-        rect.localPosition = new Vector3(0, 0, 0);
+        rect.localPosition = new Vector3(0, 0, 0.0101f);
+        rect.localRotation = Quaternion.Euler(new Vector3(0, 180, 0));
         canvas.renderMode = RenderMode.WorldSpace;
 
         textObject = new GameObject();
@@ -32,13 +34,16 @@ public class MuseumPlaque : MonoBehaviour {
         text.font = (Font)Resources.Load("Fonts/Artbrush");
         text.text = plaqueText;
         text.resizeTextForBestFit = true;
+        text.resizeTextMaxSize = 20;
+        text.resizeTextMinSize = 10;
+        text.alignment = TextAnchor.MiddleCenter;
         text.color = Color.black;
-	}
-	
-	void Update () {
-	
-	}
 
+        cubeObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cubeObject.transform.localScale = new Vector3(size.x*1.1f, size.y*1.1f, 0.01f);
+        cubeObject.transform.SetParent(gameObject.transform,false);
+	}
+	
     void OnDestroy() {
         Util.Destroy(plaqueObject);
         Util.Destroy(textObject);
