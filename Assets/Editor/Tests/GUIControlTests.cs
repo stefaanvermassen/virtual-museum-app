@@ -40,9 +40,9 @@ public class GUIControlTests
 		for (int i = 0; i < TEST_CASES; i++) {
 			float x = RandomFloat (-1000, 1000);
 			float y = RandomFloat (-1000, 1000);
-			test.setRelativePosition (x, y);
-			Assert.AreEqual (test.getRelativeX (), x, "Relative x position should be correctly set to " + x + " but it's " + test.getRelativeX ());
-			Assert.AreEqual (test.getRelativeY (), y, "Relative y position should be correctly set to " + y + " but it's " + test.getRelativeY ());
+			test.SetRelativePosition (x, y);
+			Assert.AreEqual (test.GetRelativeX (), x, "Relative x position should be correctly set to " + x + " but it's " + test.GetRelativeX ());
+			Assert.AreEqual (test.GetRelativeY (), y, "Relative y position should be correctly set to " + y + " but it's " + test.GetRelativeY ());
 		}
 		DestroyEverything ();
 	}
@@ -54,12 +54,12 @@ public class GUIControlTests
 		GUIControl test2 = createBasicGUIControl ();
 
 		for (int i = 0; i < TEST_CASES; i++) {
-			float x = test1.getRelativeX ();
-			float y = test1.getRelativeY ();
-			test1.replace (test2);
-			test1.replace (test2);
-			Assert.AreEqual (test1.getRelativeX (), x, "Relative x position should be correctly set to " + x + " but it's " + test1.getRelativeX ());
-			Assert.AreEqual (test1.getRelativeY (), y, "Relative y position should be correctly set to " + y + " but it's " + test1.getRelativeY ());
+			float x = test1.GetRelativeX ();
+			float y = test1.GetRelativeY ();
+			test1.Replace (test2);
+			test1.Replace (test2);
+			Assert.AreEqual (test1.GetRelativeX (), x, "Relative x position should be correctly set to " + x + " but it's " + test1.GetRelativeX ());
+			Assert.AreEqual (test1.GetRelativeY (), y, "Relative y position should be correctly set to " + y + " but it's " + test1.GetRelativeY ());
 		}
 		DestroyEverything ();
 	}
@@ -70,9 +70,9 @@ public class GUIControlTests
 		GUIControl test1 = createBasicGUIControl ();
 
 		for (int i = 0; i < TEST_CASES; i++) {
-			test1.open ();
-			test1.close ();
-			Assert.AreEqual (test1.isOpen (), false, "The open state should be " + false + " but it's " + test1.isOpen ());
+			test1.Open ();
+			test1.Close ();
+			Assert.AreEqual (test1.IsOpen (), false, "The open state should be " + false + " but it's " + test1.IsOpen ());
 		}
 		DestroyEverything ();
 	}
@@ -83,10 +83,10 @@ public class GUIControlTests
 		GUIControl test1 = createBasicGUIControl ();
 		
 		for (int i = 0; i < TEST_CASES; i++) {
-			bool state = test1.isOpen ();
-			test1.flipCloseOpen ();
-			test1.flipCloseOpen ();
-			Assert.AreEqual (test1.isOpen (), state, "The open state should be " + state + " but it's " + test1.isOpen ());
+			bool state = test1.IsOpen ();
+			test1.FlipCloseOpen ();
+			test1.FlipCloseOpen ();
+			Assert.AreEqual (test1.IsOpen (), state, "The open state should be " + state + " but it's " + test1.IsOpen ());
 		}
 		DestroyEverything ();
 	}
@@ -98,8 +98,8 @@ public class GUIControlTests
 		GUIControl test2 = createBasicGUIControl ();
 
 		for (int i = 0; i < TEST_CASES; i++) {
-			test1.add (test2);
-			Assert.AreEqual (test1.getChild (0), test2, "The first child of the control should be " + test2 + " but it's " + test1.getChild (0));
+			test1.Add (test2);
+			Assert.AreEqual (test1.GetChild (0), test2, "The first child of the control should be " + test2 + " but it's " + test1.GetChild (0));
 		}
 		DestroyEverything ();
 	}
@@ -110,9 +110,9 @@ public class GUIControlTests
 		GUIControl test1 = createBasicGUIControl ();
 		GUIControl test2 = createBasicGUIControl ();
 		for (int i = 0; i < TEST_CASES; i++) {
-			test1.add (test2);
-			test1.removeAllChildren ();
-			Assert.IsTrue (test1.getChild (0)== null, "The first child of the control should be null but it's " + test1.getChild (0));
+			test1.Add (test2);
+			test1.RemoveAllChildren ();
+			Assert.IsTrue (test1.GetChild (0)== null, "The first child of the control should be null but it's " + test1.GetChild (0));
 		}
 		DestroyEverything ();
 	}
@@ -123,7 +123,7 @@ public class GUIControlTests
 		GUIControl test1 = createBasicGUIControl ();
 
 		for (int i = 0; i < TEST_CASES; i++) {
-			GUIControl test2 = GUIControl.init (test1);
+			GUIControl test2 = GUIControl.Init (test1);
 			Assert.IsTrue (test2 != null, "Initialised GUIControl should be differen from null");
 
 		}
@@ -137,7 +137,7 @@ public class GUIControlTests
 		for (int i = 0; i < TEST_CASES; i++) {
 			Array values = Enum.GetValues (typeof(GUIControl.types));
 			GUIControl.types type = (GUIControl.types) values.GetValue (RandomInt (0, values.Length - 1));
-			GUIControl test1 = GUIControl.init (type);
+			GUIControl test1 = GUIControl.Init (type);
 		
 			Assert.IsTrue (test1 != null, "Initialised GUIControl should be differen from null");
 		}

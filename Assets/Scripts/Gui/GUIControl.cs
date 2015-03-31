@@ -34,7 +34,7 @@ public class GUIControl : MonoBehaviour
 	/// Close this instance.
 	/// both show and hide can be overriden to add extra close and open logic
 	/// </summary>
-	public virtual void close ()
+	public virtual void Close ()
 	{
 		gameObject.SetActive (false);
 	}
@@ -46,7 +46,7 @@ public class GUIControl : MonoBehaviour
 	/// <summary>
 	/// Flips the close open.
 	/// </summary>
-	public void flipCloseOpen(){
+	public void FlipCloseOpen(){
 		if (IsOpen ()) {
 			Close ();
 		} else {

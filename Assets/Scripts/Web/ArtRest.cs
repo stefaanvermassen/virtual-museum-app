@@ -22,7 +22,7 @@ public class ArtRest : MonoBehaviour
 				var artwork = child;
 				ac.getArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
 					//the id is differen between th 2 calls
-					addArtToCatalog (artwork,texture, content);
+					AddArtToCatalog (artwork,texture, content);
 				}, error: (error) => {
 					Debug.Log ("An error occured while loading artwork with ID: " + child.ArtWorkID.ToString ());});
 				
@@ -36,7 +36,7 @@ public class ArtRest : MonoBehaviour
 	}
 
     //show new art panel in catalog
-	public void addNewArtToCatalog (GUIControl content)
+	public void AddNewArtToCatalog (GUIControl content)
 	{
 		//create a clone of the contents child
 		GUIControl item = content.AddDynamicChild ();
@@ -47,14 +47,14 @@ public class ArtRest : MonoBehaviour
 		item.GetComponent<ArtworkData> ().UpdateGUI ();
 	}
 	
-	public void postArt (GUIControl content)
+	public void PostArt (GUIControl content)
 	{
 		for (int i=0; i<content.transform.childCount; i++) {
 			content.GetChild (i).GetComponent<ArtworkData> ().Upload ();
 		}
 	}
 	
-	private void addArtToCatalog (API.ArtWork art, byte[] texture, GUIControl content)
+	private void AddArtToCatalog (API.ArtWork art, byte[] texture, GUIControl content)
 	{
 		//add new item to catalog
 		GUIControl item = content.AddDynamicChild ();
@@ -67,7 +67,7 @@ public class ArtRest : MonoBehaviour
 		item.GetComponent<ArtworkData>().Init(artwork, texture);
 	}
 	
-	public void fillCatalogWithAllArt (GUIControl content)
+	public void FillCatalogWithAllArt (GUIControl content)
 	{
 		StartCoroutine (getAllArt (content));
 	}
