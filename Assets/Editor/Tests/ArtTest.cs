@@ -24,7 +24,7 @@ public class ArtTest {
         Assert.AreEqual(art.owner.name, user.name, "OwnerName should be " + user.name + " but it's " + art.owner.name);
         Assert.IsEmpty(art.tags, "Tags should be empty");
         Assert.IsEmpty(art.genres, "Genres should be empty");
-        Assert.IsNull(art.image, "Image should be null");
+        Assert.IsNotNull(art.image, "Image should not be null");
     }
 
     [Test]
@@ -60,6 +60,6 @@ public class ArtTest {
         Assert.AreEqual(newData.Tags[0], tag, "Tag should be " + tag + " but it's " + newData.Tags[0]);
         Assert.AreEqual(newData.Genres[0], genre1, "Genre1 should be " + genre1 + " but it's " + newData.Genres[0]);
         Assert.AreEqual(newData.Genres[1], genre2, "Genre2 should be " + genre2 + " but it's " + newData.Genres[1]);
-        Assert.IsNull(art.image, "Image should be null");
+        Assert.IsNotNull(art.image, "Image should not be null");
     }
 }

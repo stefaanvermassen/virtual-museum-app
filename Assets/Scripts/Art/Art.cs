@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using API;
 
-public class Art : Storable<Art, ArtData>
+public class Art : Savable<Art, ArtData>
 {
 
     public int ID { get; set; }
@@ -11,7 +13,7 @@ public class Art : Storable<Art, ArtData>
     public User owner;
     public List<string> tags = new List<string>();
     public List<string> genres = new List<string>();
-    public byte[] image { get; private set; }
+    public Texture2D image { get; set; }
 
     public Art() {
         owner = new User();
@@ -24,7 +26,8 @@ public class Art : Storable<Art, ArtData>
     public ArtData Save()
     {
         var userData = owner.Save();
-        return new ArtData(ID, name, description, userData, tags, genres, image);
+        //var imageData = image.EncodeToPNG();
+        return new ArtData(ID, name, description, userData, tags, genres, null);
     }
 
     /// <summary>
@@ -39,6 +42,42 @@ public class Art : Storable<Art, ArtData>
         owner.Load(data.Owner);
         tags = data.Tags;
         genres = data.Genres;
-        image = data.Image;
+        image = new Texture2D(1, 1);
+        image.LoadImage(data.Image);
+    }
+
+    public string getFolder() {
+        return "Art";
+    }
+    public string getFileName() {
+        return name;
+    }
+    public string getExtension(){
+        return ".art";   
+    }
+    public void SaveRemote() {
+        //TODO: implement
+    }
+    public void LoadRemote(string identifier) {
+        ArtworkController.Instance.getArtwork(
+            identifier, 
+            success: (art) => {
+                ID = art.ArtWorkID;
+                name = art.Name;
+                Debug.Log(name);
+                },
+            error: (error) => { Debug.Log("NOPE"); }
+        );
+        ArtworkController.Instance.getArtworkData(
+            identifier,
+            success: (art) => {
+                image = new Texture2D(1, 1);
+                image.LoadImage(art);
+            },
+            error: (error) => { Debug.Log("NOPE"); }
+        ); 
+    }
+    public DateTime LastModified(string identifier) {
+        return DateTime.Now;
     }
 }

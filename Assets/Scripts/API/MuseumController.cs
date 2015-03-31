@@ -8,6 +8,7 @@ namespace API
 {
 	/// <summary>
 	/// Museum controller.
+	/// To create a new museum, first create, than add the data.
 	/// </summary>
 	public class MuseumController: APIConnection
 	{
@@ -28,9 +29,9 @@ namespace API
 		/// <summary>
 		/// Gets the museum.
 		/// </summary>
-		/// <returns>The museum.</returns>
+		/// <returns>An HTTP.Request to follow up on the request.</returns>
 		/// <param name="id">Identifier.</param>
-		/// <param name="success">Success.</param>
+		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you a museum object with the needed id.</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request getMuseum(string id, Action<Museum> success = null, Action<API.API_Error> error = null) {
 			return get (BASE_URL + MUSEUM + "/" + id, ((response) => {
@@ -40,12 +41,12 @@ namespace API
 		}
 
 		/// <summary>
-		/// Creates the museum.
+		/// Creates the museum, should be the first task when creating a museum
 		/// </summary>
-		/// <returns>The museum.</returns>
-		/// <param name="museum">Museum.</param>
-		/// <param name="success">Success.</param>
-		/// <param name="error">Error.</param>
+		/// <returns>HTTP.Request</returns>
+		/// <param name="museum">Museum is an API class which contains all necessary fields, MuseumID can be left empty when creating a new museum</param>
+		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you a museum object with the needed id.</param>
+		/// <param name="error">Error. Handle errors</param>
 		public HTTP.Request createMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
 			var form = museum.ToDictionary ();
@@ -60,11 +61,11 @@ namespace API
 
 
 		/// <summary>
-		/// Updates the museum.
+		/// Updates the museum info, should be called when renaming, or adding more info.
 		/// </summary>
-		/// <returns>The museum.</returns>
-		/// <param name="museum">Museum.</param>
-		/// <param name="success">Success.</param>
+		/// <returns>HTTP.Request</returns>
+		/// <param name="museum">Museum is an API class which contains all APIfields, MuseumID is required</param>
+		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you a museum object with the needed id.</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request updateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
@@ -82,15 +83,14 @@ namespace API
 		/// Uploads the museum.
 		/// </summary>
 		/// <returns>The museum.</returns>
-		/// <param name="name">Name.</param>
-		/// <param name="imageLocation">Image location.</param>
-		/// <param name="image">Image.</param>
-		/// <param name="success">Success.</param>
+		/// <param name="name">Name of the museum</param>
+		/// <param name="museum">Byte array which contains the museum data</param>
+		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, returns a Response when succesfull</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request uploadMuseumData(string id, string name, string museumLocation, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request uploadMuseumData(string id, string name, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
 		{
 			WWWForm form = new WWWForm();
-			form.AddBinaryData(museumLocation, museum, name, "museum/binary");
+			form.AddBinaryData("museum", museum, name, "museum/binary");
 			return postForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
 		}
 
@@ -109,9 +109,9 @@ namespace API
 		/// <summary>
 		/// Gets the museum data.
 		/// </summary>
-		/// <returns>The museum data.</returns>
+		/// <returns>HTTP.Reuqest</returns>
 		/// <param name="id">Identifier.</param>
-		/// <param name="success">Success.</param>
+		/// <param name="success">Success, closure variable is a byte[], which contains the museum data</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request getMuseumData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
 			return get (BASE_URL + MUSEUM + "/" + id + "/data", ((response) => {
@@ -123,8 +123,8 @@ namespace API
 		/// <summary>
 		/// Gets the random museum.
 		/// </summary>
-		/// <returns>The random museum.</returns>
-		/// <param name="success">Success.</param>
+		/// <returns>HTTP.Request</returns>
+		/// <param name="success">Succes gives the random museum object, after this you should call the getMuseumData function</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request getRandomMuseum(Action<Museum> success = null, Action<API.API_Error> error = null)
 		{

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 
 [Serializable]
-public class ArtData : Data<Art> {
+public class ArtData : Data<Art>
+{
 
     public int ID { get; private set; }
     public string Name { get; private set; }
