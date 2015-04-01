@@ -368,7 +368,7 @@ public class Storage : MonoBehaviour {
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
         TestFileStream.Close();
-        Debug.Log("Data Saved Locally.");
+        Debug.Log("Data Saved Locally to "+path);
     }
 
     /// <summary>

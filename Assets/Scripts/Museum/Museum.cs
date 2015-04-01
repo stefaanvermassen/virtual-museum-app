@@ -524,9 +524,19 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     {
         museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
-        req = cont.getMuseum(""+museumID); //dit gebruikt denk ik de unityVersion check -> confirmed
-        Thread requestThread = new Thread(LoadMuseumThread);
-        requestThread.Start();
+        req = cont.getMuseum("" + museumID,
+            success: (museum) => {
+                description = museum.Description;
+                museumName = museum.Description;
+                privacy = museum.Privacy;
+            }); //dit gebruikt denk ik de unityVersion check -> confirmed
+        req = cont.getMuseumData("" + museumID,
+            success: (museum) => {
+                Stream stream = new MemoryStream(museum);
+                BinaryFormatter deserializer = new BinaryFormatter();
+                MuseumData data = (MuseumData)deserializer.Deserialize(stream);
+                Load(data);
+            });
     }
 
     private void LoadMuseumThread()
@@ -537,7 +547,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             if (req.isDone)
             {
                 Debug.Log("Request done, copy data here.");
-                //TODO: copy data from request into variables
                 break;
             }
             Debug.Log("Request not done, sleep and check again");

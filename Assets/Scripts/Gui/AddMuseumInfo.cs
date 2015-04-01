@@ -25,18 +25,23 @@ public class AddMuseumInfo : MonoBehaviour
     }
 
     /// <summary>
-    /// This will save the new Museum info when
-    /// the confirm button is pressed
+    /// This will save the new Museum remotely
     /// </summary>
     /// <param name="useless">Does nothing but is needed to be seen as a ClickListener</param>
     public void Save(int useless)
     {
         museum.museumName = museumName.text;
         museum.description = museumDescription.text;
+        museum.museumID = 1;
+        Storage.Instance.SaveLocal(museum);
 
-        Storage.Instance.setStoreMode(Storage.StoreMode.Only_Local);
-        Storage.Instance.Save(museum);
-
+        panel.SetActive(false);
+    }
+    /// <summary>
+    /// This will load the museum remotely
+    /// </summary>
+    public void Load() {
+        Storage.Instance.LoadRemote(museum, "1");
         panel.SetActive(false);
     }
 }
