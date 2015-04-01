@@ -17,7 +17,7 @@ public class Remote_Savable
         Museum museum = new Museum();
         Storage st = Storage.Instance;
         st.LoadRemote(museum, "1");
-        Assert.AreEqual(museum.req.uri, "http://api.awesomepeople.tv/api/museum/1");
+        Assert.AreEqual("http://api.awesomepeople.tv/api/museum/1/data", museum.req.uri );
         //if it is Okay or wheter the data was loaded correctly is not the Storage responsibility, this test should not break because of bugs in that code
     }
 
@@ -32,7 +32,7 @@ public class Remote_Savable
         Storage st = Storage.Instance;
         st.SaveRemote(museum);
         Debug.Log(museum.req.uri);
-        Assert.AreEqual(museum.req.uri, "http://api.awesomepeople.tv/api/museum/10");
+        Assert.AreEqual("http://api.awesomepeople.tv/api/museum/10", museum.req.uri);
         //if it is Okay or wheter the data was saved correctly is not the Storage responsibility, this test should not break because of bugs in that code
     }
 
