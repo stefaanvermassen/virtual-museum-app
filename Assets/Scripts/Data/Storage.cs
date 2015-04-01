@@ -68,6 +68,9 @@ public class Storage : MonoBehaviour {
                 SaveLocal<T, D>(st);
                 if (lan()) SaveRemote<T, D>(st);
                 break;
+            default:
+                //This should not happen, but sonar wants a default case, so I'll throw an exception, because this would be a VERY unexpected outcome
+                throw new Exception("Unexpected SaveMode in Storage component");
 
         }
     }
@@ -148,7 +151,7 @@ public class Storage : MonoBehaviour {
         switch (Mode)
         {
         case StoreMode.Only_Local:
-                SaveLocal(data);
+            SaveLocal(data);
             break;
         case StoreMode.Local_And_Remote:
             SaveLocal(data);
@@ -161,6 +164,10 @@ public class Storage : MonoBehaviour {
             SaveLocal(data);
             if (lan()) SaveRemote(data);
             break;
+        default:
+            //This should not happen, but sonar wants a default case, so I'll throw an exception, because this would be a VERY unexpected outcome
+            throw new Exception("Unexpected SaveMode in Storage component");
+
 
         }
     }
@@ -308,6 +315,9 @@ public class Storage : MonoBehaviour {
                 case RuntimePlatform.OSXEditor:
                     Mode = Storage.StoreMode.Local_And_Remote;
                     break;
+                default:
+                    //Unsupported platform, should not happen, but Sonar wants default case, so I'll throw an exception
+                    throw new Exception("Unexpected Platform, Storage doesn't know where to save stuff, how did you manage to run this app on a magical platform?");
             }
             SavePlayerPrefs();
         }
@@ -334,10 +344,6 @@ public class Storage : MonoBehaviour {
     protected Storage()
     {
     }
-
-    // Update is called once per frame
-    void Update()
-    {}
 
 
     /// <summary>
