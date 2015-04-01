@@ -83,28 +83,15 @@ namespace API
 		/// Uploads the museum.
 		/// </summary>
 		/// <returns>The museum.</returns>
-<<<<<<< HEAD
-		/// <param name="name">Name.</param>
-		/// <param name="museumLocation">Image location.</param>
-		/// <param name="image">Image.</param>
-		/// <param name="success">Success.</param>
-		/// <param name="error">Error.</param>
-		public HTTP.Request UploadMuseumData(string id, string name, string museumLocation, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
-		{
-			WWWForm form = new WWWForm();
-			form.AddBinaryData(museumLocation, museum, name, "museum/binary");
-			return PostForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
-=======
 		/// <param name="name">Name of the museum</param>
 		/// <param name="museum">Byte array which contains the museum data</param>
 		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, returns a Response when succesfull</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request uploadMuseumData(string id, string name, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UploadMuseumData(string id, string name, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
 		{
 			WWWForm form = new WWWForm();
 			form.AddBinaryData("museum", museum, name, "museum/binary");
-			return postForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
->>>>>>> FETCH_HEAD
+			return PostForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
 		}
 
 		/// <summary>
