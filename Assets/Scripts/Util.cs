@@ -17,4 +17,17 @@ public class Util {
 			Object.Destroy(obj);
 		} else Object.DestroyImmediate(obj);
 	}
+
+    /// <summary>
+    /// Sets an objects layer, and all it's children's layers to a specific layer.
+    /// Very useful as Unity does not provide this out of the box.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="layer"></param>
+    public static void SetLayerRecursively(GameObject obj, int layer) {
+        obj.layer = layer;
+        foreach (Transform child in obj.transform) {
+            SetLayerRecursively(child.gameObject, layer);
+        }
+    }
 }
