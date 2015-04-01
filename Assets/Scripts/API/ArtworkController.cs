@@ -8,6 +8,7 @@ namespace API
 {
 	/// <summary>
 	/// Artwork controller.
+	/// To create: uploadImage, and after this fill in the necessary fields, and call updateMuseum
 	/// </summary>
 	public class ArtworkController: APIConnection
 	{
@@ -102,8 +103,8 @@ namespace API
 		/// Gets the artwork data.
 		/// </summary>
 		/// <returns>The artwork data.</returns>
-		/// <param name="id">Identifier.</param>
-		/// <param name="success">Success.</param>
+		/// <param name="id">ArtWork Identifier. The ArtWorkID for which we request the data</param>
+		/// <param name="success">Success. Returns a byte[]</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request GetArtworkData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
 			return Get (BASE_URL + ARTWORK + "/" + id + "/data", ((response) => {
@@ -117,9 +118,9 @@ namespace API
 		/// </summary>
 		/// <returns>The image.</returns>
 		/// <param name="name">Name.</param>
-		/// <param name="mime">MIME.</param>
-		/// <param name="imageLocation">Image location.</param>
-		/// <param name="image">Image.</param>
+		/// <param name="mime">MIME. Image type, to easily decode on the backend</param>
+		/// <param name="imageLocation">Image location. Param to find it by on the backend</param>
+		/// <param name="image">Image. the image as a byte[]</param>
 		/// <param name="success">Success. Returns an artwork</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request UploadImage(string name, string mime, string imageLocation, byte[] image, Action<ArtWork> success = null, Action<API.API_Error> error = null)
@@ -138,8 +139,8 @@ namespace API
 		/// <summary>
 		/// Updates the art work.
 		/// </summary>
-		/// <returns>The art work.</returns>
-		/// <param name="artwork">Artwork.</param>
+		/// <returns>HTTP.Request</returns>
+		/// <param name="artwork">Artwork. the artwork to update, filled we the new values.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
 		public HTTP.Request UpdateArtWork(ArtWork artwork, Action<HTTP.Response> success = null, Action<API.API_Error> error = null){
@@ -180,4 +181,3 @@ namespace API
 		}
 	}
 }
-

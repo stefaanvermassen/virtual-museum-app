@@ -2,25 +2,70 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading;
 using API;
+using System.Threading;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 /// <summary>
 /// Internal museum representation. This can load and save museum 
 /// representations and has methods to modify the museum.
 /// </summary>
-public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
-
+public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
+{
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
+    public int museumID;
     public string description;
+    public API.Level privacy;
 
     public Material frontMaterial;
     public Material backMaterial;
 
     public Texture2D debugTexture;
+
+    private API.MuseumController cont;
+    public HTTP.Request req;
+    private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
+    private List<MuseumArt> artWaitingForDownload = new List<MuseumArt>();
+    private HashSet<int> artIDsDownloading = new HashSet<int>(); 
+
+    Art GetArt(int id, MuseumArt ma = null) {
+        if (!artDictionary.ContainsKey(id)) {
+            if (artIDsDownloading.Contains(id)) {
+                return null;
+            }
+            artIDsDownloading.Add(id);
+            Art art = new Art();
+            ArtworkController.Instance.getArtwork(
+                "" + id,
+                success: (artwork) => {
+                    art.name = artwork.Name;
+                    art.description = artwork.Name;
+                    art.ID = artwork.ArtWorkID;
+                    Debug.Log("Loaded");
+                },
+                error: (error) => {
+                });
+            ArtworkController.Instance.getArtworkData(
+                "" + id,
+                success: (artwork) => {
+                    art.image = new Texture2D(1, 1);
+                    art.image.LoadImage(artwork);
+                    Debug.Log("Loaded2");
+                    artDictionary.Add(id, art);
+                    artIDsDownloading.Remove(id);
+                },
+                error: (error) => {
+                });
+            return null;
+        }
+        return artDictionary[id];
+    }
 
     /// <summary>
     /// Create a MuseumData for serialization.
@@ -28,15 +73,18 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>The MuseumData</returns>
     public MuseumData Save() {
         var tileData = new List<MuseumTileData>();
-        foreach (var t in tiles)
+        foreach (var t in tiles) {
             tileData.Add(t.Save());
+        }
         var artData = new List<MuseumArtData>();
-        foreach (var a in art)
+        foreach (var a in art) {
             artData.Add(a.Save());
+        }
         var objectData = new List<MuseumObjectData>();
-        foreach (var o in objects)
+        foreach (var o in objects) {
             objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
+        }
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description, museumID, privacy);
     }
 
     /// <summary>
@@ -45,42 +93,24 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <param name="data"></param>
     public void Load(MuseumData data) {
         Clear();
-        foreach (var tileData in data.Tiles)
+        foreach (var tileData in data.Tiles) {
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
-        foreach (var artData in data.Art)
+        }
+        foreach (var artData in data.Art) {
             AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
-        foreach (var objectData in data.Objects)
+        }
+        foreach (var objectData in data.Objects) {
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
+        }
         ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
+        museumID = data.MuseumId;
+        privacy = data.Privacy;
     }
 
-
-    public string getFolder()
+    public DateTime LastModified(string identifier)
     {
-        return "museums";
-    }
-
-    public string getFileName()
-    {
-        return museumName.Replace(' ','_');
-    }
-
-    public string getExtension()
-    {
-        return "mus";
-    }
-
-    void SaveRemote()
-    {   //TODO
-    }
-    void LoadRemote(string identifier)
-    {   //TODO
-    }
-    DateTime LastModified(string identifier)
-    {
-        //TODO
         return new DateTime();
     }
 
@@ -118,9 +148,13 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
         RemoveArt(x, y, z);
         MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
-        Art a = new Art();
-        a.ID = artID;
         
+        Art a = GetArt(artID,ma);
+        if (a == null) {
+            a = new Art();
+            a.ID = artID;
+            artWaitingForDownload.Add(ma);
+        }
         ma.position = position;
         ma.rotation = rotation;
         ma.material = frontMaterial;
@@ -140,7 +174,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>True if the coordinate contains art</returns>
     public bool ContainsArt(int x, int y, int z) {
         foreach(MuseumArt a in art){
-            if (a.tileX == x && a.tileZ == z) return true;
+            if (a.tileX == x && a.tileZ == z) {
+                return true;
+            }
         }
         return false;
     }
@@ -154,7 +190,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>Art at the coordinate, or null when there is none.</returns>
     public MuseumArt GetArt(int x, int y, int z) {
         foreach (MuseumArt a in art) {
-            if (a.tileX == x && a.tileZ == z) return a;
+            if (a.tileX == x && a.tileZ == z) {
+                return a;
+            }
         }
         return null;
     }
@@ -170,7 +208,6 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         foreach (MuseumArt a in art) {
             if (a.tileX == x && a.tileZ == z) {
                 toRemove = a;
-                break;
             }
         }
         if (toRemove != null) {
@@ -213,7 +250,6 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         foreach (MuseumObject o in objects) {
             if (o.x == x && o.y == y && o.z == z) {
                 toRemove = o;
-                break;
             }
         }
         if (toRemove != null) {
@@ -230,7 +266,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>True if the coordinate contains an object.</returns>
     public bool ContainsObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
-            if (o.x == x && o.y == y && o.z == z) return true;
+            if (o.x == x && o.y == y && o.z == z) {
+                return true;
+            }
         }
         return false;
     }
@@ -244,7 +282,9 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>The object at x,y,z if it exists, null otherwise.</returns>
     public MuseumObject GetObject(int x, int y, int z) {
         foreach (MuseumObject o in objects) {
-            if (o.x == x && o.y == y && o.z == z) return o;
+            if (o.x == x && o.y == y && o.z == z) {
+                return o;
+            }
         }
         return null;
     }
@@ -277,18 +317,38 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
         var rightTile = GetTile(x + 1, y, z);
         var frontTile = GetTile(x, y, z + 1);
         var backTile = GetTile(x, y, z - 1);
-        if (leftTile == null) tile.left = true;
-        else leftTile.right = false;
-        if (rightTile == null) tile.right = true;
-        else rightTile.left = false;
-        if (frontTile == null) tile.front = true;
-        else frontTile.back = false;
-        if (backTile == null) tile.back = true;
-        else backTile.front = false;
-        if (leftTile != null) leftTile.UpdateEdges();
-        if (rightTile != null) rightTile.UpdateEdges();
-        if (backTile != null) backTile.UpdateEdges();
-        if (frontTile != null) frontTile.UpdateEdges();
+        if (leftTile == null) {
+            tile.left = true;
+        } else {
+            leftTile.right = false;
+        }
+        if (rightTile == null) {
+            tile.right = true;
+        } else {
+            rightTile.left = false;
+        }
+        if (frontTile == null) {
+            tile.front = true;
+        } else {
+            frontTile.back = false;
+        }
+        if (backTile == null) {
+            tile.back = true;
+        } else {
+            backTile.front = false;
+        }
+        if (leftTile != null){ 
+            leftTile.UpdateEdges();
+        }
+        if (rightTile != null){ 
+            rightTile.UpdateEdges();
+        }
+        if (backTile != null){ 
+            backTile.UpdateEdges();
+        }
+        if (frontTile != null) {
+            frontTile.UpdateEdges();
+        }
     }
 
     /// <summary>
@@ -309,14 +369,30 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
             var rightTile = GetTile(x + 1, y, z);
             var frontTile = GetTile(x, y, z + 1);
             var backTile = GetTile(x, y, z - 1);
-            if (leftTile != null) leftTile.right = true;
-            if (rightTile != null) rightTile.left = true;
-            if (frontTile != null) frontTile.back = true;
-            if (backTile != null) backTile.front = true;
-            if (leftTile != null) leftTile.UpdateEdges();
-            if (rightTile != null) rightTile.UpdateEdges();
-            if (backTile != null) backTile.UpdateEdges();
-            if (frontTile != null) frontTile.UpdateEdges();
+            if (leftTile != null) {
+                leftTile.right = true;
+            }
+            if (rightTile != null){ 
+                rightTile.left = true;
+            }
+            if (frontTile != null){ 
+                frontTile.back = true;
+            }
+            if (backTile != null){ 
+                backTile.front = true;
+            }
+            if (leftTile != null){ 
+                leftTile.UpdateEdges();
+            }
+            if (rightTile != null){ 
+                rightTile.UpdateEdges();
+            }
+            if (backTile != null){
+                backTile.UpdateEdges();
+            }
+            if (frontTile != null){ 
+                frontTile.UpdateEdges();
+            }
         }
     }
 
@@ -339,14 +415,142 @@ public class Museum : MonoBehaviour, Storable<Museum, MuseumData> {
     /// <returns>The tile at position x,y,z if it exists, null otherwise.</returns>
     public MuseumTile GetTile(int x, int y, int z) {
         foreach (MuseumTile tile in tiles) {
-            if (tile.x == x && tile.y == y && tile.z == z) return tile;
+            if (tile.x == x && tile.y == y && tile.z == z) {
+                return tile;
+            }
         }
         return null;
     }
 
 	
 	void Update () {
-	
+        List<MuseumArt> toUpdate = new List<MuseumArt>();
+        foreach (MuseumArt museumArt in artWaitingForDownload) {
+            if (artDictionary.ContainsKey(museumArt.art.ID)) {
+                toUpdate.Add(museumArt);
+            }
+        }
+        foreach (MuseumArt museumArt in toUpdate) {
+            if (art.Contains(museumArt)) {
+                museumArt.art = artDictionary[museumArt.art.ID];
+                museumArt.Reload();
+            }
+            artWaitingForDownload.Remove(museumArt);
+        }
 	}
 
+
+    public string getFolder()
+    {
+        return "museums/" + ownerID;
+    }
+
+    public string getFileName()
+    {
+        if (museumID != null) return "id_" + museumID + "_name_" + museumName.Replace(' ', '_');
+        else return "name_" + museumName.Replace(' ', '_');
+    }
+
+    public string getExtension()
+    {
+        return "mus";
+    }
+
+    public void SaveRemote()
+    {
+        Debug.Log("Start saving Remote");
+        cont = API.MuseumController.Instance;
+        byte[] data;
+        BinaryFormatter bf = new BinaryFormatter();
+        using (MemoryStream ms = new MemoryStream())
+        {
+            MuseumData md = Save();
+            bf.Serialize(ms, md);
+            data = ms.ToArray();
+        }
+        API.Museum apiM = new API.Museum();
+        apiM.Description = this.description;
+        apiM.LastModified = DateTime.Now;
+        apiM.Privacy = this.privacy;
+        Debug.Log("Start Preparing Request");
+        if (museumID == null)
+        {
+            Debug.Log("Start Request");
+            req = cont.createMuseum(apiM, (mus) =>
+            {
+                museumID = mus.MuseumID;
+                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, data);
+            });
+        }
+        else
+        {
+            Debug.Log("Start Request");
+            apiM.MuseumID = museumID;
+            req = cont.updateMuseum(apiM, (mus) => {
+                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, data);
+            });
+        }
+        //log when done
+        Debug.Log("Start Monitoring if done.");
+        Thread requestThread = new Thread(SavedMuseumThread);
+        requestThread.Start();
+    }
+
+    private void SavedMuseumThread()
+    {
+        Debug.Log("Request started.");
+        while (true)
+        {
+            if (req.isDone)
+            {
+                Debug.Log("Request done.");
+                if (req.response.status == 200)
+                {
+                    Debug.Log("Request was 200 OK.");
+                    //TODO: alert user? -> e.g. Toast in Android
+                }
+                else
+                {
+                    //TODO: retry? throw exception? alert user?
+                }
+                break;
+            }
+            Debug.Log("Request not done, sleep and check again");
+            Thread.Sleep(200);
+        }
+    }
+
+    public void LoadRemote(string identifier)
+    {
+        museumID = Convert.ToInt32(identifier);
+        cont = API.MuseumController.Instance;
+        req = cont.getMuseum("" + museumID,
+            success: (museum) => {
+                description = museum.Description;
+                museumName = museum.Description;
+                privacy = museum.Privacy;
+            }); //dit gebruikt denk ik de unityVersion check -> confirmed
+        req = cont.getMuseumData("" + museumID,
+            success: (museum) => {
+                Stream stream = new MemoryStream(museum);
+                BinaryFormatter deserializer = new BinaryFormatter();
+                MuseumData data = (MuseumData)deserializer.Deserialize(stream);
+                Load(data);
+            });
+    }
+
+    private void LoadMuseumThread()
+    {
+        Debug.Log("Request started.");
+        while (true)
+        {
+            if (req.isDone)
+            {
+                Debug.Log("Request done, copy data here.");
+                break;
+            }
+            Debug.Log("Request not done, sleep and check again");
+            Thread.Sleep(200);
+        }
+    }
 }

@@ -5,8 +5,8 @@ namespace Scanning
     {
 
         ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable);
-
-        Scannable Scan(ScanIdentity scan);
+        void Scan();
+        Scannable getScanResult();
 
     }
 }

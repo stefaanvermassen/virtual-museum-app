@@ -23,7 +23,7 @@ public class DrawController : MonoBehaviour {
     public float cameraSpeed = 10;
     public Tools tool = Tools.Drawing;
 
-    public int currentArt = 0;
+    public int currentArt = 1;
     public int currentObject = 0;
     public int currentFloor = 0;
     public int currentWall = 0;
@@ -63,8 +63,12 @@ public class DrawController : MonoBehaviour {
 
     bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
-            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) return true;
-            if (touch.phase == TouchPhase.Ended) return true;
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {
+                return true;
+            }
+            if (touch.phase == TouchPhase.Ended) {
+                return true;
+            }
         }
         return EventSystem.current.IsPointerOverGameObject(0) || EventSystem.current.IsPointerOverGameObject();
     }
@@ -83,10 +87,11 @@ public class DrawController : MonoBehaviour {
         MouseUpdate();
 #endif
 #if UNITY_IOS || UNITY_ANDROID
-        if(Input.touchCount == 1)
+        if (Input.touchCount == 1) {
             ToolUpdate(0, tool);
-        else
+        } else {
             GestureUpdate();
+        }
 #endif
     }
 	
@@ -95,7 +100,9 @@ public class DrawController : MonoBehaviour {
         var mouse3D = Camera.main.ScreenToWorldPoint(mouse2D);
         Debug.DrawRay(mouse3D, Camera.main.transform.forward * 100, Color.white, 0.1f);
         var mask = groundLayerMask;
-        if(tool == Tools.PlacingArt) mask = wallLayerMask;
+        if (tool == Tools.PlacingArt) {
+            mask = wallLayerMask;
+        }
         if (Input.GetMouseButtonDown(mouseButton) && !IsPointerBusy()) {
             cameraAnchor = Camera.main.transform.position;
             dragging[mouseButton] = true;
@@ -117,23 +124,40 @@ public class DrawController : MonoBehaviour {
             var dragOffsetScreen = anchorPointScreen - dragPointScreen;
             var dragOffsetWorld = anchorPointWorld - dragPointWorld;
             var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
-
-            if      (tool == Tools.Drawing)         Draw(dragPointWorld);
-            else if (tool == Tools.Moving)          Move(dragOffsetWorld);
-            else if (tool == Tools.Rotating)        Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Display.main.renderingHeight * 180, frameOffsetScreen.x / Display.main.renderingWidth * 180, 0));
-            else if (tool == Tools.Erasing)         Erase(dragPointWorld);
-            else if (tool == Tools.Scaling)         Scale(Mathf.Pow(2, -frameOffsetScreen.y / Display.main.renderingHeight));
-            else if (tool == Tools.PlacingObject)   PlaceObject(dragPointWorld, anchorPointWorld);
-            else if (tool == Tools.PlacingArt)      PlaceArt(dragPointWorld, anchorPointWorld, anchorNormalWorld,dragPointScreen, anchorPointScreen);
-
+            switch (tool) {
+                case Tools.Drawing:
+                    Draw(dragPointWorld);
+                    break;
+                case Tools.Moving:
+                    Move(dragOffsetWorld);
+                    break;
+                case Tools.Rotating:
+                    Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Display.main.renderingHeight * 180, frameOffsetScreen.x / Display.main.renderingWidth * 180, 0));
+                    break;
+                case Tools.Erasing:
+                    Erase(dragPointWorld);
+                    break;
+                case Tools.Scaling:
+                    Scale(Mathf.Pow(2, -frameOffsetScreen.y / Display.main.renderingHeight));
+                    break;
+                case Tools.PlacingObject:
+                    PlaceObject(dragPointWorld, anchorPointWorld);
+                    break;
+                case Tools.PlacingArt:
+                    PlaceArt(dragPointWorld, anchorPointWorld, anchorNormalWorld, dragPointScreen, anchorPointScreen);
+                    break;
+            }
             lastDragPointScreen = dragPointScreen;
         }
     }
 
     void MouseUpdate() {
         var scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll < 0) Scale(1.1f);
-        if (scroll > 0) Scale(0.9f);
+        if (scroll < 0) {
+            Scale(1.1f);
+        } else if (scroll > 0) {
+            Scale(0.9f);
+        }
         ToolUpdate(1, Tools.Rotating);
         ToolUpdate(2, Tools.Moving);
     }
@@ -180,7 +204,9 @@ public class DrawController : MonoBehaviour {
     }
 
     void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld, Vector3 anchorNormalWorld, Vector3 dragPointScreen, Vector3 anchorPointScreen) {
-        if (Vector3.Magnitude(anchorNormalWorld) < 0.5) return;
+        if (Vector3.Magnitude(anchorNormalWorld) < 0.5) {
+            return;
+        }
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
         var scale = 0.5f + 4*diff / Display.main.renderingWidth;
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale);
