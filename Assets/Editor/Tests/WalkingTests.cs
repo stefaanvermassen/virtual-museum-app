@@ -9,26 +9,8 @@ using System.Collections.Generic;
 [TestFixture]
 public class WalkingTests {
 	
-	//private static int TEST_CASES = 10;
-	//private static int SEED = 1234;
-	
 	public WalkingTests() {
-		//UnityEngine.Random.seed = SEED;
 	}
-	
-	/*int RandomInt(int from, int until) {
-		return (int)(Random.value * (from+until) - from);
-	}
-	
-	string RandomString(int minLength, int maxLength) {
-		string s = "";
-		int length = RandomInt(minLength, maxLength);
-		for (int i = 0; i < length; i++) {
-			char c = (char)RandomInt(0, 255);
-			s += c;
-		}
-		return s;
-	}*/
 
 	void CreateTestPlatform() {
 		GameObject platform = (GameObject) GameObject.Instantiate(Resources.Load("FloorQuad")); // Test platform
@@ -40,7 +22,9 @@ public class WalkingTests {
 	[TearDown]
 	public void DestroyEverything() {
 		var objects = GameObject.FindObjectsOfType<GameObject>();
-		foreach (var o in objects) GameObject.DestroyImmediate(o);
+		foreach (var o in objects) {
+			GameObject.DestroyImmediate(o);
+		}
 	}
 
 	[SetUp]
