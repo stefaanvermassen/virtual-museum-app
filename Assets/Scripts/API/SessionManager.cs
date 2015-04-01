@@ -83,7 +83,6 @@ namespace API {
 		}
 
 		public bool NeedsRefreshing() {
-			//TODO: implement
 			var newExpireDate = _expires;
 		    newExpireDate = newExpireDate.AddDays (-5.0);
 			return  newExpireDate < DateTime.Now;
