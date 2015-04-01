@@ -72,11 +72,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// </summary>
     /// <returns>The MuseumData</returns>
     public MuseumData Save() {
-        //die kak methode kan ni public zijn in een interface, bullshit
-        //ik had dus een call naar de interface methode ma da is ni echt proper wrs
-		//return ((Storable<Museum, MuseumData>)this).Save
-		
-		
         var tileData = new List<MuseumTileData>();
         foreach (var t in tiles) {
             tileData.Add(t.Save());
@@ -89,7 +84,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         foreach (var o in objects) {
             objectData.Add(o.Save());
         }
-        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description);
+        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description, museumID, privacy);
     }
 
     /// <summary>
@@ -97,9 +92,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// </summary>
     /// <param name="data"></param>
     public void Load(MuseumData data) {
-        //same here
-		//((Storable<Museum, MuseumData>)this).Load(data);
-
         Clear();
         foreach (var tileData in data.Tiles) {
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
@@ -113,30 +105,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         ownerID = data.OwnerID;
         museumName = data.MuseumName;
         description = data.Description;
+        museumID = data.MuseumId;
+        privacy = data.Privacy;
     }
 
-
-    public string getFolder()
-    {
-        return "museums";
-    }
-
-    public string getFileName()
-    {
-        return museumName.Replace(' ','_');
-    }
-
-    public string getExtension()
-    {
-        return "mus";
-    }
-
-    public void SaveRemote()
-    {   //TODO
-    }
-    public void LoadRemote(string identifier)
-    {   //TODO
-    }
     public DateTime LastModified(string identifier)
     {
         return new DateTime();
@@ -468,23 +440,23 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 	}
 
 
-    string SavableData.getFolder()
+    public string getFolder()
     {
         return "museums/" + ownerID;
     }
 
-    string SavableData.getFileName()
+    public string getFileName()
     {
         if (museumID != null) return "id_" + museumID + "_name_" + museumName.Replace(' ', '_');
         else return "name_" + museumName.Replace(' ', '_');
     }
 
-    string SavableData.getExtension()
+    public string getExtension()
     {
         return "mus";
     }
 
-    void SavableData.SaveRemote()
+    public void SaveRemote()
     {
         Debug.Log("Start saving Remote");
         cont = API.MuseumController.Instance;
@@ -507,16 +479,15 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             req = cont.createMuseum(apiM, (mus) =>
             {
                 museumID = mus.MuseumID;
-                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, "museum", data);
+                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, data);
             });
         }
         else
         {
             Debug.Log("Start Request");
             apiM.MuseumID = museumID;
-            req = cont.updateMuseum(apiM, (mus) =>
-            {
-                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, "museum", data);
+            req = cont.updateMuseum(apiM, (mus) => {
+                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, data);
             });
         }
         //log when done
@@ -549,7 +520,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         }
     }
 
-    void SavableData.LoadRemote(string identifier)
+    public void LoadRemote(string identifier)
     {
         museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
@@ -572,41 +543,5 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             Debug.Log("Request not done, sleep and check again");
             Thread.Sleep(200);
         }
-    }
-
-    DateTime SavableData.LastModified(string identifier)
-    {
-        //TODO
-        return new DateTime();
-    }
-
-    MuseumData Storable<Museum, MuseumData>.Save()
-    {
-        var tileData = new List<MuseumTileData>();
-        foreach (var t in tiles)
-            tileData.Add(t.Save());
-        var artData = new List<MuseumArtData>();
-        foreach (var a in art)
-            artData.Add(a.Save());
-        var objectData = new List<MuseumObjectData>();
-        foreach (var o in objects)
-            objectData.Add(o.Save());
-        return new MuseumData(tileData, artData, objectData, ownerID, museumName, description, museumID, privacy);
-    }
-
-    void Storable<Museum, MuseumData>.Load(MuseumData data)
-    {
-        Clear();
-        foreach (var tileData in data.Tiles)
-            SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
-        foreach (var artData in data.Art)
-            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
-        foreach (var objectData in data.Objects)
-            AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
-        ownerID = data.OwnerID;
-        museumName = data.MuseumName;
-        description = data.Description;
-        museumID = data.MuseumId;
-        privacy = data.Privacy;
     }
 }
