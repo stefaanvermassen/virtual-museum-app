@@ -514,7 +514,8 @@ public class Storage : MonoBehaviour {
     }
 
     /// <summary>
-    /// Helper function to check the date an object was last modified, this can be used to check if the remote object has changed since the last local save or not. If it is up to date no pull from the server is needed
+    /// Helper function to check the date an object was last modified, 
+    /// this can be used to check if the remote object has changed since the last local save or not. If it is up to date no pull from the server is needed
     /// </summary>
     /// <param name="path">path of the file we want to have the last modified data from</param>
     /// <returns>Last modified date</returns>
