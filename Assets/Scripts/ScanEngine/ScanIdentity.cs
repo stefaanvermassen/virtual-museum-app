@@ -7,11 +7,11 @@ namespace Scanning
     public abstract class ScanIdentity
     {
 
-        private ScanTechnology tech;
+        private ScanTechnology Tech;
 
         public ScanIdentity(ScanTechnology tech)
         {
-            this.tech = tech;
+            this.Tech = tech;
         }
     }
 }

@@ -18,6 +18,17 @@ namespace Scanning
         public List<string> Genres { get; set; }
 
 
+        public void Configure(string s)
+        {
+            string[] labels = s.Split(':');
+            string[] tags = labels[3].Split(',');
+            string[] genres = labels[5].Split(',');
+
+            ArtistName = labels[1];
+            Tags = new List<string>(tags);
+            Genres = new List<string>(genres);
+        }
+
         string Scannable.GetUniqueString()
         {
             String s = "artist:" + ArtistName + ":tags:";
