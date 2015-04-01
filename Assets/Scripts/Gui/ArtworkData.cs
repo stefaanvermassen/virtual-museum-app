@@ -141,7 +141,7 @@ public class ArtworkData : FileBrowserListener
 			string mime = splitted [splitted.Length - 1];
 			splitted = imagePathSource.Split (new char[] { '/', '\\' });
 			string name = splitted [splitted.Length - 1];
-			HTTP.Request request= ac.uploadImage (name, mime, imagePathSource, this.imageFile, 
+			HTTP.Request request= ac.UploadImage (name, mime, imagePathSource, this.imageFile, 
 			                ((artworkResponse) => {
 				//set id received from server
 				Debug.Log ("receivedId " + artworkResponse.ArtWorkID);
@@ -162,7 +162,7 @@ public class ArtworkData : FileBrowserListener
 		} 
 			Debug.Log("to send name "+Name);
 			//once id present update art info
-			ac.updateArtWork (this.artWork, ((response) => {
+			ac.UpdateArtWork (this.artWork, ((response) => {
 				Debug.Log ("Update Artwork info successfull");}), 
 			                  ((error) => {
 				throw new UploadFailedException ("Failed to update artwork info.");

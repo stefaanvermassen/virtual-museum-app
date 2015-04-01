@@ -13,11 +13,11 @@ public class ArtRest : MonoBehaviour
 		string imageArtworkUrl;
 		API.SessionManager sm = API.SessionManager.Instance;
 		API.ArtworkController ac = API.ArtworkController.Instance;
-		ac.getAllArtworks (success: (response) => {
+		ac.GetAllArtworks (success: (response) => {
 			foreach (API.ArtWork child in response) {
 				//we save the child, because else it is overwwritten in the loval scope of the closure
 				var artwork = child;
-				ac.getArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
+				ac.GetArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
 					//the id is differen between th 2 calls
 					addArtToCatalog (artwork,texture, content);
 				}, error: (error) => {

@@ -17,27 +17,27 @@ namespace API {
 
 		}
 		
-		private static readonly ArtistController _instance = new ArtistController();
+		private static readonly ArtistController _Instance = new ArtistController();
 		
 		public static ArtistController Instance {
 			get {
-				return _instance;
+				return _Instance;
 			}
 		}
 
-		public HTTP.Request getArtists(Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request GetArtists(Action<ArrayList> success = null, Action<API.API_Error> error = null)
 		{
-			return getBaseArtist("", success, error);
+			return GetBaseArtist("", success, error);
 		}
 
-		public HTTP.Request getConnectedArtists(Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request GetConnectedArtists(Action<ArrayList> success = null, Action<API.API_Error> error = null)
 		{
-			return getBaseArtist ("/connected", success, error);
+			return GetBaseArtist ("/connected", success, error);
 		}
 			
-		private HTTP.Request getBaseArtist(string url, Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		private HTTP.Request GetBaseArtist(string url, Action<ArrayList> success = null, Action<API.API_Error> error = null)
 		{
-			return get(url, ((response) => {
+			return Get(url, ((response) => {
 				var apiList = (ArrayList)response.Object["Artists"];
 				var list = new ArrayList();
 				foreach(Hashtable val in apiList) {
@@ -49,9 +49,9 @@ namespace API {
 			}), error);
 		}
 
-		public HTTP.Request getArtist(int id, Action<Artist> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request GetArtist(int id, Action<Artist> success = null, Action<API.API_Error> error = null)
 		{
-			return get(BASE_URL + ARTIST + "/" + id.ToString(), ((response) => {
+			return Get(BASE_URL + ARTIST + "/" + id.ToString(), ((response) => {
 				var artist = Artist.FromDictionary(response.Object);
 				if(success != null){
 					success(artist);
@@ -59,9 +59,9 @@ namespace API {
 			}), error);
 		}
 
-		public HTTP.Request createArtist(Artist artist, Action<Artist> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request CreateArtist(Artist artist, Action<Artist> success = null, Action<API.API_Error> error = null)
 		{
-			return post(BASE_URL+ARTIST, new string[] {"id", "Name"}, new string[]{"0", artist.Name}, ((response) => {
+			return Post(BASE_URL+ARTIST, new string[] {"id", "Name"}, new string[]{"0", artist.Name}, ((response) => {
 				var a = Artist.FromDictionary(response.Object);
 				if(success != null){
 					success(a);
@@ -69,9 +69,9 @@ namespace API {
 			}), error);
 		}
 
-		public HTTP.Request updateArtist(Artist artist, Action<Artist> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UpdateArtist(Artist artist, Action<Artist> success = null, Action<API.API_Error> error = null)
 		{
-			return put (BASE_URL + ARTIST + "/" + artist.ID.ToString (), artist.ToDictionary (), ((response) => {
+			return Put (BASE_URL + ARTIST + "/" + artist.ID.ToString (), artist.ToDictionary (), ((response) => {
 				var a = Artist.FromDictionary (response.Object);
 				if (success != null) {
 					success (a);
@@ -86,11 +86,13 @@ namespace API {
 		public int ID;
 
 		public Dictionary<string, string> ToDictionary() {
-			Dictionary<string, string> dict = new Dictionary<string, string>();
-			dict.Add ("Name", Name);
-			dict.Add ("ArtistID", ID.ToString());
-			
-			return dict;
+		    Dictionary<string, string> dict = new Dictionary<string, string>
+		    {
+		        {"Name", Name}, 
+                {"ArtistID", ID.ToString()}
+		    };
+
+		    return dict;
 		}
 
 		public static Artist FromDictionary(Hashtable hash)

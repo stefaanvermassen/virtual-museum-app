@@ -11,17 +11,17 @@ namespace API
 	/// </summary>
 	public class MuseumController: APIConnection
 	{
-		private static string  MUSEUM = "museum";
+	    private const string MUSEUM = "museum";
 
-		public MuseumController ()
+	    public MuseumController ()
 		{
 		}
 
-		private static readonly MuseumController _instance = new MuseumController();
+		private static readonly MuseumController _Instance = new MuseumController();
 		
 		public static MuseumController Instance {
 			get {
-				return _instance;
+				return _Instance;
 			}
 		}
 
@@ -32,8 +32,8 @@ namespace API
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getMuseum(string id, Action<Museum> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + MUSEUM + "/" + id, ((response) => {
+		public HTTP.Request GetMuseum(string id, Action<Museum> success = null, Action<API.API_Error> error = null) {
+			return Get (BASE_URL + MUSEUM + "/" + id, ((response) => {
 				if(success != null) {
 					success(Museum.FromDictionary(response.Object));
 				}}), error);
@@ -46,11 +46,11 @@ namespace API
 		/// <param name="museum">Museum.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request createMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request CreateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
 			var form = museum.ToDictionary ();
 
-			return post (BASE_URL + MUSEUM, form, ((response) => {
+			return Post (BASE_URL + MUSEUM, form, ((response) => {
 				if(success != null) {
 					var m = Museum.FromDictionary(response.Object);
 					success(m);
@@ -66,11 +66,11 @@ namespace API
 		/// <param name="museum">Museum.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request updateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UpdateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
 			var form = museum.ToDictionary ();
 			
-			return put (BASE_URL + MUSEUM + "/" + museum.MuseumID.ToString(), form, ((response) => {
+			return Put (BASE_URL + MUSEUM + "/" + museum.MuseumID.ToString(), form, ((response) => {
 				if(success != null) {
 					var m = Museum.FromDictionary(response.Object);
 					success(m);
@@ -83,15 +83,15 @@ namespace API
 		/// </summary>
 		/// <returns>The museum.</returns>
 		/// <param name="name">Name.</param>
-		/// <param name="imageLocation">Image location.</param>
+		/// <param name="museumLocation">Image location.</param>
 		/// <param name="image">Image.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request uploadMuseumData(string id, string name, string museumLocation, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UploadMuseumData(string id, string name, string museumLocation, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
 		{
 			WWWForm form = new WWWForm();
 			form.AddBinaryData(museumLocation, museum, name, "museum/binary");
-			return postForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
+			return PostForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace API
 		/// <returns>The museums.</returns>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request listMuseums(Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request ListMuseums(Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
 		{
 			throw new NotImplementedException ();
 			return null;
@@ -113,8 +113,8 @@ namespace API
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getMuseumData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + MUSEUM + "/" + id + "/data", ((response) => {
+		public HTTP.Request GetMuseumData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
+			return Get (BASE_URL + MUSEUM + "/" + id + "/data", ((response) => {
 				if(success != null) {
 					success(response.bytes);
 				}}), error);
@@ -126,9 +126,9 @@ namespace API
 		/// <returns>The random museum.</returns>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getRandomMuseum(Action<Museum> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request GetRandomMuseum(Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
-			return get(BASE_URL + MUSEUM + "/random", ((response) => {
+			return Get(BASE_URL + MUSEUM + "/random", ((response) => {
 				if(success != null) {
 					var m = Museum.FromDictionary(response.Object);
 					success(m);
@@ -147,13 +147,15 @@ namespace API
 		public Level Privacy;
 
 		public Dictionary<string, string> ToDictionary(){
-			Dictionary<string, string> dict = new Dictionary<string, string>();
-			dict.Add ("MuseumID", MuseumID.ToString());
-			dict.Add ("Description", Description);
-			dict.Add ("LastModified", LastModified.ToString());
-			dict.Add ("Privacy", ((int)Privacy).ToString());
+		    Dictionary<string, string> dict = new Dictionary<string, string>
+		    {
+		        {"MuseumID", MuseumID.ToString()},
+		        {"Description", Description},
+		        {"LastModified", LastModified.ToString()},
+		        {"Privacy", ((int) Privacy).ToString()}
+		    };
 
-			return dict;
+		    return dict;
 		}
 
 		public static Museum FromDictionary(Hashtable dict) {
