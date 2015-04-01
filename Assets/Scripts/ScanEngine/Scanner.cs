@@ -6,7 +6,7 @@ namespace Scanning
 
         ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable);
         void Scan();
-        Scannable getScanResult();
+        Scannable GetScanResult();
 
     }
 }
