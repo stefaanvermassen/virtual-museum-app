@@ -2,7 +2,10 @@ using UnityEngine;
 using System.Collections;
 
 namespace API {
-	
+
+	/// <summary>
+	/// Artist controller: control the artist requests
+	/// </summary>
 	public class ArtistController : APIConnection
 	{
 		protected ArtistController() {
@@ -16,7 +19,13 @@ namespace API {
 				return _instance;
 			}
 		}
+
 	}
-	
+
+	public class Artist
+	{
+		public string Name;
+		public int ID;
+	}
 }
 
