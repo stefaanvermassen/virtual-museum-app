@@ -90,14 +90,14 @@ public class FirstPersonController : MonoBehaviour {
 		float sensitivity = defaultSensitivity;
 
 		if (activeVR == VR.None) {
-			if(CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch)) {
+			if (CrossPlatformInputManager.GetActiveInputMethod ().Equals (CrossPlatformInputManager.ActiveInputMethod.Touch)) {
 				// Mobile "thumbstick" controls
 				// Reduce right stick sensitivity
-				sensitivity = defaultSensitivity * 0.4f;
+				sensitivity = defaultSensitivity * 0.3f;
 			} else {
 				// Keyboard controls
 				// Clamp the movement magnitude in a circle instead of both axes separately
-				Vector2 movement = Vector2.ClampMagnitude(new Vector2(horizontalAxis, verticalAxis), 1);
+				Vector2 movement = Vector2.ClampMagnitude (new Vector2 (horizontalAxis, verticalAxis), 1);
 				horizontalAxis = movement.x;
 				verticalAxis = movement.y;
 			}
@@ -107,24 +107,33 @@ public class FirstPersonController : MonoBehaviour {
 			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
 		} else if (activeVR == VR.Oculus) {
 			// TODO: Complete Oculus Rift movement and looking implementation.
+		} else {
+			activeVR = VR.None;
 		}
 
 		// Control cameras
-		if(stereoEnabled) {
-			if(!stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(true);
-			if(monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(false);
-			Rotate(mouseXAxis, mouseYAxis, sensitivity);
-		} else {
-			if(!monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(true);
-			if(stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(false);
-			Rotate(mouseXAxis, mouseYAxis, sensitivity);
-		}
+		ConfigureCameras (stereoEnabled);
+		Rotate(mouseXAxis, mouseYAxis, sensitivity);
 
 		// Only the axes are modified via the different input methods, the actual move call remains the same.
 		Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
 
 		// Check if out of bounds
 		if (transform.position.y < -100) JumpToStart ();
+	}
+
+	/// <summary>
+	/// Changes the cameras depending on whether or not stereo view is enabled.
+	/// </summary>
+	/// <param name="stereo">Whether or not stereo cameras should be enabled.</param>
+	void ConfigureCameras(bool stereo) {
+		if(stereo) {
+			if(!stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(true);
+			if(monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(false);
+		} else {
+			if(!monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(true);
+			if(stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(false);
+		}
 	}
 
 	/// <summary>
