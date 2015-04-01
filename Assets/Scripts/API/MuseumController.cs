@@ -12,17 +12,17 @@ namespace API
 	/// </summary>
 	public class MuseumController: APIConnection
 	{
-		private static string  MUSEUM = "museum";
+	    private const string MUSEUM = "museum";
 
-		public MuseumController ()
+	    public MuseumController ()
 		{
 		}
 
-		private static readonly MuseumController _instance = new MuseumController();
-		
+		private static readonly MuseumController _Instance = new MuseumController();
+
 		public static MuseumController Instance {
 			get {
-				return _instance;
+				return _Instance;
 			}
 		}
 
@@ -33,8 +33,8 @@ namespace API
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you a museum object with the needed id.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getMuseum(string id, Action<Museum> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + MUSEUM + "/" + id, ((response) => {
+		public HTTP.Request GetMuseum(string id, Action<Museum> success = null, Action<API.API_Error> error = null) {
+			return Get (BASE_URL + MUSEUM + "/" + id, ((response) => {
 				if(success != null) {
 					success(Museum.FromDictionary(response.Object));
 				}}), error);
@@ -47,11 +47,11 @@ namespace API
 		/// <param name="museum">Museum is an API class which contains all necessary fields, MuseumID can be left empty when creating a new museum</param>
 		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you a museum object with the needed id.</param>
 		/// <param name="error">Error. Handle errors</param>
-		public HTTP.Request createMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request CreateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
 			var form = museum.ToDictionary ();
 
-			return post (BASE_URL + MUSEUM, form, ((response) => {
+			return Post (BASE_URL + MUSEUM, form, ((response) => {
 				if(success != null) {
 					var m = Museum.FromDictionary(response.Object);
 					success(m);
@@ -67,11 +67,11 @@ namespace API
 		/// <param name="museum">Museum is an API class which contains all APIfields, MuseumID is required</param>
 		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you a museum object with the needed id.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request updateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UpdateMuseum(Museum museum, Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
 			var form = museum.ToDictionary ();
-			
-			return put (BASE_URL + MUSEUM + "/" + museum.MuseumID.ToString(), form, ((response) => {
+
+			return Put (BASE_URL + MUSEUM + "/" + museum.MuseumID.ToString(), form, ((response) => {
 				if(success != null) {
 					var m = Museum.FromDictionary(response.Object);
 					success(m);
@@ -87,11 +87,11 @@ namespace API
 		/// <param name="museum">Byte array which contains the museum data</param>
 		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, returns a Response when succesfull</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request uploadMuseumData(string id, string name, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UploadMuseumData(string id, string name, byte[] museum, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
 		{
 			WWWForm form = new WWWForm();
 			form.AddBinaryData("museum", museum, name, "museum/binary");
-			return postForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
+			return PostForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace API
 		/// <returns>The museums.</returns>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request listMuseums(Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request ListMuseums(Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
 		{
 			throw new NotImplementedException ();
 			return null;
@@ -113,8 +113,8 @@ namespace API
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success, closure variable is a byte[], which contains the museum data</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getMuseumData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + MUSEUM + "/" + id + "/data", ((response) => {
+		public HTTP.Request GetMuseumData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
+			return Get (BASE_URL + MUSEUM + "/" + id + "/data", ((response) => {
 				if(success != null) {
 					success(response.bytes);
 				}}), error);
@@ -126,9 +126,9 @@ namespace API
 		/// <returns>HTTP.Request</returns>
 		/// <param name="success">Succes gives the random museum object, after this you should call the getMuseumData function</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getRandomMuseum(Action<Museum> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request GetRandomMuseum(Action<Museum> success = null, Action<API.API_Error> error = null)
 		{
-			return get(BASE_URL + MUSEUM + "/random", ((response) => {
+			return Get(BASE_URL + MUSEUM + "/random", ((response) => {
 				if(success != null) {
 					var m = Museum.FromDictionary(response.Object);
 					success(m);
@@ -147,13 +147,15 @@ namespace API
         public Level Privacy { get; set; }
 
 		public Dictionary<string, string> ToDictionary(){
-			Dictionary<string, string> dict = new Dictionary<string, string>();
-			dict.Add ("MuseumID", MuseumID.ToString());
-			dict.Add ("Description", Description);
-			dict.Add ("LastModified", LastModified.ToString());
-			dict.Add ("Privacy", ((int)Privacy).ToString());
+		    Dictionary<string, string> dict = new Dictionary<string, string>
+		    {
+		        {"MuseumID", MuseumID.ToString()},
+		        {"Description", Description},
+		        {"LastModified", LastModified.ToString()},
+		        {"Privacy", ((int) Privacy).ToString()}
+		    };
 
-			return dict;
+		    return dict;
 		}
 
 		public static Museum FromDictionary(Hashtable dict) {
@@ -173,4 +175,3 @@ namespace API
 		PUBLIC = 1
 	}
 }
-
