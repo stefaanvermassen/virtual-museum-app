@@ -28,6 +28,8 @@ namespace UnityStandardAssets.CrossPlatformInput
 		CrossPlatformInputManager.VirtualAxis m_VerticalVirtualAxis; // Reference to the joystick in the cross platform input
 
 		public void Start() {
+			float scale = (float)(Screen.height * Screen.dpi) / (720 * 120);
+			MovementRange = (int)(MovementRange*scale);
 			m_StartPos = transform.localPosition;
 			holdingPos.x = 0;
 			holdingPos.y = 0;
@@ -107,14 +109,14 @@ namespace UnityStandardAssets.CrossPlatformInput
 		void OnDisable()
 		{
 			// remove the joysticks from the cross platform input
-			if (m_UseX)
+			/*if (m_UseX)
 			{
 				m_HorizontalVirtualAxis.Remove();
 			}
 			if (m_UseY)
 			{
 				m_VerticalVirtualAxis.Remove();
-			}
+			}*/
 		}
 	}
 }
