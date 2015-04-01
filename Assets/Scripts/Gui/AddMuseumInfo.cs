@@ -33,7 +33,7 @@ public class AddMuseumInfo : MonoBehaviour
         museum.museumName = museumName.text;
         museum.description = museumDescription.text;
         museum.museumID = 1;
-        Storage.Instance.SaveLocal(museum);
+        Storage.Instance.SaveRemote(museum);
 
         panel.SetActive(false);
     }
