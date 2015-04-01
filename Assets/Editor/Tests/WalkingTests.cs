@@ -30,10 +30,10 @@ public class WalkingTests {
 	[SetUp]
 	public void LoadWalkingController() {
 		CreateTestPlatform ();
-		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
-		player.transform.localPosition = new Vector3(0, 0, 0);
 		GameObject eventSystem = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/EventSystem.prefab", typeof(GameObject)));
 		GameObject dualSticks = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/MobileDualStickControl.prefab", typeof(GameObject)));
+		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
+		player.transform.localPosition = new Vector3(0, 0, 0);
 	}
 	
 	[Test]

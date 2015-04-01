@@ -136,6 +136,9 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	/// <param name="vrMode">Vr mode.</param>
 	public void SwitchVRMode(VR vrMode) {
+		if (mobileControlRig == null) {
+			mobileControlRig = FindObjectOfType<MobileControlRig> ();
+		}
 		if(vrMode == VR.Durovis) {
 			// Disable joysticks
 			mobileControlRig.overrideControls = true;
