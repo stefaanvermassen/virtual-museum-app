@@ -473,6 +473,16 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         apiM.LastModified = DateTime.Now;
         apiM.Privacy = this.privacy;
         Debug.Log("Start Preparing Request");
+        AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+            () => {
+                Debug.Log("Started");
+            },
+            () => {
+                Debug.Log("Still loading");
+            },
+            () => {
+                Debug.Log("Loaded");
+            });
         if (museumID == null)
         {
             Debug.Log("Start Request");
@@ -480,6 +490,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             {
                 museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
+                
             });
         }
         else
@@ -488,12 +499,14 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             apiM.MuseumID = museumID;
             req = cont.UpdateMuseum(apiM, (mus) => {
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
+                loader.forceDone = true;
             });
         }
         //log when done
         Debug.Log("Start Monitoring if done.");
-        Thread requestThread = new Thread(SavedMuseumThread);
-        requestThread.Start();
+        
+        //Thread requestThread = new Thread(SavedMuseumThread);
+        //requestThread.Start();
     }
 
     private void SavedMuseumThread()
