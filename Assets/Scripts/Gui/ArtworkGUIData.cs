@@ -6,7 +6,7 @@ using AssemblyCSharp;
 using System.Collections.Generic;
 
 //class responsible for synchronizing user input data and local data
-public class ArtworkData : FileBrowserListener
+public class ArtworkGUIData : FileBrowserListener
 {
 	//GUI fields
     public InputField nameInput;
@@ -49,7 +49,7 @@ public class ArtworkData : FileBrowserListener
 		Name = nameInput.text;
 	}
 
-	public ArtworkData ()
+	public ArtworkGUIData ()
 	{
 		artWork = new Art();
 	}
@@ -137,7 +137,8 @@ public class ArtworkData : FileBrowserListener
 			string mime = splitted[splitted.Length - 1];
 			splitted = imagePathSource.Split(new char[] { '/', '\\' });
 			string name = splitted[splitted.Length - 1];
-			HTTP.Request request= ac.uploadImage(name, mime, imagePathSource, this.imageFile, 
+			HTTP.Request request= ac.UploadImage(name, mime, imagePathSource, this.imageFile, 
+
 			                ((artworkResponse) => {
 				//set id received from server
 				Debug.Log("receivedId " + artworkResponse.ArtWorkID);
@@ -155,19 +156,19 @@ public class ArtworkData : FileBrowserListener
 				//TODO does not work
 			}
 		} 
-		
-        Debug.Log("to send name " + Name);
-		//once id present update art info
-        ac.updateArtWork(API.ArtWork.FromArt(artWork),
-            ((response) =>
-            {
-                Debug.Log("Update Artwork info successfull");
-            }),
-            ((error) =>
-            {
-                throw new UploadFailedException("Failed to update artwork info.");
-            }));
 
-            yield return null;
+			Debug.Log("to send name "+Name);
+			//once id present update art info
+			ac.UpdateArtWork (this.artWork, ((response) => {
+				Debug.Log ("Update Artwork info successfull");}), 
+			                  ((error) => {
+				throw new UploadFailedException ("Failed to update artwork info.");
+			}));
+
+
+
+
+		yield return null;
+
 	}
 }

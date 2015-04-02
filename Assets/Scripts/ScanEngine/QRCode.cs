@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.IO;
-using System.Drawing;
+using ZXing;
+using ZXing.QrCode;
 
 
 namespace Scanning
@@ -14,8 +13,8 @@ namespace Scanning
     public class QRCode: ScanIdentity
     {
 
-		public Bitmap Image { get; set; }
 
+        public Color32[] Image { get; set; }
         public QRCode():base(ScanTechnology.QR)
         {
 

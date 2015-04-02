@@ -18,7 +18,11 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     private static float METER_PER_UNIT = 2;
     private static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
 
-    private static Dictionary<string, GameObject> objects = new Dictionary<string, GameObject>();
+    private enum QuadType {
+        Wall,
+        Ceiling,
+        Floor
+    }
 
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
@@ -44,20 +48,32 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         return quad;
     }
 
-    GameObject FastResource(string resource) {
-        if (!objects.ContainsKey(resource)) {
-            objects.Add(resource, (GameObject) Resources.Load(resource));
-        }
-        return objects[resource];
-    }
-
-    GameObject CreateFace(Vector3 localPosition, Vector3 scale, Vector3 angles, string type, bool wall = false){
+    GameObject CreateFace(Vector3 localPosition, Vector3 scale, Vector3 angles, int id, QuadType quadType = QuadType.Floor){
         var ob = new GameObject();
         ob.transform.parent = gameObject.transform;
-        var frontSide = (GameObject)GameObject.Instantiate(FastResource(type));
-        frontSide.transform.parent = ob.transform;
-        if (wall) frontSide.layer = LayerMask.NameToLayer("Walls");
-        //frontSide.GetComponent<MeshRenderer>().material = frontMaterial;
+        GameObject frontSide = null;
+        switch (quadType) {
+            case QuadType.Ceiling:
+                frontSide = GameObject.Instantiate(Catalog.GetCeiling(id));
+                frontSide.transform.Rotate(new Vector3(90, 0, 0));
+                frontSide.transform.Translate(new Vector3(-0.5f, -1.5f, -0.5f));
+                break;
+            case QuadType.Floor:
+                frontSide = GameObject.Instantiate(Catalog.GetFloor(id));
+                frontSide.transform.Rotate(new Vector3(-90, 0, 0));
+                frontSide.transform.Translate(new Vector3(-0.5f, 0, -0.5f));
+                break;
+            case QuadType.Wall:
+                frontSide = GameObject.Instantiate(Catalog.GetWall(id));
+                frontSide.transform.localScale = new Vector3(1, 2 / 3f, 1);
+                frontSide.transform.localRotation = Quaternion.Euler(new Vector3(0, 180, 0));
+                frontSide.transform.localPosition = new Vector3(0.5f, -0.5f, 0);
+                break;
+        }
+        frontSide.transform.SetParent(ob.transform,false);
+        if (quadType == QuadType.Wall) {
+            Util.SetLayerRecursively(frontSide, LayerMask.NameToLayer("Walls"));
+        }
         var backSide = ReversedQuad();
         backSide.transform.parent = ob.transform;
         backSide.GetComponent<MeshRenderer>().material = backMaterial;
@@ -70,50 +86,78 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
 
 	void Start () {
         transform.position = new Vector3(x, y, z);
-        upObject = CreateFace(new Vector3(0, UNIT_HEIGHT, 0), new Vector3(1,1,1), new Vector3(-90, 0, 0), "CeilingQuad");
-        downObject = CreateFace(new Vector3(0, 0, 0), new Vector3(1, 1, 1), new Vector3(90, 0, 0), "FloorQuad");
+        upObject = CreateFace(new Vector3(0, UNIT_HEIGHT, 0), new Vector3(1,1,1), new Vector3(-90, 0, 0), ceilingStyle, QuadType.Ceiling);
+        downObject = CreateFace(new Vector3(0, 0, 0), new Vector3(1, 1, 1), new Vector3(90, 0, 0), floorStyle, QuadType.Floor);
         UpdateEdges();
 	}
 
     public void Remove() {
-        if (upObject != null)       Destroy(upObject);
-        if (downObject != null)     Destroy(downObject);
-        if (leftObject != null)     Destroy(leftObject);
-        if (rightObject != null)    Destroy(rightObject);
-        if (frontObject != null)    Destroy(frontObject);
-        if (backObject != null)     Destroy(backObject);
+        if (upObject != null) {
+            Destroy(upObject);
+        }
+        if (downObject != null) {
+            Destroy(downObject);
+        }
+        if (leftObject != null) {
+            Destroy(leftObject);
+        }
+        if (rightObject != null){
+            Destroy(rightObject);
+        }
+        if (frontObject != null){
+            Destroy(frontObject);
+        }
+        if (backObject != null) {
+            Destroy(backObject);
+        }
     }
 
     /// <summary>
     /// Checks the neighbour booleans and creates or removes faces accordingly.
     /// </summary>
     public void UpdateEdges() {
+        UpdateLeftEdge();
+        UpdateRightEdge();
+        UpdateFrontEdge();
+        UpdateBackEdge();
+    }
+
+    void UpdateLeftEdge() {
         if (left && leftObject == null) {
-            leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0), "WallQuad", true);
+            leftObject = CreateFace(new Vector3(-0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, -90, 0), wallStyle, QuadType.Wall);
         }
         if (!left && leftObject != null) {
-			Util.Destroy(leftObject);
+            Util.Destroy(leftObject);
             leftObject = null;
         }
+    }
+
+    void UpdateRightEdge() {
         if (right && rightObject == null) {
-            rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0), "WallQuad", true);
+            rightObject = CreateFace(new Vector3(0.5f, UNIT_HEIGHT / 2, 0), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 90, 0), wallStyle, QuadType.Wall);
         }
         if (!right && rightObject != null) {
-			Util.Destroy(rightObject);
+            Util.Destroy(rightObject);
             rightObject = null;
         }
+    }
+
+    void UpdateFrontEdge() {
         if (front && frontObject == null) {
-            frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0), "WallQuad", true);
+            frontObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, 0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 0, 0), wallStyle, QuadType.Wall);
         }
         if (!front && frontObject != null) {
-			Util.Destroy(frontObject);
+            Util.Destroy(frontObject);
             frontObject = null;
         }
+    }
+
+    void UpdateBackEdge() {
         if (back && backObject == null) {
-            backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0), "WallQuad", true);
+            backObject = CreateFace(new Vector3(0, UNIT_HEIGHT / 2, -0.5f), new Vector3(1, UNIT_HEIGHT, 1), new Vector3(0, 180, 0), wallStyle, QuadType.Wall);
         }
         if (!back && backObject != null) {
-			Util.Destroy(backObject);
+            Util.Destroy(backObject);
             backObject = null;
         }
     }

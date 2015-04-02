@@ -14,13 +14,16 @@ public class ArtRest : MonoBehaviour
 	//thread safe 
 	IEnumerator  getAllArt (GUIControl content)
 	{
-		API.UserController uc = API.UserController.Instance;
+
+		Debug.Log ("t");
+		string imageArtworkUrl;
+		API.SessionManager sm = API.SessionManager.Instance;
 		API.ArtworkController ac = API.ArtworkController.Instance;
-		ac.getAllArtworks (success: (response) => {
+		ac.GetAllArtworks (success: (response) => {
 			foreach (API.ArtWork child in response) {
 				//we save the child, because else it is overwwritten in the loval scope of the closure
 				var artwork = child;
-				ac.getArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
+				ac.GetArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
 					//the id is differen between th 2 calls
 					AddArtToCatalog (artwork,texture, content);
 				}, error: (error) => {
@@ -44,13 +47,13 @@ public class ArtRest : MonoBehaviour
 		//add to content of catalog
 		content.Add (item);
 		//update UI elements
-		item.GetComponent<ArtworkData> ().UpdateGUI ();
+		item.GetComponent<ArtworkGUIData> ().UpdateGUI ();
 	}
 	
 	public void PostArt (GUIControl content)
 	{
 		for (int i=0; i<content.transform.childCount; i++) {
-			content.GetChild (i).GetComponent<ArtworkData> ().Upload ();
+			content.GetChild (i).GetComponent<ArtworkGUIData> ().Upload ();
 		}
 	}
 	
@@ -64,7 +67,7 @@ public class ArtRest : MonoBehaviour
         artwork.owner = new User();
         artwork.owner.ID = art.ArtistID;
 		//copy info in item
-		item.GetComponent<ArtworkData>().Init(artwork, texture);
+		item.GetComponent<ArtworkGUIData>().Init(artwork, texture);
 	}
 	
 	public void FillCatalogWithAllArt (GUIControl content)

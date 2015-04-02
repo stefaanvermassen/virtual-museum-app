@@ -28,7 +28,9 @@ public class MuseumTests {
 
     void DestroyEverything() {
         var objects = GameObject.FindObjectsOfType<GameObject>();
-        foreach (var o in objects) GameObject.DestroyImmediate(o);
+        foreach (var o in objects) {
+            GameObject.DestroyImmediate(o);
+        }
     }
 
     [Test]

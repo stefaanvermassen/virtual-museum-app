@@ -35,8 +35,8 @@ namespace API {
 		/// <param name="success">Success. Closure that gets run if downloading the file is succesfull</param>
 		/// <param name="error">Error. Closure that gets run if downloading the file is unsuccesfull</param>
 		/// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
-		protected HTTP.Request get(string url,  Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) {
-			return sendRequest (new HTTP.Request ("get", url), success, error, authToken);
+		protected HTTP.Request Get(string url,  Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) {
+			return SendRequest (new HTTP.Request ("get", url), success, error, authToken);
 		}
 
 		/// <summary>
@@ -45,9 +45,9 @@ namespace API {
 		/// <param name="url">URL. the location of the request</param>
 		/// <param name="name">Name. Array with keys</param>
 		/// <param name="value">Value. Array with values</param>
-		protected HTTP.Request post(string url, string[] name, string[] value)
+		protected HTTP.Request Post(string url, string[] name, string[] value)
 		{
-			return post (url, name, value, null, null, true);
+			return Post (url, name, value, null, null, true);
 		}
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace API {
 		/// <param name="success">Success. Closure that gets run if downloading the file is succesfull</param>
 		/// <param name="error">Error. Closure that gets run if downloading the file is unsuccesfull</param>
 		/// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
-		protected HTTP.Request post(string url, string[] name, string[] value, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		protected HTTP.Request Post(string url, string[] name, string[] value, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
 			WWWForm form = new WWWForm();
 			for (int i = 0; i < name.Length; i++)
@@ -67,7 +67,7 @@ namespace API {
 				form.AddField(name[i], value[i]);
 			}
 			
-			return postForm(url, form, success, error, authToken);
+			return PostForm(url, form, success, error, authToken);
 		}
 
 		/// <summary>
@@ -78,13 +78,13 @@ namespace API {
 		/// <param name="success">Success. Closure that gets run if downloading the file is succesfull</param>
 		/// <param name="error">Error. Closure that gets run if downloading the file is unsuccesfull</param>
 		/// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
-		protected HTTP.Request post(string url, Dictionary<string, string> formData, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		protected HTTP.Request Post(string url, Dictionary<string, string> formData, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
 			WWWForm form = new WWWForm ();
 			foreach (var pair in formData) {
 				form.AddField(pair.Key, pair.Value);
 			}
-			return postForm(url, form, success, error, authToken);
+			return PostForm(url, form, success, error, authToken);
 		}
 
 		/// <summary>
@@ -96,26 +96,26 @@ namespace API {
 		/// <param name="success">Success. Closure that gets run if downloading the file is succesfull</param>
 		/// <param name="error">Error. Closure that gets run if downloading the file is unsuccesfull</param>
 		/// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
-		protected HTTP.Request postForm(string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		protected HTTP.Request PostForm(string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
-			return postOrPutForm ("post", url, form, success, error, authToken);
+			return PostOrPutForm ("post", url, form, success, error, authToken);
 		}
 
-		protected HTTP.Request postOrPutForm(string method, string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		protected HTTP.Request PostOrPutForm(string method, string url, WWWForm form, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
 			HTTP.Request postRequest = new HTTP.Request (method, url, form);
 
-			return sendRequest(postRequest, success, error, authToken);
+			return SendRequest(postRequest, success, error, authToken);
 		}
 
-		protected HTTP.Request put(string url, Dictionary<string, string> formData, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
+		protected HTTP.Request Put(string url, Dictionary<string, string> formData, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true)
 		{
 			WWWForm form = new WWWForm ();
 			foreach (var pair in formData) {
 				form.AddField(pair.Key, pair.Value);
 			}
 
-			return postOrPutForm ("put", url, form, success, error, authToken);
+			return PostOrPutForm ("put", url, form, success, error, authToken);
 		}
 
 		/// <summary>
@@ -126,10 +126,10 @@ namespace API {
 		/// <param name="success">Success. Closure that gets run if downloading the file is succesfull</param>
 		/// <param name="error">Error. Closure that gets run if downloading the file is unsuccesfull</param>
 		/// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
-		private HTTP.Request sendRequest(HTTP.Request sendRequest, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) 
+		private HTTP.Request SendRequest(HTTP.Request sendRequest, Action<HTTP.Response> success = null, Action<API.API_Error> error = null, bool authToken = true) 
 		{
 			if (authToken) {
-				sendRequest.AddHeader("Authorization", "Bearer " + UserController.Instance.user.accessToken);
+				sendRequest.AddHeader("Authorization", "Bearer " + SessionManager.Instance.GetAccessToken());
 			}
 
 			sendRequest.Send ((request) => {
@@ -141,20 +141,22 @@ namespace API {
 				} else {
 					Debug.Log("Response status: " + response.status);
 					Debug.Log("Response text: " + response.Text);
-					var api_error = API_Error.REQUEST_FAILED;
+					var apiError = API_Error.REQUEST_FAILED;
 					switch(response.status) {
 					case 404:
-						api_error = API_Error.OBJECT_NOT_FOUND;
+						apiError = API_Error.OBJECT_NOT_FOUND;
 						break;
 					case 401:
-						api_error = API_Error.USER_NOT_AUTHENTICATED;
+						apiError = API_Error.USER_NOT_AUTHENTICATED;
 						break;
 					case 500:
-						api_error = API_Error.SERVER_ERROR;
+						apiError = API_Error.SERVER_ERROR;
 						break;
+                    default:
+					    break;
 					}
 					if(error != null) {
-						error(api_error);
+						error(apiError);
 					}
 				}
 			});

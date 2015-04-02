@@ -50,24 +50,27 @@ public class Storage : MonoBehaviour {
     /// Method to Save a Storable object, the player preferences and application runtime platform will decide wether this is done local or remote or both
     /// </summary>
     /// <param name="st">The object that will be serialized and saved (should be of type Savable)</param>
-    public void Save<T>(Savable<T, Data<T>> st)
+    public void Save<T, D>(Savable<T, D> st) where D : Data<T>
     {
         switch (Mode)
         {
             case StoreMode.Only_Local:
-                SaveLocal(st);
+                SaveLocal<T,D>(st);
                 break;
             case StoreMode.Local_And_Remote:
-                SaveLocal(st);
-                if (internet()) SaveRemote(st);
+                SaveLocal<T, D>(st);
+                if (Internet()) SaveRemote<T, D>(st);
                 break;
             case StoreMode.Only_Remote:
-                if (internet()) SaveRemote(st);
+                if (Internet()) SaveRemote<T, D>(st);
                 break;
             case StoreMode.Always_Local_Remote_On_Wifi:
-                SaveLocal(st);
-                if (lan()) SaveRemote(st);
+                SaveLocal<T, D>(st);
+                if (Lan()) SaveRemote<T, D>(st);
                 break;
+            default:
+                //This should not happen, but sonar wants a default case, so I'll throw an exception, because this would be a VERY unexpected outcome
+                throw new Exception("Unexpected SaveMode in Storage component");
 
         }
     }
@@ -77,9 +80,9 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">Object where data will be loaded to</param>
     /// <param name="identification">idintifier</param>
-    public void Load<T>(Savable<T, Data<T>> st, int identification)
+    public void Load<T, D>(Savable<T, D> st, int identification) where D : Data<T>
     {
-        Load<T>(st, ""+identification);
+        Load<T,D>(st, ""+identification);
     }
 
     /// <summary>
@@ -87,27 +90,25 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">The object where data will be loaded to.</param>
     /// <param name="identification">unique string identification of the object</param>
-    public void Load<T>(Savable<T, Data<T>> st, string identification)
+    public void Load<T, D>(Savable<T, D> st, string identification) where D : Data<T>
     {
         string path;
 
         //if possibly stored locally but no internet
-        bool firstCase = (Mode == StoreMode.Local_And_Remote || Mode == StoreMode.Always_Local_Remote_On_Wifi) && !internet();
+        bool firstCase = (Mode == StoreMode.Local_And_Remote || Mode == StoreMode.Always_Local_Remote_On_Wifi) && !Internet();
         //if only locally stored        
         bool secondCase = Mode == StoreMode.Only_Local;
         //if only use data on lan mode and no lan available
-        bool thirdCase = Mode == StoreMode.Always_Local_Remote_On_Wifi && !lan();
+        bool thirdCase = Mode == StoreMode.Always_Local_Remote_On_Wifi && !Lan();
 
         //load locally
         if (firstCase || secondCase || thirdCase)
         {
-            path = findPath(identification);
-            if (checkFileExtension(st, path))
-            {
-                LoadLocal<T>(st, path);
-                return;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+            path = FindPath(identification);
+
+            LoadLocal<T,D>(st, path);
+            return;
+
         }
 
         //if only stored remote
@@ -121,19 +122,17 @@ public class Storage : MonoBehaviour {
         //if stored remote and locally and internet is available and permitted to use (in case of only lan)
 
         //compare last modified
-        path = findPath(identification);
+        path = FindPath(identification);
         DateTime dtLocal = File.GetLastWriteTime(path);
         DateTime dtRemote = st.LastModified(identification);
 
         //local file most recent
         if (dtLocal.CompareTo(dtRemote) <= 0)
         {
-            if (checkFileExtension(st, path))
-            {
-                LoadLocal<T>(st, path);
-                return;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+
+            LoadLocal<T,D>(st, path);
+            return;
+
         }
         //remote file most recent
         else
@@ -152,19 +151,23 @@ public class Storage : MonoBehaviour {
         switch (Mode)
         {
         case StoreMode.Only_Local:
-                SaveLocal(data);
+            SaveLocal(data);
             break;
         case StoreMode.Local_And_Remote:
             SaveLocal(data);
-            if (internet()) SaveRemote(data);
+            if (Internet()) SaveRemote(data);
             break;
         case StoreMode.Only_Remote:
-            if (internet()) SaveRemote(data);
+            if (Internet()) SaveRemote(data);
             break;
         case StoreMode.Always_Local_Remote_On_Wifi:
             SaveLocal(data);
-            if (lan()) SaveRemote(data);
+            if (Lan()) SaveRemote(data);
             break;
+        default:
+            //This should not happen, but sonar wants a default case, so I'll throw an exception, because this would be a VERY unexpected outcome
+            throw new Exception("Unexpected SaveMode in Storage component");
+
 
         }
     }
@@ -195,22 +198,20 @@ public class Storage : MonoBehaviour {
         string path;
 
         //if possibly stored locally but no internet
-        bool firstCase = (Mode == StoreMode.Local_And_Remote || Mode == StoreMode.Always_Local_Remote_On_Wifi) && !internet();
+        bool firstCase = (Mode == StoreMode.Local_And_Remote || Mode == StoreMode.Always_Local_Remote_On_Wifi) && !Internet();
         //if only locally stored        
         bool secondCase = Mode == StoreMode.Only_Local;
         //if only use data on lan mode and no lan available
-        bool thirdCase = Mode == StoreMode.Always_Local_Remote_On_Wifi && !lan();
+        bool thirdCase = Mode == StoreMode.Always_Local_Remote_On_Wifi && !Lan();
 
         //load locally
         if (firstCase || secondCase || thirdCase)
         {
-            path = findPath(identification);
-            if (checkFileExtension(data, path))
-            {
-                data = LoadLocal(data, path);
-                return data;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+            path = FindPath(identification);
+
+            data = LoadLocal(data, path);
+            return data;
+          
         }
 
         //if only stored remote
@@ -224,19 +225,17 @@ public class Storage : MonoBehaviour {
         //if stored remote and locally and internet is available and permitted to use (in case of only lan)
 
         //compare last modified
-        path = findPath(identification);
+        path = FindPath(identification);
         DateTime dtLocal = File.GetLastWriteTime(path);
         DateTime dtRemote = data.LastModified(identification);
 
         //local file most recent
         if (dtLocal.CompareTo(dtRemote) <= 0)
         {
-            if (checkFileExtension(data, path))
-            {
-                data = LoadLocal(data, path);
-                return data;
-            }
-            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
+
+            data = LoadLocal(data, path);
+            return data;
+            
         }
         //remote file most recent
         else
@@ -258,7 +257,7 @@ public class Storage : MonoBehaviour {
     /// Method to request the Modus of storing
     /// </summary>
     /// <returns>Modus of Storing (enumtype)</returns>
-    public StoreMode getStoreMode()
+    public StoreMode GetStoreMode()
     {
         return Mode;
     }
@@ -267,9 +266,9 @@ public class Storage : MonoBehaviour {
     /// Method to change the Modus of storing
     /// </summary>
     /// <param name="m">Desired modus of storing</param>
-    public void setStoreMode(StoreMode m)
+    public void SetStoreMode(StoreMode m)
     {
-        if (storeModeAllowed(m))
+        if (StoreModeAllowed(m))
         {
             Mode = m;
             SavePlayerPrefs();
@@ -281,7 +280,7 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="m">Deisred modus of storing</param>
     /// <returns>Modus is allowed or not</returns>
-    public bool storeModeAllowed(StoreMode m)
+    public bool StoreModeAllowed(StoreMode m)
     {
         //TODO: check if modus is possible on this platform ! (e.g. no local on browser)
         throw new NotImplementedException();
@@ -316,6 +315,9 @@ public class Storage : MonoBehaviour {
                 case RuntimePlatform.OSXEditor:
                     Mode = Storage.StoreMode.Local_And_Remote;
                     break;
+                default:
+                    //Unsupported platform, should not happen, but Sonar wants default case, so I'll throw an exception
+                    throw new Exception("Unexpected Platform, Storage doesn't know where to save stuff, how did you manage to run this app on a magical platform?");
             }
             SavePlayerPrefs();
         }
@@ -343,18 +345,14 @@ public class Storage : MonoBehaviour {
     {
     }
 
-    // Update is called once per frame
-    void Update()
-    {}
-
 
     /// <summary>
     /// Helper function used to save a Savable object (Data from a MonoBehavior) Remotely
     /// </summary>
     /// <param name="st">The object to be saved remotely</param>
-    private void SaveRemote<T>(Savable<T, Data<T>> st)
+    public void SaveRemote<T,D>(Savable<T,D> savable) where D : Data<T>
     {
-        st.SaveRemote();
+        savable.SaveRemote();
         Debug.Log("Data Saved Remotely.");
     }
 
@@ -362,25 +360,28 @@ public class Storage : MonoBehaviour {
     /// Helper function to save a savable object (Data from a MonoBehavior) locally
     /// </summary>
     /// <param name="st">The object to be saved</param>
-    private void SaveLocal<T>(Savable<T, Data<T>> st)
+    public void SaveLocal<T,D>(Savable<T, D> savable) where D : Data<T>
     {
         //Require data to save
-        var data = st.Save();
+        var data = savable.Save();
         //Build path where to save
-        string path = RootFolder + st.getFolder() + "/" + st.getFileName() +"." +st.getExtension();
+        string path = RootFolder + savable.getFolder();
+        bool folderExists = Directory.Exists(path);
+        if (!folderExists) Directory.CreateDirectory(path);
         //create file and save data
+        path += "/" + savable.getFileName() + "." + savable.getExtension();
         Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
         TestFileStream.Close();
-        Debug.Log("Data Saved Locally.");
+        Debug.Log("Data Saved Locally to "+path);
     }
 
     /// <summary>
     /// Helper function to save SavableData (non Monobehaviour object) remotely
     /// </summary>
     /// <param name="data">data to be saved</param>
-    private void SaveRemote(SavableData data)
+    public void SaveRemote(SavableData data)
     {
         data.SaveRemote();
         Debug.Log("Data Saved Remotely.");
@@ -391,11 +392,14 @@ public class Storage : MonoBehaviour {
     /// Helper function to save SavableData (non Monobehaviour object) locally
     /// </summary>
     /// <param name="data">data to be saved</param>
-    private void SaveLocal(SavableData data)
+    public void SaveLocal(SavableData data)
     {
         //Build path where to save
-        string path = RootFolder + data.getFolder() + "/" + data.getFileName() + "." + data.getExtension();
+        string path = RootFolder + data.getFolder();
+        bool folderExists = Directory.Exists(path);
+        if (!folderExists) Directory.CreateDirectory(path);
         //create file and save data
+        path += "/" + data.getFileName() + "." + data.getExtension();
         Stream TestFileStream = File.Create(path);//does this overwrite existing files? -> Yes !
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
@@ -410,7 +414,7 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">Object where the data should be loaded to</param>
     /// <param name="identifier">string to identify the object on the backend</param>
-    private void LoadRemote<T>(Savable<T, Data<T>> st, string identifier)
+    public void LoadRemote<T>(Savable<T, Data<T>> st, string identifier)
     {
         st.LoadRemote(identifier);
     }
@@ -420,17 +424,19 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">The object where the data will be loaded to</param>
     /// <param name="path">the path of the file to load from</param>
-    private void LoadLocal<T>(Savable<T, Data<T>> st, string path)
+    public void LoadLocal<T, D>(Savable<T, D> savable, string path) where D : Data<T>
     {
         if (File.Exists(path))
         {
-            Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
-            BinaryFormatter deserializer = new BinaryFormatter();
-            Data<T> data = (Data<T>)deserializer.Deserialize(TestFileStream);
-            TestFileStream.Close();
-            st.Load(data);
+            if(CheckFileExtension<T,D>(savable,path)){
+                Stream TestFileStream = File.OpenRead(path);
+                BinaryFormatter deserializer = new BinaryFormatter();
+                D data = (D)deserializer.Deserialize(TestFileStream);
+                TestFileStream.Close();
+                savable.Load(data);
+            }else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
         }
-        throw new FileNotFoundException("Could not load data because file does not exist. ("+path+")");
+        else throw new FileNotFoundException("Could not load data because file does not exist. ("+path+")");
     }
 
 
@@ -439,7 +445,7 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">Object where the data should be loaded to</param>
     /// <param name="identifier">string to identify the object on the backend</param>
-    private SavableData LoadRemote(SavableData data, string identifier)
+    public SavableData LoadRemote(SavableData data, string identifier)
     {
         data.LoadRemote(identifier);
         Debug.Log("Data Loaded Remotely.");
@@ -451,18 +457,21 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="st">The object where the data will be loaded to</param>
     /// <param name="path">the path of the file to load from</param>
-    private SavableData LoadLocal(SavableData data, string path)
+    public SavableData LoadLocal(SavableData data, string path)
     {
         if (File.Exists(path))
         {
-            Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
-            BinaryFormatter deserializer = new BinaryFormatter();
-            data = (SavableData)deserializer.Deserialize(TestFileStream);
-            TestFileStream.Close();
-            Debug.Log("Data Loaded Locally.");
-            return data;
+            if(CheckFileExtension(data,path)){
+                Stream TestFileStream = File.OpenRead(path);
+                BinaryFormatter deserializer = new BinaryFormatter();
+                data = (SavableData)deserializer.Deserialize(TestFileStream);
+                TestFileStream.Close();
+                Debug.Log("Data Loaded Locally.");
+                return data;
+            }
+            else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
         }
-        throw new FileNotFoundException("Could not load data because file does not exist. (" + path + ")");
+        else throw new FileNotFoundException("Could not load data because file does not exist. (" + path + ")");
     }
 
 
@@ -473,10 +482,11 @@ public class Storage : MonoBehaviour {
     /// <param name="st">Object where data will be loaded to</param>
     /// <param name="path">File where we want to load data from</param>
     /// <returns>if these are of the same type (file extension matches)</returns>
-    private bool checkFileExtension<T>(Savable<T, Data<T>> st, string path)
+    private bool CheckFileExtension<T, D>(Savable<T, D> savable, string path) where D : Data<T>
     {
+        Debug.Log("Checking file extension");
         string[] splitPath = path.Split('.');
-        return splitPath[splitPath.Length - 1].Equals( st.getExtension() );
+        return splitPath[splitPath.Length - 1].Equals(savable.getExtension());
     }
 
     /// <summary>
@@ -485,8 +495,9 @@ public class Storage : MonoBehaviour {
     /// <param name="st">Object where data will be loaded to</param>
     /// <param name="path">File where we want to load data from</param>
     /// <returns>if these are of the same type (file extension matches)</returns>
-    private bool checkFileExtension(SavableData data, string path)
+    private bool CheckFileExtension(SavableData data, string path)
     {
+        Debug.Log("Checking file extension");
         string[] splitPath = path.Split('.');
         return splitPath[splitPath.Length - 1].Equals(data.getExtension());
     }
@@ -496,18 +507,19 @@ public class Storage : MonoBehaviour {
     /// </summary>
     /// <param name="identification">string for identification of the object on the server</param>
     /// <returns>path to the desired file</returns>
-    private string findPath(string identification)
+    private string FindPath(string identification)
     {
         //TODO: identification will probably be a user/museum combo or another unique identifier for the server: find the path of this file locally (if it exists)
         return identification;
     }
 
     /// <summary>
-    /// Helper function to check the date an object was last modified, this can be used to check if the remote object has changed since the last local save or not. If it is up to date no pull from the server is needed
+    /// Helper function to check the date an object was last modified, 
+    /// this can be used to check if the remote object has changed since the last local save or not. If it is up to date no pull from the server is needed
     /// </summary>
     /// <param name="path">path of the file we want to have the last modified data from</param>
     /// <returns>Last modified date</returns>
-    private DateTime lastModified(string path)
+    private DateTime LastModified(string path)
     {
         if (File.Exists(path)) return File.GetLastWriteTimeUtc(path);
         else return new DateTime(); // default constructor returns 1/1/0001 12:00:00 AM.
@@ -517,7 +529,7 @@ public class Storage : MonoBehaviour {
     /// Helper function that checks if the application has internet via Local Area Network
     /// </summary>
     /// <returns>if there is a LAN connection</returns>
-    public bool lan()
+    public bool Lan()
     {
         return (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork);
     }
@@ -526,7 +538,7 @@ public class Storage : MonoBehaviour {
     /// Helper function that checks if the application has internet via a Carrier Data Network
     /// </summary>
     /// <returns>if there is a 4G connection</returns>
-    public bool carrier()
+    public bool Carrier()
     {
         return (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork);
     }
@@ -535,10 +547,9 @@ public class Storage : MonoBehaviour {
     /// Helper function that checks if the application has an internet connection
     /// </summary>
     /// <returns>if there is an internet connection</returns>
-    public bool internet()
+    public bool Internet()
     {
-        return lan() || carrier();
+        return Lan() || Carrier();
     }
 
-    
 }
