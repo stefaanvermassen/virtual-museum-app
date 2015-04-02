@@ -28,7 +28,8 @@ namespace UnityStandardAssets.CrossPlatformInput
 		CrossPlatformInputManager.VirtualAxis m_VerticalVirtualAxis; // Reference to the joystick in the cross platform input
 
 		public void Start() {
-			float scale = (float)(Screen.height * Screen.dpi) / (720 * 120);
+			//float scale = (float)(Screen.height * Screen.dpi) / (720 * 120);
+			float scale = (float)(Screen.height) / (720);
 			MovementRange = (int)(MovementRange*scale);
 			m_StartPos = transform.localPosition;
 			holdingPos.x = 0;

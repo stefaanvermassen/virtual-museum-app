@@ -103,7 +103,7 @@ public class FirstPersonController : MonoBehaviour {
 		if (activeVR == VR.Durovis) {
 			// TODO: Complete Durovis VR movement implementation. Looking around already works.
 			// Modify Horizontal/Vertical axis values depending on vertical rotation (look at ground = stop/start).
-			verticalAxis = Mathf.Cos(Mathf.Deg2Rad*verticalRotation);
+			verticalAxis = Mathf.Cos(Mathf.Deg2Rad*verticalRotation) * 0.4f;
 			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
 		} else if (activeVR == VR.Oculus) {
 			// TODO: Complete Oculus Rift movement and looking implementation.
