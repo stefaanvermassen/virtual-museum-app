@@ -24,6 +24,8 @@ namespace Scanning
         public QRScanner()
         {
             LastResult = "default";
+            Height = 256;
+            Width = 256;
         }
 
         public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable)
@@ -41,7 +43,7 @@ namespace Scanning
                     Width = Width
                 }
             };
-
+            Debug.Log("index out of range after this?");
             id.Image = writer.Write(scannable.GetUniqueString());
             return id;
         }
