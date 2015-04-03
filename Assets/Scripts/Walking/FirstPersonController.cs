@@ -181,16 +181,30 @@ public class FirstPersonController : MonoBehaviour {
             ovrCamera.gameObject.SetActive(false);
             monoCamera.gameObject.SetActive(true);
             stereoCameraController.gameObject.SetActive(false);
+            mobileControlRig.overrideControls = false;
+#if MOBILE_INPUT
+            mobileControlRig.EnableControlRig(true);
+            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Touch);
+#endif
         }else if (Application.isMobilePlatform) {
             activeVR = VR.Durovis;
             stereoCameraController.gameObject.SetActive(true);
             ovrCamera.gameObject.SetActive(false);
             monoCamera.gameObject.SetActive(false);
+            mobileControlRig.overrideControls = true;
+            mobileControlRig.EnableControlRig(false);
+#if UNITY_EDITOR
+            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
+#endif
         }else if (Application.isEditor) {
             activeVR = VR.Oculus;
             stereoCameraController.gameObject.SetActive(false);
             ovrCamera.gameObject.SetActive(true);
             monoCamera.gameObject.SetActive(false);
+            mobileControlRig.overrideControls = false;
+#if UNITY_EDITOR
+            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
+#endif
         }
         stereoEnabled = stereo;
 	}

@@ -189,7 +189,7 @@ public class OVRCameraRig : MonoBehaviour
 		}
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-		if (leftEyeCamera != null)
+		/*if (leftEyeCamera != null)
 		{
 			if (leftEyeCamera.GetComponent<OVRPostRender>() == null)
 			{
@@ -202,7 +202,7 @@ public class OVRCameraRig : MonoBehaviour
 			{
 				rightEyeCamera.gameObject.AddComponent<OVRPostRender>();
 			}
-		}
+		}*/
 #endif
 	}
 

@@ -397,8 +397,8 @@ public class OVRManager : MonoBehaviour
 	private static AndroidJavaClass javaVrActivityClass;
 	internal static int timeWarpViewNumber = 0;
 
-	[NonSerialized]
-	private static OVRVolumeControl VolumeController = null;
+	//[NonSerialized]
+	//private static OVRVolumeControl VolumeController = null;
 
 	public static void EnterVRMode()
 	{
@@ -516,9 +516,9 @@ public class OVRManager : MonoBehaviour
 		}
 
 		// We want to set up our touchpad messaging system
-		OVRTouchpad.Create();
+		//OVRTouchpad.Create();
 
-		InitVolumeController();
+		//InitVolumeController();
 #else
 		SetEditorPlay(Application.isEditor);
 #endif
@@ -609,11 +609,11 @@ public class OVRManager : MonoBehaviour
 		StartCoroutine(CallbackCoroutine());
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-		if (VolumeController != null)
+		/*if (VolumeController != null)
 		{
 			OVRPose pose = OVRManager.display.GetHeadPose();
 			VolumeController.UpdatePosition(pose.orientation, pose.position);
-		}
+		}*/
 #endif
 	}
 
@@ -723,11 +723,11 @@ public class OVRManager : MonoBehaviour
 		display.Update();
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-		if (VolumeController != null)
+		/*if (VolumeController != null)
 		{
 			OVRPose pose = OVRManager.display.GetHeadPose();
 			VolumeController.UpdatePosition(pose.orientation, pose.position);
-		}
+		}*/
 #endif
 	}
 
@@ -796,7 +796,7 @@ public class OVRManager : MonoBehaviour
 	/// </summary>
 	private static void InitVolumeController()
 	{
-		if (VolumeController == null)
+		/*if (VolumeController == null)
 		{
 			Debug.Log("Creating volume controller...");
 			// Create the volume control popup
@@ -809,7 +809,7 @@ public class OVRManager : MonoBehaviour
 			{
 				Debug.LogError("Unable to instantiate volume controller");
 			}
-		}
+		}*/
 	}
 
 	/// <summary>
