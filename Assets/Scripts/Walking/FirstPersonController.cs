@@ -40,7 +40,7 @@ public class FirstPersonController : MonoBehaviour {
 	}
 
 	public enum VR{None, Durovis, Oculus};
-	private VR activeVR = VR.None;
+	public VR activeVR = VR.None;
 
 	/// <summary>
 	/// The active Virtual Reality mode. Usually, this would be no VR at all.
@@ -71,6 +71,7 @@ public class FirstPersonController : MonoBehaviour {
 	
 	CharacterController characterController;
 	public Camera monoCamera;
+    public OVRCameraRig ovrCamera;
 	public MuseumDiveSensor stereoCameraController;
 	public MobileControlRig mobileControlRig;
 
@@ -107,6 +108,7 @@ public class FirstPersonController : MonoBehaviour {
 			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
 		} else if (activeVR == VR.Oculus) {
 			// TODO: Complete Oculus Rift movement and looking implementation.
+            //verticalAxis = Mathf.Cos(Mathf.Deg2Rad * verticalRotation) * 0.4f;
 		} else {
 			if (CrossPlatformInputManager.GetActiveInputMethod ().Equals (CrossPlatformInputManager.ActiveInputMethod.Touch)) {
 				// Mobile "thumbstick" controls
@@ -148,8 +150,9 @@ public class FirstPersonController : MonoBehaviour {
 #endif
 		} else if(vrMode == VR.Oculus) {
 			// Disable joysticks
-			mobileControlRig.overrideControls = true;
-			mobileControlRig.EnableControlRig(false);
+			//mobileControlRig.overrideControls = true;
+            //mobileControlRig.EnableControlRig(false);
+            mobileControlRig.overrideControls = false;
 #if UNITY_EDITOR
 			CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
 #endif
@@ -167,15 +170,24 @@ public class FirstPersonController : MonoBehaviour {
 	/// Changes the cameras depending on whether or not stereo view is enabled.
 	/// </summary>
 	/// <param name="stereo">Whether or not stereo cameras should be enabled.</param>
-	void SwitchCameraMode(bool stereo) {
-		if(stereo) {
-			if(!stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(true);
-			if(monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(false);
-		} else {
-			if(!monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(true);
-			if(stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(false);
-		}
-		stereoEnabled = stereo;
+	public void SwitchCameraMode(bool stereo) {
+        if (!stereo) {
+            activeVR = VR.None;
+            ovrCamera.gameObject.SetActive(false);
+            monoCamera.gameObject.SetActive(true);
+            stereoCameraController.gameObject.SetActive(false);
+        }else if (Application.isMobilePlatform) {
+            activeVR = VR.Durovis;
+            stereoCameraController.gameObject.SetActive(true);
+            ovrCamera.gameObject.SetActive(false);
+            monoCamera.gameObject.SetActive(false);
+        }else if (Application.isEditor) {
+            activeVR = VR.Oculus;
+            stereoCameraController.gameObject.SetActive(false);
+            ovrCamera.gameObject.SetActive(true);
+            monoCamera.gameObject.SetActive(false);
+        }
+        stereoEnabled = stereo;
 	}
 
 	/// <summary>
