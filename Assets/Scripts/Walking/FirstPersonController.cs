@@ -107,6 +107,11 @@ public class FirstPersonController : MonoBehaviour {
 			verticalAxis = Mathf.Cos(Mathf.Deg2Rad*verticalRotation) * 0.4f;
 			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
 		} else if (activeVR == VR.Oculus) {
+            mouseXAxis = 0;
+            mouseYAxis = 0;
+            var center = ovrCamera.transform.FindChild("TrackingSpace").transform.FindChild("CenterEyeAnchor");
+            SetRotation(center.transform.rotation);
+            ovrCamera.transform.position = monoCamera.transform.position;
 			// TODO: Complete Oculus Rift movement and looking implementation.
             //verticalAxis = Mathf.Cos(Mathf.Deg2Rad * verticalRotation) * 0.4f;
 		} else {
