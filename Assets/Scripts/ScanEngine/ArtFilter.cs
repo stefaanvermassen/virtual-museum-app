@@ -18,7 +18,7 @@ namespace Scanning
         public List<string> Genres { get; set; }
 
 
-        public void configure(string s)
+        public void Configure(string s)
         {
             string[] labels = s.Split(':');
             string[] tags = labels[3].Split(',');
