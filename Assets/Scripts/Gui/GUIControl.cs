@@ -92,7 +92,7 @@ public class GUIControl : MonoBehaviour
 	{
 		//activate all scripts
 		foreach (MonoBehaviour script in instance.GetComponents<MonoBehaviour>()) {
-			script.enabled = true;
+			if(script !=null)script.enabled = true;
 		}
 		//activate all children
 		for (int i=0; i<instance.childCount; i++) {
