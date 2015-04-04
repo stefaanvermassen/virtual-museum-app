@@ -1,24 +1,6 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Art/Art.cs">
-    <Files>
-      <File FileName="Assets/Scripts/Gui/ArtCatalog.cs" Line="44" Column="30" />
-      <File FileName="Assets/Scripts/Art/Art.cs" Line="148" Column="39" />
-      <File FileName="Assets/Scripts/Gui/ArtworkGUIData.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Util/AsyncLoader.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/API/UserController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/API/SessionManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Gui/LoginGUI.cs" Line="10" Column="3" />
-      <File FileName="Assets/Scripts/Art/ArtData.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Building/ObjectCatalogItemController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Building/ObjectSelectorPanel.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Catalog/Catalog.cs" Line="51" Column="2" />
-      <File FileName="Assets/Scripts/Building/ObjectCatalogController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Building/DrawController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Museum/Museum.cs" Line="1" Column="1" />
-      <File FileName="Assets/OVR/Scripts/OVRUnityVersionChecker.cs" Line="124" Column="17" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

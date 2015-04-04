@@ -38,7 +38,7 @@ public class ArtworkGUIData : FileBrowserListener
 
 	}
 
-	public void ReadFromGUI ()
+	public void Save ()
 	{
 		artWork.name = nameInput.text;
 		//save changes

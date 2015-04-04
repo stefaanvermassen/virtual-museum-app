@@ -8,7 +8,7 @@ public class ArtCatalog : MonoBehaviour
 {
 
 
-	private List<Art> allArt;
+
 
     //show new art panel in catalog
 	public void AddNewArtToCatalog (GUIControl content)
@@ -23,7 +23,7 @@ public class ArtCatalog : MonoBehaviour
 	public void PostArt (GUIControl content)
 	{
 		for (int i=0; i<content.transform.childCount; i++) {
-			content.GetChild (i).GetComponent<ArtworkGUIData> ().Upload ();
+			content.GetChild (i).GetComponent<ArtworkGUIData> ().Save ();
 		}
 	}
 	
@@ -43,7 +43,6 @@ public class ArtCatalog : MonoBehaviour
 		//get all art from catalog
 		var allArt = Catalog.getAllArt ().Values;
 		Debug.Log (allArt.Count);
-		Debug.Log (";ldkfgndjsfb");
 		//load art in gui
 		foreach (Art art in allArt) {
 			AddArtToCatalog(art,content);
