@@ -6,12 +6,11 @@ using Scanning;
 public class QRGenerator : MonoBehaviour {
 
     public ArtFilter RequestedArtFilter { get; set; }
-    public Image GUIImage;
+    public QRView view;
 
     public QRGenerator(ArtFilter filter)
     {
-        RequestedArtFilter = filter;
-        
+        RequestedArtFilter = filter;   
     }
 
 	// Use this for initialization
@@ -30,14 +29,10 @@ public class QRGenerator : MonoBehaviour {
         Color32[] QRCodeImage = qrCode.Image;
         Debug.Log("QRCode image required");
 
-
         Texture2D qrTexture = new Texture2D(256, 256);
         Debug.Log("number of pixels in array:" + QRCodeImage.Length);
-        qrTexture.SetPixels32(0,0,256,256,QRCodeImage);
-
-        Debug.Log("Got image:" + GUIImage.minHeight);
-        GUIImage.color = Color.blue;
-        GUIImage.sprite = Sprite.Create(qrTexture, new Rect(0, 0, 256, 256), Vector2.zero);
+        qrTexture.SetPixels32(0, 0, 256, 256, QRCodeImage);
+        view.image = qrTexture;
     }
 
 	// Update is called once per frame
