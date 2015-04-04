@@ -29,10 +29,12 @@ public class QRGenerator : MonoBehaviour {
         Color32[] QRCodeImage = qrCode.Image;
         Debug.Log("QRCode image required");
 
-        Texture2D qrTexture = new Texture2D(256, 256);
+        /*Texture2D qrTexture = new Texture2D(256, 256);
         Debug.Log("number of pixels in array:" + QRCodeImage.Length);
-        qrTexture.SetPixels32(0, 0, 256, 256, QRCodeImage);
-        view.image = qrTexture;
+        qrTexture.SetPixels32(0, 0, 256, 256, QRCodeImage);*/
+
+        view.image = Texture2D.blackTexture;
+        view.QR.sprite = Sprite.Create(Texture2D.blackTexture, new Rect(0, 0, 256, 256), Vector2.zero);
     }
 
 	// Update is called once per frame
