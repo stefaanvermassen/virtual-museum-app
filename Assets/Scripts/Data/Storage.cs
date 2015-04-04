@@ -126,10 +126,13 @@ public class Storage : MonoBehaviour {
         DateTime dtLocal = File.GetLastWriteTime(path);
         DateTime dtRemote = st.LastModified(identification);
 
-        //local file most recent
-        if (dtLocal.CompareTo(dtRemote) <= 0)
-        {
+        Debug.Log("STORAGE: Local File Last Modified: " + dtLocal.ToString());
+        Debug.Log("STORAGE: Remote File Last Modified: " + dtRemote.ToString());
 
+        //local file most recent
+        if (dtLocal.CompareTo(dtRemote) > 0)
+        {
+            
             LoadLocal<T,D>(st, path);
             return;
 
