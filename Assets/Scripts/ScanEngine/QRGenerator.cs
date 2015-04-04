@@ -35,7 +35,7 @@ public class QRGenerator : MonoBehaviour {
         Debug.Log("number of pixels in array:" + QRCodeImage.Length);
         qrTexture.SetPixels32(0,0,256,256,QRCodeImage);*/
         Texture2D qrTexture = new Texture2D(265, 265);
-        qrTexture.SetPixel(0, 0, Color.red);
+        qrTexture.SetPixel(0, 0, Color.red); //om te testen of mijn texture ni gwn fout is ofzo
 
         Debug.Log("Got image:" + GUIImage.minHeight);
         GUIImage.color = Color.blue;
