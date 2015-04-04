@@ -111,10 +111,11 @@ public class Art : Savable<Art, ArtData>
 		Debug.Log("Start saving Remote");
 		API.ArtworkController cont = API.ArtworkController.Instance;
 		//TODO make sure a user is logged in
-		API.SessionManager sm = API.SessionManager.Instance;
+		//TODO: start metadata upload on other therad where it waits for the image upload to be finished
+
 		HTTP.Request req = UploadImage(cont);
 		Debug.Log (req.isDone);
-		while (!req.isDone) {
+		while (!req.callbackCompleted) {
 			//wait
 		}
 		UploadMetaData(cont);
@@ -140,40 +141,11 @@ public class Art : Savable<Art, ArtData>
             error: (error) => { Debug.Log("NOPE"); }
         ); 
     }
+	public void LoadRemote(int identifier) {
+		LoadRemote (identifier + "");
+	}
     public DateTime LastModified(string identifier) {
         return DateTime.Now;
     }
-	//TODO: add filters on collection of requested art
-	/// <summary>
-	/// Loads all art from server available to user.
-	/// A filter can be applied to refine the scope of the collection.
-	/// </summary>
-	/// <returns>A collection Art.</returns>
-	public static List<Art> LoadRemoteAll(){
-		List<Art> allArt = new List<Art> ();
-		Debug.Log ("t");
-		string imageArtworkUrl;
-		//TODO make sure a user is logged in
-		API.SessionManager sm = API.SessionManager.Instance;
-		API.ArtworkController ac = API.ArtworkController.Instance;
-		ac.GetAllArtworks (success: (response) => {
-			foreach (API.ArtWork child in response) {
-				//we save the child, because else it is overwwritten in the loval scope of the closure
-				var artwork = child;
-				ac.GetArtworkData (artwork.ArtWorkID.ToString(), success: (texture) => {
-					//save art metadata
-					Art art = API.ArtWork.ToArt(artwork);
-					//save image byte[] 
-					art.imageFile=texture;
-					allArt.Add(art);
-				}, error: (error) => {
-					Debug.Log ("An error occured while loading artwork with ID: " + child.ArtWorkID.ToString ());});
-				
-			}
-		},
-		error: (error) => {
-			Debug.Log ("An error occured while loading all artworks");
-		}); 
-		return allArt;
-	}
+
 }

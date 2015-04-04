@@ -19,10 +19,10 @@ public class ArtworkGUIData : FileBrowserListener
 	{
 		artWork.imagePathSource = fileBrowser.GetSelectedFile ();
 		artWork.imageFile = File.ReadAllBytes (fileBrowser.GetSelectedFile ());
-		WriteToGUI ();
+		Refresh();
 	}
 
-	public void WriteToGUI ()
+	public void Refresh() 
 	{
 		//update properties
 		if (artWork.name == null) {
@@ -41,6 +41,8 @@ public class ArtworkGUIData : FileBrowserListener
 	public void ReadFromGUI ()
 	{
 		artWork.name = nameInput.text;
+		//save changes
+		artWork.Save();
 	}
 
 	public ArtworkGUIData ()
@@ -52,7 +54,7 @@ public class ArtworkGUIData : FileBrowserListener
 	{
 		this.artWork = artWork;
 		//check name of 
-		WriteToGUI ();
+		Refresh();
 	}
 
 
