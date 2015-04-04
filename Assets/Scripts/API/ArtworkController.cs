@@ -21,7 +21,7 @@ namespace API
 
 		}
 
-		private static readonly ArtworkController _instance = new ArtworkController();
+		private static readonly ArtworkController _Instance = new ArtworkController ();
 
 		/// <summary>
 		/// Gets the instance.
@@ -29,7 +29,7 @@ namespace API
 		/// <value>The instance.</value>
 		public static ArtworkController Instance {
 			get {
-				return _instance;
+				return _Instance;
 			}
 		}
 
@@ -40,10 +40,11 @@ namespace API
 		/// <param name="id">Identifier.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getArtwork(string id, Action<ArtWork> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + ARTWORK + "/" + id, ((response) => {
-				if(success != null) {
-					success(ArtWork.FromDictionary(response.Object));
+		public HTTP.Request GetArtwork (string id, Action<ArtWork> success = null, Action<API.API_Error> error = null)
+		{
+			return Get (BASE_URL + ARTWORK + "/" + id, ((response) => {
+				if (success != null) {
+					success (ArtWork.FromDictionary (response.Object));
 				}}), error);
 		}
 
@@ -54,8 +55,9 @@ namespace API
 		/// <param name="artistID">Artist I.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getAllArtworksByArtist(string artistID, Action<ArrayList> success = null, Action<API.API_Error> error = null){
-			return getArtworksByFilter ("?ArtistID=" + artistID, success, error);
+		public HTTP.Request GetAllArtworksByArtist (string artistID, Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		{
+			return GetArtworksByFilter ("?ArtistID=" + artistID, success, error);
 		}
 
 		/// <summary>
@@ -65,8 +67,9 @@ namespace API
 		/// <param name="name">Name.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getAllArtworksByName(string name, Action<ArrayList> success = null, Action<API.API_Error> error = null){
-			return getArtworksByFilter ("?Name=" + name, success, error);
+		public HTTP.Request GetAllArtworksByName (string name, Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		{
+			return GetArtworksByFilter ("?Name=" + name, success, error);
 		}
 
 		/// <summary>
@@ -75,8 +78,9 @@ namespace API
 		/// <returns>The all artworks.</returns>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getAllArtworks(Action<ArrayList> success = null, Action<API.API_Error> error = null) {
-			return getArtworksByFilter ("", success, error);
+		public HTTP.Request GetAllArtworks (Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		{
+			return GetArtworksByFilter ("", success, error);
 		}
 
 		/// <summary>
@@ -86,16 +90,17 @@ namespace API
 		/// <param name="filter">Filter.</param>
 		/// <param name="success">Success. Returns an arrayList with Artwork objects</param>
 		/// <param name="error">Error.</param>
-		private HTTP.Request getArtworksByFilter(string filter, Action<ArrayList> success = null, Action<API.API_Error> error = null) {
+		private HTTP.Request GetArtworksByFilter (string filter, Action<ArrayList> success = null, Action<API.API_Error> error = null)
+		{
 			//TODO: create filter class
-			return get (BASE_URL + ARTWORK + filter, ((response) => {
-				if(success != null) {
-					var apiList = (ArrayList)response.Object["ArtWorks"];
-					var list = new ArrayList();
-					foreach(Hashtable val in apiList) {
-						list.Add(ArtWork.FromDictionary(val));
+			return Get (BASE_URL + ARTWORK + filter, ((response) => {
+				if (success != null) {
+					var apiList = (ArrayList)response.Object ["ArtWorks"];
+					var list = new ArrayList ();
+					foreach (Hashtable val in apiList) {
+						list.Add (ArtWork.FromDictionary (val));
 					}
-					success(list);
+					success (list);
 				}}), error);
 		}
 
@@ -106,10 +111,11 @@ namespace API
 		/// <param name="id">ArtWork Identifier. The ArtWorkID for which we request the data</param>
 		/// <param name="success">Success. Returns a byte[]</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request getArtworkData(string id, Action<byte[]> success = null, Action<API.API_Error> error = null) {
-			return get (BASE_URL + ARTWORK + "/" + id + "/data", ((response) => {
-				if(success != null) {
-					success(response.bytes);
+		public HTTP.Request GetArtworkData (string id, Action<byte[]> success = null, Action<API.API_Error> error = null)
+		{
+			return Get (BASE_URL + ARTWORK + "/" + id + "/data", ((response) => {
+				if (success != null) {
+					success (response.bytes);
 				}}), error);
 		}
 
@@ -123,15 +129,15 @@ namespace API
 		/// <param name="image">Image. the image as a byte[]</param>
 		/// <param name="success">Success. Returns an artwork</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request uploadImage(string name, string mime, string imageLocation, byte[] image, Action<ArtWork> success = null, Action<API.API_Error> error = null)
+		public HTTP.Request UploadImage (string name, string mime, string imageLocation, byte[] image, Action<ArtWork> success = null, Action<API.API_Error> error = null)
 		{
-			WWWForm form = new WWWForm();
-			form.AddBinaryData(imageLocation, image, name, MIME + mime);
-			return postForm(BASE_URL + ARTWORK, form, ((response) => {
+			WWWForm form = new WWWForm ();
+			form.AddBinaryData (imageLocation, image, name, MIME + mime);
+			return PostForm (BASE_URL + ARTWORK, form, ((response) => {
 				if (success != null) {
-					ArrayList respArray = (ArrayList)response.Object["ArtWorks"];
-					ArtWork artWork = ArtWork.FromDictionary((Hashtable)respArray[0]);
-					success(artWork);
+					ArrayList respArray = (ArrayList)response.Object ["ArtWorks"];
+					ArtWork artWork = ArtWork.FromDictionary ((Hashtable)respArray [0]);
+					success (artWork);
 				}
 			}), error, true);
 		}
@@ -143,33 +149,39 @@ namespace API
 		/// <param name="artwork">Artwork. the artwork to update, filled we the new values.</param>
 		/// <param name="success">Success.</param>
 		/// <param name="error">Error.</param>
-		public HTTP.Request updateArtWork(ArtWork artwork, Action<HTTP.Response> success = null, Action<API.API_Error> error = null){
+		public HTTP.Request UpdateArtWork (ArtWork artwork, Action<HTTP.Response> success = null, Action<API.API_Error> error = null)
+		{
 			Dictionary<string, string> form = artwork.ToDictionary ();
 
-			return put (BASE_URL + ARTWORK + "/" + artwork.ArtWorkID, form, success, error);
+			return Put (BASE_URL + ARTWORK + "/" + artwork.ArtWorkID, form, success, error);
 		}
 	}
 
 	/// <summary>
 	/// Art work.
 	/// </summary>
-	public class ArtWork {
+	public class ArtWork
+	{
 		public int ArtWorkID;
 		public int ArtistID;
 		//make sure string is not null
-		public string Name="";
+		public string Name = "";
 
-		public Dictionary<string, string> ToDictionary() {
-			Dictionary<string, string> dict = new Dictionary<string, string>();
-			dict.Add ("ArtWorkID", ArtWorkID.ToString());
-			dict.Add ("ArtistID", ArtistID.ToString());
-			dict.Add ("Name", Name);
+		public Dictionary<string, string> ToDictionary ()
+		{
+			var dict = new Dictionary<string, string>
+		    {
+		        {"ArtWorkID", ArtWorkID.ToString()},
+		        {"ArtistID", ArtistID.ToString()},
+		        {"Name", Name}
+		    };
 
 			return dict;
 		}
 
-		public static ArtWork FromDictionary(Hashtable dict) {
-			ArtWork aw = new ArtWork () {
+		public static ArtWork FromDictionary (Hashtable dict)
+		{
+			var aw = new ArtWork () {
 				ArtWorkID = ((int)dict["ArtWorkID"]),
 				ArtistID = ((int)dict["ArtistID"]),
 				Name = (string)dict["Name"]
@@ -177,6 +189,24 @@ namespace API
 
 			return aw;
 		}
+
+		public static ArtWork FromArt (Art art)
+		{
+			return new ArtWork ()
+            {
+                ArtWorkID = art.ID,
+                ArtistID = art.owner.ID,
+                Name = art.name
+            };
+		}
+
+		public static Art ToArt (ArtWork artwork)
+		{
+			Art art = new Art ();
+			art.ID = artwork.ArtWorkID;
+			art.owner.ID = artwork.ArtistID;
+			art.name = artwork.Name;
+			return art;
+		}
 	}
 }
-

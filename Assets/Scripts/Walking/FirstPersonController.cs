@@ -28,18 +28,27 @@ public class FirstPersonController : MonoBehaviour {
 	/// Enables or disables the secret/debug jump functionality
 	/// </summary>
 	public bool jumpEnabled = false;
+	
+	private bool stereoEnabled = false;
 
 	/// <summary>
 	/// Enables stereo camera view and disables mono camera view.
 	/// </summary>
-	public bool stereoEnabled = false;
+	public bool StereoEnabled {
+		get { return stereoEnabled; }
+		set { SwitchCameraMode (value); }
+	}
 
 	public enum VR{None, Durovis, Oculus};
+	public VR activeVR = VR.None;
 
 	/// <summary>
 	/// The active Virtual Reality mode. Usually, this would be no VR at all.
 	/// </summary>
-	public VR activeVR = VR.None;
+	public VR ActiveVR {
+		get { return activeVR; }
+		set { SwitchVRMode (value); }
+	}
 
 	/// <summary>
 	/// Vertical rotation of the cameras. The character controller doesn't rotate vertically!
@@ -62,7 +71,9 @@ public class FirstPersonController : MonoBehaviour {
 	
 	CharacterController characterController;
 	public Camera monoCamera;
+    public OVRCameraRig ovrCamera;
 	public MuseumDiveSensor stereoCameraController;
+	public MobileControlRig mobileControlRig;
 
 	bool started = false;
 
@@ -73,6 +84,7 @@ public class FirstPersonController : MonoBehaviour {
 	void Start() {
 		if((!testMode) && ((!CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch))
 		   || (activeVR != VR.None))) Screen.lockCursor = true;
+		SwitchVRMode (activeVR);
 		characterController = GetComponent<CharacterController>();
 		startingPosition = transform.position;
 		started = true;
@@ -89,36 +101,35 @@ public class FirstPersonController : MonoBehaviour {
 		float mouseYAxis = CrossPlatformInputManager.GetAxis("Mouse Y"); // Controls vertical camera movement
 		float sensitivity = defaultSensitivity;
 
-		if (activeVR == VR.None) {
-			if(CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch)) {
+		if (activeVR == VR.Durovis) {
+			// TODO: Complete Durovis VR movement implementation. Looking around already works.
+			// Modify Horizontal/Vertical axis values depending on vertical rotation (look at ground = stop/start).
+			verticalAxis = Mathf.Cos(Mathf.Deg2Rad*verticalRotation) * 0.4f;
+			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
+		} else if (activeVR == VR.Oculus) {
+            mouseXAxis = 0;
+            mouseYAxis = 0;
+            var center = ovrCamera.transform.FindChild("TrackingSpace").transform.FindChild("CenterEyeAnchor");
+            SetRotation(center.transform.rotation);
+            ovrCamera.transform.position = monoCamera.transform.position;
+			// TODO: Complete Oculus Rift movement and looking implementation.
+            //verticalAxis = Mathf.Cos(Mathf.Deg2Rad * verticalRotation) * 0.4f;
+		} else {
+			if (CrossPlatformInputManager.GetActiveInputMethod ().Equals (CrossPlatformInputManager.ActiveInputMethod.Touch)) {
 				// Mobile "thumbstick" controls
 				// Reduce right stick sensitivity
-				sensitivity = defaultSensitivity * 0.4f;
+				sensitivity = defaultSensitivity * 0.3f;
 			} else {
 				// Keyboard controls
 				// Clamp the movement magnitude in a circle instead of both axes separately
-				Vector2 movement = Vector2.ClampMagnitude(new Vector2(horizontalAxis, verticalAxis), 1);
+				Vector2 movement = Vector2.ClampMagnitude (new Vector2 (horizontalAxis, verticalAxis), 1);
 				horizontalAxis = movement.x;
 				verticalAxis = movement.y;
 			}
-		} else if (activeVR == VR.Durovis) {
-			// TODO: Complete Durovis VR movement implementation. Looking around already works.
-			// Modify Horizontal/Vertical axis values depending on vertical rotation (look at ground = stop/start).
-			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
-		} else if (activeVR == VR.Oculus) {
-			// TODO: Complete Oculus Rift movement and looking implementation.
 		}
 
 		// Control cameras
-		if(stereoEnabled) {
-			if(!stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(true);
-			if(monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(false);
-			Rotate(mouseXAxis, mouseYAxis, sensitivity);
-		} else {
-			if(!monoCamera.gameObject.activeSelf) monoCamera.gameObject.SetActive(true);
-			if(stereoCameraController.gameObject.activeSelf) stereoCameraController.gameObject.SetActive(false);
-			Rotate(mouseXAxis, mouseYAxis, sensitivity);
-		}
+		Rotate(mouseXAxis, mouseYAxis, sensitivity);
 
 		// Only the axes are modified via the different input methods, the actual move call remains the same.
 		Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
@@ -128,13 +139,84 @@ public class FirstPersonController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Switches VR mode. You need to call this every time you change VR mode.
+	/// </summary>
+	/// <param name="vrMode">Vr mode.</param>
+	public void SwitchVRMode(VR vrMode) {
+		if (mobileControlRig == null) {
+			mobileControlRig = FindObjectOfType<MobileControlRig> ();
+		}
+		if(vrMode == VR.Durovis) {
+			// Disable joysticks
+			mobileControlRig.overrideControls = true;
+			mobileControlRig.EnableControlRig(false);
+#if UNITY_EDITOR
+			CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
+#endif
+		} else if(vrMode == VR.Oculus) {
+			// Disable joysticks
+			//mobileControlRig.overrideControls = true;
+            //mobileControlRig.EnableControlRig(false);
+            mobileControlRig.overrideControls = false;
+#if UNITY_EDITOR
+			CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
+#endif
+		} else {
+			mobileControlRig.overrideControls = false;
+#if MOBILE_INPUT
+			mobileControlRig.EnableControlRig(true);
+			CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Touch);
+#endif
+		}
+		activeVR = vrMode;
+	}
+
+	/// <summary>
+	/// Changes the cameras depending on whether or not stereo view is enabled.
+	/// </summary>
+	/// <param name="stereo">Whether or not stereo cameras should be enabled.</param>
+	public void SwitchCameraMode(bool stereo) {
+        if (!stereo) {
+            activeVR = VR.None;
+            ovrCamera.gameObject.SetActive(false);
+            monoCamera.gameObject.SetActive(true);
+            stereoCameraController.gameObject.SetActive(false);
+            mobileControlRig.overrideControls = false;
+#if MOBILE_INPUT
+            mobileControlRig.EnableControlRig(true);
+            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Touch);
+#endif
+        }else if (Application.isMobilePlatform) {
+            activeVR = VR.Durovis;
+            stereoCameraController.gameObject.SetActive(true);
+            ovrCamera.gameObject.SetActive(false);
+            monoCamera.gameObject.SetActive(false);
+            mobileControlRig.overrideControls = true;
+            mobileControlRig.EnableControlRig(false);
+#if UNITY_EDITOR
+            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
+#endif
+        }else if (Application.isEditor) {
+            activeVR = VR.Oculus;
+            stereoCameraController.gameObject.SetActive(false);
+            ovrCamera.gameObject.SetActive(true);
+            monoCamera.gameObject.SetActive(false);
+            mobileControlRig.overrideControls = false;
+#if UNITY_EDITOR
+            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
+#endif
+        }
+        stereoEnabled = stereo;
+	}
+
+	/// <summary>
 	/// Main rotation method - rotates player and camera.
 	/// </summary>
 	/// <param name="xAxis">X input axis - horizontal rotation strength between -1 and 1</param>
 	/// <param name="yAxis">Y input axis - vertical rotation strength between -1 and 1</param>
 	/// <param name="sensitivity">Sensitivity.</param>
 	void Rotate(float xAxis, float yAxis, float sensitivity) {
-		if (activeVR != VR.None) {
+		if (activeVR == VR.Durovis) {
 			stereoCameraController.Rotate (xAxis, yAxis, this);
 		} else {
 			RotateHorizontal(xAxis * sensitivity);

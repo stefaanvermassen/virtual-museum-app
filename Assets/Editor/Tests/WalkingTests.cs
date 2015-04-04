@@ -9,26 +9,8 @@ using System.Collections.Generic;
 [TestFixture]
 public class WalkingTests {
 	
-	//private static int TEST_CASES = 10;
-	//private static int SEED = 1234;
-	
 	public WalkingTests() {
-		//UnityEngine.Random.seed = SEED;
 	}
-	
-	/*int RandomInt(int from, int until) {
-		return (int)(Random.value * (from+until) - from);
-	}
-	
-	string RandomString(int minLength, int maxLength) {
-		string s = "";
-		int length = RandomInt(minLength, maxLength);
-		for (int i = 0; i < length; i++) {
-			char c = (char)RandomInt(0, 255);
-			s += c;
-		}
-		return s;
-	}*/
 
 	void CreateTestPlatform() {
 		GameObject platform = (GameObject) GameObject.Instantiate(Resources.Load("FloorQuad")); // Test platform
@@ -40,16 +22,18 @@ public class WalkingTests {
 	[TearDown]
 	public void DestroyEverything() {
 		var objects = GameObject.FindObjectsOfType<GameObject>();
-		foreach (var o in objects) GameObject.DestroyImmediate(o);
+		foreach (var o in objects) {
+			GameObject.DestroyImmediate(o);
+		}
 	}
 
 	[SetUp]
 	public void LoadWalkingController() {
 		CreateTestPlatform ();
-		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
-		player.transform.localPosition = new Vector3(0, 0, 0);
 		GameObject eventSystem = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/EventSystem.prefab", typeof(GameObject)));
 		GameObject dualSticks = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/MobileDualStickControl.prefab", typeof(GameObject)));
+		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
+		player.transform.localPosition = new Vector3(0, 0, 0);
 	}
 	
 	[Test]
@@ -156,11 +140,11 @@ public class WalkingTests {
 		player.TestUpdate();
 		Camera[] cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active.");
-		player.stereoEnabled = true;
+		player.StereoEnabled = true;
 		player.TestUpdate ();
 		cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 2, "There should be two cameras active in stereoscopic mode.");
-		player.stereoEnabled = false;
+		player.StereoEnabled = false;
 		player.TestUpdate ();
 		cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active after switching stereoscopic mode off.");
@@ -174,7 +158,7 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Vertical");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Horizontal");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
-		rig.testMode = true;
+		rig.overrideControls = true;
 		rig.EnableControlRig (true);
 		// Get left joystick
 		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
@@ -228,7 +212,7 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Vertical");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Horizontal");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
-		rig.testMode = true;
+		rig.overrideControls = true;
 		rig.EnableControlRig (true);
 		// Get left joystick
 		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
@@ -287,7 +271,7 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Mouse Y");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Mouse X");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
-		rig.testMode = true;
+		rig.overrideControls = true;
 		rig.EnableControlRig (true);
 		// Get right joystick
 		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
