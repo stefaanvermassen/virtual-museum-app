@@ -35,7 +35,12 @@ public class ArtCatalog : MonoBehaviour
 		//copy info in item
 		item.GetComponent<ArtworkGUIData>().Init(art);
 	}
-	
+	//this method can be optimized a lot by not creating new objects for each refresh but byjust editing them
+
+	/// <summary>
+	/// Refresh the specified content.
+	/// </summary>
+	/// <param name="content">Content.</param>
 	public void Refresh(GUIControl content)
 	{
 		//clear the catalog

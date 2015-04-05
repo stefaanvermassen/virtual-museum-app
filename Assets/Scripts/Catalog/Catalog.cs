@@ -80,8 +80,9 @@ public static class Catalog {
 				if(!hasArt(artwork.ArtWorkID)){
 					Art newArt = new Art();
 					//TODO switch back to Load after this that this is fixed in storage
-					Storage.Instance.Load(newArt,artwork.ArtWorkID+"");
-					artworksDictionary.Add(newArt.ID,newArt);
+					Storage.Instance.LoadRemote(newArt,artwork.ArtWorkID+"");
+					//Loadremote is async, thus we use the id of the received artwork, which is availabe
+					artworksDictionary.Add(artwork.ArtWorkID,newArt);
 				}
 			}
 		},

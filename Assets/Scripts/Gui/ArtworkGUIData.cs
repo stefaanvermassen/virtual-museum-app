@@ -31,10 +31,14 @@ public class ArtworkGUIData : FileBrowserListener
 			nameInput.text = artWork.name;
 		}
 		//update image
-		thumbNail.enabled = true;
-		Texture2D texture = new Texture2D (0, 0);
-		texture.LoadImage (artWork.imageFile);
-		thumbNail.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
+		if (artWork.imageFile != null) {
+			thumbNail.enabled = true;
+			Texture2D texture = new Texture2D (0, 0);
+			texture.LoadImage (artWork.imageFile);
+			thumbNail.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
+
+		}
+
 
 	}
 

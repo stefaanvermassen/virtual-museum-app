@@ -1,6 +1,16 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Art/Art.cs">
+    <Files>
+      <File FileName="Assets/Scripts/Catalog/Catalog.cs" Line="85" Column="90" />
+      <File FileName="Assets/Scripts/Gui/LoginGUI.cs" Line="17" Column="34" />
+      <File FileName="Assets/Scripts/Art/ArtData.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Art/Art.cs" Line="152" Column="88" />
+      <File FileName="Assets/OVR/Scripts/OVRUnityVersionChecker.cs" Line="124" Column="17" />
+      <File FileName="Assets/Scripts/Data/Storage.cs" Line="28" Column="1" />
+      <File FileName="Assets/Scripts/API/UploadFailedException.cs" Line="18" Column="33" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

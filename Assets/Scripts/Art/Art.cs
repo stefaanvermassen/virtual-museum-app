@@ -141,20 +141,20 @@ public class Art : Savable<Art, ArtData>
                 name = art.Name;
                 Debug.Log(name);
                 },
-            error: (error) => { Debug.Log("NOPE"); }
+		error: (error) => { throw new UploadFailedException ("Failed to download artwork info."); }
         );
         ArtworkController.Instance.GetArtworkData(
             identifier,
             success: (art) => {
+			imageFile=art;
                 image = new Texture2D(1, 1);
                 image.LoadImage(art);
+
             },
-            error: (error) => { Debug.Log("NOPE"); }
+		error: (error) => { throw new UploadFailedException ("Failed to download artwork data."); }
         ); 
     }
-	public void LoadRemote(int identifier) {
-		LoadRemote (identifier + "");
-	}
+
     public DateTime LastModified(string identifier) {
         return DateTime.Now;
     }

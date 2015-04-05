@@ -10,12 +10,12 @@
 using System;
 namespace API
 {
-	public class DownloadFailedException : Exception
+	public class UploadFailedException : Exception
 	{
-		public DownloadFailedException ()
+		public UploadFailedException ()
 		{
 		}
-		public DownloadFailedException (string message)
+		public UploadFailedException (string message)
 			: base(message)
 		{
 		}
