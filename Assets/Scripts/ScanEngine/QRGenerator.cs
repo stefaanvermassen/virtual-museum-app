@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using Scanning;
+using System.IO;
 
 public class QRGenerator : MonoBehaviour {
 
@@ -29,12 +30,30 @@ public class QRGenerator : MonoBehaviour {
         Color32[] QRCodeImage = qrCode.Image;
         Debug.Log("QRCode image required");
 
-        /*Texture2D qrTexture = new Texture2D(256, 256);
+        Texture2D qrTexture = new Texture2D(256, 256);
         Debug.Log("number of pixels in array:" + QRCodeImage.Length);
-        qrTexture.SetPixels32(0, 0, 256, 256, QRCodeImage);*/
+        qrTexture.SetPixels32(0, 0, 256, 256, QRCodeImage);
 
-        view.image = Texture2D.blackTexture;
-        view.QR.sprite = Sprite.Create(Texture2D.blackTexture, new Rect(0, 0, 256, 256), Vector2.zero);
+        view.image = qrTexture;
+
+        // Print the QRCode
+        /*string s = "";
+        int i = 0;
+        foreach (Color32 c in QRCodeImage)
+        {
+            s+=c;
+            if (i++ % 256 == 0)
+            {
+                Debug.Log(s);
+                s = "";
+            }
+        }*/
+
+        // Test if the QRView works
+        /*
+        Texture2D a = new Texture2D(256, 256);
+        a.LoadImage(File.ReadAllBytes("B:\\Documents\\GitHub\\DesignProject\\Assets\\UI Sprites\\TestQR.jpg"));
+        view.image = a;*/
     }
 
 	// Update is called once per frame
