@@ -72,23 +72,34 @@ public static class Catalog {
 		//TODO make sure a user is logged in
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		//load all artworks
-		ac.GetAllArtworks (success: (response) => {
-			foreach (API.ArtWork child in response) {
-				//we save the child, because else it is overwwritten in the loval scope of the closure
-				var artwork = child;
-				//check if catalog has it
-				if(!hasArt(artwork.ArtWorkID)){
-					Art newArt = new Art();
-
-					Storage.Instance.Load(newArt,artwork.ArtWorkID+"");
-					//we use the id from the artwork instance because there's no guarantee for the newart instance to be loaded already
-					artworksDictionary.Add(artwork.ArtWorkID,newArt);
+		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+			() => {
+			Debug.Log("Started");
+			ac.GetAllArtworks (success: (response) => {
+				foreach (API.ArtWork child in response) {
+					//we save the child, because else it is overwwritten in the loval scope of the closure
+					var artwork = child;
+					//check if catalog has it
+					if(!hasArt(artwork.ArtWorkID)){
+						Art newArt = new Art();
+						
+						Storage.Instance.Load(newArt,artwork.ArtWorkID+"");
+						//we use the id from the artwork instance because there's no guarantee for the newart instance to be loaded already
+						artworksDictionary.Add(artwork.ArtWorkID,newArt);
+					}
 				}
-			}
+			},
+			error: (error) => {
+				Debug.Log ("An error occured while loading all artworks");
+			}); 
 		},
-		error: (error) => {
-			Debug.Log ("An error occured while loading all artworks");
-		}); 
+		() => {
+		},
+		() => {
+			Debug.Log("Loaded");
+
+		});
+
 
 	}
 
@@ -96,7 +107,6 @@ public static class Catalog {
 		return artworksDictionary [artID];
 	}
 	public static Dictionary<int, Art> getAllArt(){
-
 		return artworksDictionary;
 	}
 }

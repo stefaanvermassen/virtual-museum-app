@@ -20,6 +20,8 @@ public class Art : Savable<Art, ArtData>
 	public string imagePathSource;
 	public byte[] imageFile;
 
+	//checks if the artworks image is loading or not
+	public bool loadingImage;
 
     public Art() {
         owner = new User();
@@ -66,7 +68,7 @@ public class Art : Savable<Art, ArtData>
 	/// This is important, because an ID is aquired zhen uploading tha artwork image
 	/// </summary>
 	/// <returns><c>true</c> if this instance has I; otherwise, <c>false</c>.</returns>
-	private bool HasID ()
+	public bool HasID ()
 	{
 		return ID != 0;
 	}
@@ -123,14 +125,12 @@ public class Art : Savable<Art, ArtData>
 			return req==null || req.callbackCompleted;
 		},
 		() => {
-			Debug.Log("Still loading");
 		},
 		() => {
 			Debug.Log("Loaded");
 			UploadMetaData(cont);
 
 		});
-
 		
 	}
 	public void LoadRemote(string identifier) {
@@ -139,20 +139,37 @@ public class Art : Savable<Art, ArtData>
             success: (art) => {
                 ID = art.ArtWorkID;
                 name = art.Name;
-                Debug.Log(name);
                 },
 		error: (error) => { throw new UploadFailedException ("Failed to download artwork info."); }
         );
-        ArtworkController.Instance.GetArtworkData(
+
+		HTTP.Request req = ArtworkController.Instance.GetArtworkData(
             identifier,
             success: (art) => {
 			imageFile=art;
-                image = new Texture2D(1, 1);
-                image.LoadImage(art);
+
+			Debug.Log ("file"+imageFile.Length);
+            image = new Texture2D(1, 1);
+			image.LoadImage(imageFile);
 
             },
 		error: (error) => { throw new UploadFailedException ("Failed to download artwork data."); }
         ); 
+		//loading an image can take a long time, make it possible to check this and report to user
+		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+			() => {
+			Debug.Log("Started");
+			loadingImage=true;
+		},() => {
+			//either wait for image to be uploaded or there was nu upload necessary
+			return req==null || req.callbackCompleted;
+		},
+		() => {
+		},
+		() => {
+			Debug.Log("Loaded");
+			loadingImage=false;
+		});
     }
 
     public DateTime LastModified(string identifier) {

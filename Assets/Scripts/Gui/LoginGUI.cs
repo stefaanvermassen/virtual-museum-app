@@ -9,29 +9,22 @@ public class LoginGUI : MonoBehaviour {
 		API.SessionManager sm = API.SessionManager.Instance;
 		//wait for login to happen
 		//todo use asyncloader and check the key of the login
-		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
-			() => {
-			Debug.Log("Started");
-		},() => {
-			//ewait for accestoken to be received
-			return !sm.GetAccessToken().Equals("");
-		},
-		() => {
-			Debug.Log("Still loading");
-		},
-		() => {
-			Debug.Log("Loaded");
-			Catalog.Refresh ();
-			
-		});
+//		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+//			() => {
+//			Debug.Log("Started");
+//		},() => {
+//			//ewait for accestoken to be received
+//			return !sm.GetAccessToken().Equals("");
+//		},
+//		() => {
+//		},
+//		() => {
+//			Debug.Log("Loaded");
+//			//this is debug, nomally the method is called implicitly by tiestamp and change on the server
+//			Catalog.RefreshArtWork ();
+//			
+//		});
 	}
-	IEnumerator Wait()
-	{
-		// suspend execution for 5 seconds
-		yield return new WaitForSeconds(5);
 
-
-	}
-	
 
 }

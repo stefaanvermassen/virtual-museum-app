@@ -103,7 +103,7 @@ public class GUIControl : MonoBehaviour
 	//show guicontrol on top of all siblings
 	public void OnTop ()
 	{
-		this.gameObject.transform.SetSiblingIndex (0);//qsmdjkfsjqdfi
+		this.gameObject.transform.SetSiblingIndex (this.gameObject.transform.parent.childCount-1);
 	}
 
 	public void SetRelativePosition (float x, float y)
@@ -142,8 +142,6 @@ public class GUIControl : MonoBehaviour
 		SetRelativePosition (x, y);
 	}
 
-	//Todo
-	//basic methods to be added for: color, text, position, behaviour, layout in panel
 	public void RemoveAllChildren ()
 	{
 		int children = this.transform.childCount;

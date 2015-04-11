@@ -13,16 +13,25 @@ public class ArtworkGUIData : FileBrowserListener
 
 	//internal values fields
 	private Art artWork;
-
+	//keep track if changed
+	private bool changed;
 
 	public override void FileIsSelected ()
 	{
-		artWork.imagePathSource = fileBrowser.GetSelectedFile ();
-		artWork.imageFile = File.ReadAllBytes (fileBrowser.GetSelectedFile ());
-		Refresh();
+		//An image can only be added not edited
+		if (!artWork.HasID () && FileBrowser.PathIsValid (fileBrowser.GetSelectedFile ())) {
+			artWork.imagePathSource = fileBrowser.GetSelectedFile ();
+			artWork.imageFile = File.ReadAllBytes (fileBrowser.GetSelectedFile ());
+			if (artWork.imageFile != null) {
+				changed = true;
+				Refresh ();
+			}
+
+		}
+
 	}
 
-	public void Refresh() 
+	public void Refresh ()
 	{
 		//update properties
 		if (artWork.name == null) {
@@ -31,12 +40,15 @@ public class ArtworkGUIData : FileBrowserListener
 			nameInput.text = artWork.name;
 		}
 		//update image
-		if (artWork.imageFile != null) {
+		if ( artWork.image!= null) {
 			thumbNail.enabled = true;
-			Texture2D texture = new Texture2D (0, 0);
+			thumbNail.sprite = Sprite.Create (artWork.image, new Rect (0, 0, artWork.image.width, artWork.image.height), Vector2.zero);
+
+		} else if (artWork.imageFile != null) {
+			thumbNail.enabled = true;
+			Texture2D texture = new Texture2D (1, 1);
 			texture.LoadImage (artWork.imageFile);
 			thumbNail.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
-
 		}
 
 
@@ -44,9 +56,17 @@ public class ArtworkGUIData : FileBrowserListener
 
 	public void Save ()
 	{
-		artWork.name = nameInput.text;
-		//save changes
-		artWork.Save();
+		if (nameInput.text != "" && artWork.name != nameInput.text) {
+			artWork.name = nameInput.text;
+			changed = true;
+		}
+		//saving could lead to an upload, thus it shouldn be done if not necessary
+		if (changed) {
+			//save changes
+			artWork.Save ();
+
+		}
+	
 	}
 
 	public ArtworkGUIData ()
@@ -58,11 +78,8 @@ public class ArtworkGUIData : FileBrowserListener
 	{
 		this.artWork = artWork;
 		//check name of 
-		Refresh();
+		Refresh ();
 	}
-
-
-
 
 	public Art ArtWork {
 		get {
@@ -70,18 +87,5 @@ public class ArtworkGUIData : FileBrowserListener
 		}
 	}
 
-
-	public void Upload ()
-	{
-		if (artWork.name == "") {
-			Debug.Log ("Empty name not allowed");
-			return;
-		}
-		if (artWork.imageFile == null || string.IsNullOrEmpty (artWork.imagePathSource)) {
-			Debug.Log ("No image selected.");
-			return;
-		}
-		artWork.SaveRemote ();
-	}
 
 }

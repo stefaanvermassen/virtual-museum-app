@@ -36,7 +36,7 @@ public class ArtCatalog : MonoBehaviour
 		item.GetComponent<ArtworkGUIData>().Init(art);
 	}
 	//this method can be optimized a lot by not creating new objects for each refresh but byjust editing them
-
+	private Dictionary<int, Art>.ValueCollection allArt;
 	/// <summary>
 	/// Refresh the specified content.
 	/// </summary>
@@ -46,11 +46,13 @@ public class ArtCatalog : MonoBehaviour
 		//clear the catalog
 		content.RemoveAllChildren ();
 		//get all art from catalog
-		var allArt = Catalog.getAllArt ().Values;
-		Debug.Log (allArt.Count);
-		//load art in gui
+		 allArt = Catalog.getAllArt ().Values;
+		//load art in gui, check for each art is it's still loading or not
 		foreach (Art art in allArt) {
-			AddArtToCatalog(art,content);
+			if(art.loadingImage){
+				Debug.Log ("Art is still loading, image will not be displayed.");
+			}
+			//AddArtToCatalog(art,content);
 		}
 	}
 }

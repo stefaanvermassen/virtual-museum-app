@@ -7,4 +7,7 @@ public class BasicActions : MonoBehaviour {
 	{
 		Application.LoadLevel("BuildMuseum");
 	}
+	public void ShowtestMessage(){
+		PopUpWindow.ShowMessage(PopUpWindow.MessageType.INFO, "This is a test info");
+	}
 }
