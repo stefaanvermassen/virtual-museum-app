@@ -42,14 +42,22 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         if (art.image != null) {
             texture = art.image;
         }
-        ob = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        var renderer = ob.GetComponent<MeshRenderer>();
-        renderer.material = material;
-        renderer.material.mainTexture = texture;
+		ob = (GameObject)Instantiate(Resources.Load("Frames/Frame1.prefab"));
+		var frame = ob.GetComponent<Frame> ();
+		frame.artWidth = 0.5f * scale;
+		frame.artHeight = scale * 0.5f * texture.height / texture.width;
+		frame.texture = texture;
+		ob.transform.position = position;
+		ob.transform.Rotate(rotation);
 
-        ob.transform.position = position;
-        ob.transform.localScale = new Vector3(0.5f * scale, scale * 0.5f * texture.height / texture.width, 0.05f);
-        ob.transform.Rotate(rotation);
+        //ob = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //var renderer = ob.GetComponent<MeshRenderer>();
+		//renderer.material = material;
+        //renderer.material.mainTexture = texture;
+
+        //ob.transform.position = position;
+        //ob.transform.localScale = new Vector3(0.5f * scale, scale * 0.5f * texture.height / texture.width, 0.05f);
+        //ob.transform.Rotate(rotation);
 
         var normal = Quaternion.Euler(rotation) * Vector3.forward;
         tileX = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
