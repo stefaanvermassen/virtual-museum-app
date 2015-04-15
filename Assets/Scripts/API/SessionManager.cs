@@ -13,6 +13,8 @@ namespace API
     {
         private User _loggedInUser;
 
+        private const string CurrentVersion = "1.0";
+
         protected SessionManager()
         {
             var user = ReadUserFromFile();
@@ -76,24 +78,18 @@ namespace API
         {
             var hash = new Hashtable();
             hash["user"] = _loggedInUser.CreateHashtable();
-            hash["version"] = "0.1";
+            hash["version"] = CurrentVersion;
 
-            //Build path where to save
-            string path = Application.persistentDataPath + "/3DVirtualMuseum/userinfo";
-            bool folderExists = Directory.Exists(path);
-            if (!folderExists) Directory.CreateDirectory(path);
-            //create file and save data
-            path += "/userinfo.json";
-            Stream fileStream = File.Create(path);
+            Stream fileStream = File.Create(getPath());
             BinaryFormatter serializer = new BinaryFormatter();
             serializer.Serialize(fileStream, hash);
             fileStream.Close();
-            Debug.Log("Data Saved Locally to " + path);
+            Debug.Log("Data Saved Locally to " + getPath());
         }
 
         private User ReadUserFromFile()
         {
-            string path = Application.persistentDataPath + "/3DVirtualMuseum/userinfo/userinfo.json";
+            string path = getPath();
             if (File.Exists(path))
             {
                 Stream fileStream = File.OpenRead(path);
@@ -101,7 +97,7 @@ namespace API
                 var data = (Hashtable)deserializer.Deserialize(fileStream);
                 fileStream.Close();
 
-                if (((string) data["version"]).Equals("0.1"))
+                if (((string) data["version"]).Equals(CurrentVersion))
                 {
                     var user = User.CreateUser((Hashtable)data["user"]);
                     if (user.AccessToken().NeedsRefreshing())
@@ -112,6 +108,18 @@ namespace API
                 }
             }
             return null;
+        }
+
+        private string getPath()
+        {
+            //Make sure the folder exists
+            string path = Application.persistentDataPath + "/3DVirtualMuseum/userinfo";
+            bool folderExists = Directory.Exists(path);
+            if (!folderExists)
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path + "/userinfo.json";
         }
     }
 
