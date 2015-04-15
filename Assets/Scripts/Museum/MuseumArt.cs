@@ -42,7 +42,7 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         if (art.image != null) {
             texture = art.image;
         }
-		ob = (GameObject)Instantiate(Resources.Load("Frames/Frame1.prefab"));
+		ob = GameObject.Instantiate (Catalog.GetFrame (0));
 		var frame = ob.GetComponent<Frame> ();
 		frame.artWidth = 0.5f * scale;
 		frame.artHeight = scale * 0.5f * texture.height / texture.width;

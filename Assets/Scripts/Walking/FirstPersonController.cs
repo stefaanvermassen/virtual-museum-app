@@ -169,6 +169,9 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	/// <param name="camMode">What the new camera mode should be</param>
 	void SwitchCameraMode(Cam camMode) {
+		if (ovrCamera == null) {
+			ovrCamera = FindObjectOfType<OVRCameraRig> ();
+		}
         if (camMode == Cam.Mono) {
 			stereoCameraController.gameObject.SetActive(false);
 			ovrCamera.gameObject.SetActive(false);
