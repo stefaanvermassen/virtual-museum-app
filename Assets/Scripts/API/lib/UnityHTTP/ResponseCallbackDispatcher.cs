@@ -44,6 +44,7 @@ namespace HTTP
             {
                 HTTP.Request request = (Request)requests.Dequeue();
                 request.completedCallback( request );
+				request.callbackCompleted = true;
             }
         }
     }

@@ -59,7 +59,7 @@ public class Art : Savable<Art, ArtData>
         //TODO: implement
     }
     public void LoadRemote(string identifier) {
-        ArtworkController.Instance.getArtwork(
+        ArtworkController.Instance.GetArtwork(
             identifier, 
             success: (art) => {
                 ID = art.ArtWorkID;
@@ -68,7 +68,7 @@ public class Art : Savable<Art, ArtData>
                 },
             error: (error) => { Debug.Log("NOPE"); }
         );
-        ArtworkController.Instance.getArtworkData(
+        ArtworkController.Instance.GetArtworkData(
             identifier,
             success: (art) => {
                 image = new Texture2D(1, 1);

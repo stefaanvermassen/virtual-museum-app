@@ -41,7 +41,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             }
             artIDsDownloading.Add(id);
             Art art = new Art();
-            ArtworkController.Instance.getArtwork(
+            ArtworkController.Instance.GetArtwork(
                 "" + id,
                 success: (artwork) => {
                     art.name = artwork.Name;
@@ -51,7 +51,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 },
                 error: (error) => {
                 });
-            ArtworkController.Instance.getArtworkData(
+            ArtworkController.Instance.GetArtworkData(
                 "" + id,
                 success: (artwork) => {
                     art.image = new Texture2D(1, 1);
@@ -473,27 +473,40 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         apiM.LastModified = DateTime.Now;
         apiM.Privacy = this.privacy;
         Debug.Log("Start Preparing Request");
+        AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+            () => {
+                Debug.Log("Started");
+            },
+            () => {
+                Debug.Log("Still loading");
+            },
+            () => {
+                Debug.Log("Loaded");
+            });
         if (museumID == null)
         {
             Debug.Log("Start Request");
-            req = cont.createMuseum(apiM, (mus) =>
+            req = cont.CreateMuseum(apiM, (mus) =>
             {
                 museumID = mus.MuseumID;
-                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, data);
+                req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
+                
             });
         }
         else
         {
             Debug.Log("Start Request");
             apiM.MuseumID = museumID;
-            req = cont.updateMuseum(apiM, (mus) => {
-                req = cont.uploadMuseumData("" + mus.MuseumID, museumName, data);
+            req = cont.UpdateMuseum(apiM, (mus) => {
+                req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
+                loader.forceDone = true;
             });
         }
         //log when done
         Debug.Log("Start Monitoring if done.");
-        Thread requestThread = new Thread(SavedMuseumThread);
-        requestThread.Start();
+        
+        //Thread requestThread = new Thread(SavedMuseumThread);
+        //requestThread.Start();
     }
 
     private void SavedMuseumThread()
@@ -524,13 +537,13 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     {
         museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
-        req = cont.getMuseum("" + museumID,
+        req = cont.GetMuseum("" + museumID,
             success: (museum) => {
                 description = museum.Description;
                 museumName = museum.Description;
                 privacy = museum.Privacy;
             }); //dit gebruikt denk ik de unityVersion check -> confirmed
-        req = cont.getMuseumData("" + museumID,
+        req = cont.GetMuseumData("" + museumID,
             success: (museum) => {
                 Stream stream = new MemoryStream(museum);
                 BinaryFormatter deserializer = new BinaryFormatter();

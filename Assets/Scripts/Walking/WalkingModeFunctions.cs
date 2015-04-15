@@ -7,16 +7,27 @@ public class WalkingModeFunctions : MonoBehaviour {
 	public FirstPersonController player;
 
 	public void TempSwitchVR() {
-		if(player.ActiveVR == FirstPersonController.VR.None) {
+        if (player.ActiveVR == FirstPersonController.VR.None) {
+#if MOBILE_INPUT
 			player.ActiveVR = FirstPersonController.VR.Durovis;
-			player.StereoEnabled = true;
+			player.CameraMode = FirstPersonController.Cam.StereoDurovis;
+#else
+			player.ActiveVR = FirstPersonController.VR.Oculus;
+			player.CameraMode = FirstPersonController.Cam.StereoOculus;
+#endif
 		} else {
 			player.ActiveVR = FirstPersonController.VR.None;
-			player.StereoEnabled = false;
+			player.CameraMode = FirstPersonController.Cam.Mono;
 		}
 	}
 
 	public void TempBack() {
 		Application.LoadLevel("BuildMuseum");
 	}
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.V)) {
+            TempSwitchVR();
+        }
+    }
 }
