@@ -15,14 +15,14 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
     public Art art;
 
     public Texture2D texture;
-    public Material material;
+	public int frameStyle;
 
     private GameObject ob;
     private MuseumPlaque plaque;
 
     public MuseumArtData Save(){
         var artData = art.Save();
-        return new MuseumArtData(artData, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, scale);
+        return new MuseumArtData(artData, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, scale, frameStyle);
     }
 
     public void Load(MuseumArtData data) {
@@ -30,6 +30,7 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         position = new Vector3(data.X, data.Y, data.Z);
         rotation = new Vector3(data.RX, data.RY, data.RZ);
         scale = data.Scale;
+		frameStyle = data.FrameStyle;
         Start();
     }
 
@@ -42,13 +43,14 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         if (art.image != null) {
             texture = art.image;
         }
-		ob = GameObject.Instantiate (Catalog.GetFrame (0));
+		ob = GameObject.Instantiate (Catalog.GetFrame (frameStyle));
 		var frame = ob.GetComponent<Frame> ();
 		frame.artWidth = 0.5f * scale;
 		frame.artHeight = scale * 0.5f * texture.height / texture.width;
 		frame.texture = texture;
 		ob.transform.position = position;
-		ob.transform.Rotate(rotation);
+		ob.transform.localEulerAngles = new Vector3 (rotation.x + 90, rotation.y + 180, rotation.z);
+		//ob.transform.Rotate(rotation);
 
         //ob = GameObject.CreatePrimitive(PrimitiveType.Cube);
         //var renderer = ob.GetComponent<MeshRenderer>();

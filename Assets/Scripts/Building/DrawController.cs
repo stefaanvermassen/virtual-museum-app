@@ -28,6 +28,7 @@ public class DrawController : MonoBehaviour {
     public int currentFloor = 0;
     public int currentWall = 0;
     public int currentCeiling = 0;
+	public int currentFrame = 0;
 
     private bool[] dragging = {false, false, false, false, false};
     private Vector3 centerPointWorld = Vector3.zero;
@@ -209,6 +210,6 @@ public class DrawController : MonoBehaviour {
         }
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
         var scale = 0.5f + 4*diff / Display.main.renderingWidth;
-        currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale);
+        currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale,currentFrame);
     }
 }

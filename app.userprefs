@@ -1,13 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ScanEngine/QRScanner.cs">
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Museum\MuseumArtData.cs">
     <Files>
-      <File FileName="Assets/Scripts/API/ArtworkController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/API/MuseumController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Editor/Tests/AddInfoTest.cs" Line="1" Column="1" />
-      <File FileName="Assets/Editor/Tests/ArtTest.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/ScanEngine/QRScanner.cs" Line="23" Column="18" />
-      <File FileName="Assets/Scripts/ScanEngine/QRCode.cs" Line="19" Column="7" />
+      <File FileName="Assets\Scripts\Museum\MuseumArt.cs" Line="25" Column="30" />
+      <File FileName="Assets\Scripts\Museum\Museum.cs" Line="160" Column="29" />
+      <File FileName="Assets\Scripts\Building\DrawController.cs" Line="213" Column="120" />
+      <File FileName="Assets\Scripts\Museum\MuseumArtData.cs" Line="17" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

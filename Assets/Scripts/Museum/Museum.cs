@@ -141,7 +141,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="artID"></param>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
-    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale) {
+    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale, int frameStyle = 0) {
         var normal = Quaternion.Euler(rotation) * Vector3.forward;
         int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
         int y = 0;
@@ -157,7 +157,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         }
         ma.position = position;
         ma.rotation = rotation;
-        ma.material = frontMaterial;
+		ma.frameStyle = frameStyle;
         ma.texture = debugTexture;
         ma.art = a;
         ma.tileX = x;
