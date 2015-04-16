@@ -97,7 +97,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         }
         foreach (var artData in data.Art) {
-            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
+            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale, artData.FrameStyle);
         }
         foreach (var objectData in data.Objects) {
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);

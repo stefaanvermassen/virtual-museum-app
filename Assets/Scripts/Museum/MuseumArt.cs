@@ -15,7 +15,7 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
     public Art art;
 
     public Texture2D texture;
-	public int frameStyle;
+    public int frameStyle;
 
     private GameObject ob;
     private MuseumPlaque plaque;
@@ -30,7 +30,7 @@ public class MuseumArt : MonoBehaviour, Storable<MuseumArt, MuseumArtData> {
         position = new Vector3(data.X, data.Y, data.Z);
         rotation = new Vector3(data.RX, data.RY, data.RZ);
         scale = data.Scale;
-		frameStyle = data.FrameStyle;
+        frameStyle = data.FrameStyle;
         Start();
     }
 
