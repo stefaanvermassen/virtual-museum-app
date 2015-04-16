@@ -14,8 +14,9 @@ public class MuseumArtData: Data<MuseumArt>{
     public float RY { get; private set; }
     public float RZ { get; private set; }
     public float Scale { get; private set; }
+    public int FrameStyle { get; private set; }
 
-    public MuseumArtData(ArtData art, float x, float y, float z, float rx, float ry, float rz, float scale) {
+    public MuseumArtData(ArtData art, float x, float y, float z, float rx, float ry, float rz, float scale, int frameStyle) {
         Art = art;
         X = x;
         Y = y;
@@ -24,6 +25,7 @@ public class MuseumArtData: Data<MuseumArt>{
         RY = ry;
         RZ = rz;
         Scale = scale;
+        FrameStyle = frameStyle;
     }
 
 }
