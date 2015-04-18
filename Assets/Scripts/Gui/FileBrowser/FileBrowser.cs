@@ -4,7 +4,11 @@ using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using   System;
+using System;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 
 public class FileBrowser: GUIControl
 {
@@ -21,7 +25,14 @@ public class FileBrowser: GUIControl
 	private string selectedFilePath;
 	public GUIControl placeHolder;
 	private FileBrowserListener listener;
-	private enum Type
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    private IntPtr AndroidFileBrowser;
+    private int getFilePath;
+    private string path = "Push to get filepath";
+#endif
+
+    private enum Type
 	{
 		FOLDER,
 		FILE    }
@@ -42,13 +53,68 @@ public class FileBrowser: GUIControl
 		listener.fileIsSelected ();
 
 	}
+
 	void Start ()
 	{
-		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
-		updateFileAndFolder ();
-	}
+#if UNITY_ANDROID && !UNITY_EDITOR
+        // attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
+		JavaVM.AttachCurrentThread();
 
-	private void updateFileAndFolder ()
+		// first we try to find our main activity..
+		IntPtr cls_Activity	= JNI.FindClass("com/unity3d/player/UnityPlayer");
+		int fid_Activity	= JNI.GetStaticFieldID(cls_Activity, "currentActivity", "Landroid/app/Activity;");
+		IntPtr obj_Activity	= JNI.GetStaticObjectField(cls_Activity, fid_Activity);
+		Debug.Log("obj_Activity = " + obj_Activity);
+		
+		// create an AndroidFileBrowser object...
+		IntPtr cls_FileBrowser	= JNI.FindClass("be/ugent/virtualmuseum/FileBrowser");
+		int mid_FileBrowser		= JNI.GetMethodID(cls_FileBrowser, "<init>", "(Landroid/app/Activity;)V");
+		//IntPtr obj_FileBrowser	= JNI.NewObject(cls_FileBrowser, mid_FileBrowser, obj_Activity);
+        IntPtr obj_FileBrowser = JNI.NewObject(cls_FileBrowser, mid_FileBrowser);
+		Debug.Log("FileBrowser object = " + obj_FileBrowser);
+
+		// create a global reference to the FileBrowser object and fetch method id(s)..
+		AndroidFileBrowser			= JNI.NewGlobalRef(obj_FileBrowser);
+		getFilePath     	= JNI.GetMethodID(cls_FileBrowser, "getFilePath", "()Ljava/lang/String;");
+		Debug.Log("AndroidFileBrowser global ref = " + AndroidFileBrowser);
+		Debug.Log("AndroidFileBrowser method id = " + getFilePath);
+#endif
+        currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        updateFileAndFolder();
+	}
+    
+#if UNITY_ANDROID && !UNITY_EDITOR
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(15, 125, 450, 100), path))
+        {
+            path = getPath();
+            Debug.Log("getFilePath returned " + path);
+        }
+    }
+
+    private string getPath()
+	{
+		// again, make sure the thread is attached..
+		JavaVM.AttachCurrentThread();
+
+		// get the Java String object from the AndroidFileBrowser object
+		IntPtr str_path 	= JNI.CallObjectMethod(AndroidFileBrowser, getFilePath);
+		Debug.Log("str_path = " + str_path);
+	
+		// convert the Java String into a Mono string
+		IntPtr stringPtr = JNI.GetStringUTFChars(str_path, 0);
+		Debug.Log("stringPtr = " +stringPtr);
+		String p = Marshal.PtrToStringAnsi(stringPtr);
+		JNI.ReleaseStringUTFChars(str_path, stringPtr);
+
+		Debug.Log("return value is = " + p);
+
+		return p;
+	}
+#endif
+
+    private void updateFileAndFolder ()
 	{
 		if (directoryLabel == null) {
 			Debug.Log ("DirectoryLabel is null.");
