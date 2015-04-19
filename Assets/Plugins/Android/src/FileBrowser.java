@@ -1,4 +1,4 @@
-package tv.awesomepeople.virtualmuseum.FileBrowser;
+package tv.awesomepeople.virtualmuseum;
 
 import com.unity3d.player.UnityPlayerActivity;
 

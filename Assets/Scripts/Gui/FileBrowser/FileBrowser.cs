@@ -51,31 +51,23 @@ public class FileBrowser: GUIControl
 	public override void close(){
 		placeHolder.replace (this);
 		listener.fileIsSelected ();
-
 	}
 
 	void Start ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
-        // attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
+        // Attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
 		JavaVM.AttachCurrentThread();
-
-		// first we try to find our main activity..
-		IntPtr cls_Activity	= JNI.FindClass("com/unity3d/player/UnityPlayer");
-		int fid_Activity	= JNI.GetStaticFieldID(cls_Activity, "currentActivity", "Landroid/app/Activity;");
-		IntPtr obj_Activity	= JNI.GetStaticObjectField(cls_Activity, fid_Activity);
-		Debug.Log("obj_Activity = " + obj_Activity);
 		
-		// create an AndroidFileBrowser object...
+		// Create an AndroidFileBrowser object...
 		IntPtr cls_FileBrowser	= JNI.FindClass("be/ugent/virtualmuseum/FileBrowser");
 		int mid_FileBrowser		= JNI.GetMethodID(cls_FileBrowser, "<init>", "(Landroid/app/Activity;)V");
-		//IntPtr obj_FileBrowser	= JNI.NewObject(cls_FileBrowser, mid_FileBrowser, obj_Activity);
         IntPtr obj_FileBrowser = JNI.NewObject(cls_FileBrowser, mid_FileBrowser);
 		Debug.Log("FileBrowser object = " + obj_FileBrowser);
 
 		// create a global reference to the FileBrowser object and fetch method id(s)..
 		AndroidFileBrowser			= JNI.NewGlobalRef(obj_FileBrowser);
-		getFilePath     	= JNI.GetMethodID(cls_FileBrowser, "getFilePath", "()Ljava/lang/String;");
+		getFilePath     	        = JNI.GetMethodID(cls_FileBrowser, "getFilePath", "()Ljava/lang/String;");
 		Debug.Log("AndroidFileBrowser global ref = " + AndroidFileBrowser);
 		Debug.Log("AndroidFileBrowser method id = " + getFilePath);
 #endif

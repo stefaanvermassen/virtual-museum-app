@@ -122,7 +122,6 @@ namespace API
         public Request ListMuseums(Action<Response> success = null, Action<API_Error> error = null)
         {
             throw new NotImplementedException();
-            return null;
         }
 
         /// <summary>

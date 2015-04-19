@@ -10,8 +10,6 @@ public class ArtRest : MonoBehaviour
 	IEnumerator  getAllArt (GUIControl content)
 	{
 		Debug.Log ("t");
-		string imageArtworkUrl;
-		API.SessionManager sm = API.SessionManager.Instance;
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		ac.GetAllArtworks (success: (response) => {
 			foreach (API.ArtWork child in response) {

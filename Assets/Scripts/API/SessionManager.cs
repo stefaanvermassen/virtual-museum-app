@@ -14,7 +14,7 @@ namespace API
         protected SessionManager()
         {
             //TODO: remove this when we have a login view
-            var request = UserController.Instance.Login("VirtualMuseum", "@wesomePeople_20", (LoginUser),
+            UserController.Instance.Login("VirtualMuseum", "@wesomePeople_20", (LoginUser),
                 (error => { Debug.Log("An error occured when logging in"); }));
         }
 
@@ -48,14 +48,10 @@ namespace API
 
     public class User
     {
-        private string _name;
-
         private Token _accessToken;
-        private int _currentArtist = 1;
 
         public User(string name, Token accessToken)
         {
-            _name = name;
             _accessToken = accessToken;
         }
 

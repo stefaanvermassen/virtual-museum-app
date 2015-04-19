@@ -122,7 +122,6 @@ public class DrawController : MonoBehaviour {
             var dragPointWorld = Vector3.zero;
             dragPointScreen = mouse2D;
             dragPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask).point;
-            var dragOffsetScreen = anchorPointScreen - dragPointScreen;
             var dragOffsetWorld = anchorPointWorld - dragPointWorld;
             var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
             switch (tool) {
