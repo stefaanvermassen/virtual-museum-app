@@ -17,7 +17,7 @@ public class FileBrowser extends UnityPlayerActivity
 		Log.i("FileBrowser", "onCreate called");
 	}
 
-	private String getFilePath() {
+	public String getFilePath() {
     	Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     	intent.setType("*/*");
     	startActivityForResult(intent, 0);
