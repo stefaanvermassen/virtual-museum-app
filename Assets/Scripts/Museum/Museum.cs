@@ -97,7 +97,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         }
         foreach (var artData in data.Art) {
-            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
+            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale, artData.FrameStyle);
         }
         foreach (var objectData in data.Objects) {
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
@@ -141,7 +141,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="artID"></param>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
-    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale) {
+    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale, int frameStyle = 0) {
         var normal = Quaternion.Euler(rotation) * Vector3.forward;
         int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
         int y = 0;
@@ -157,7 +157,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         }
         ma.position = position;
         ma.rotation = rotation;
-        ma.material = frontMaterial;
+		ma.frameStyle = frameStyle;
         ma.texture = debugTexture;
         ma.art = a;
         ma.tileX = x;

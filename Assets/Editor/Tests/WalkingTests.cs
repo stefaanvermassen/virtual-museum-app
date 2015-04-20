@@ -30,10 +30,10 @@ public class WalkingTests {
 	[SetUp]
 	public void LoadWalkingController() {
 		CreateTestPlatform ();
-		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
-		player.transform.localPosition = new Vector3(0, 0, 0);
 		GameObject eventSystem = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/EventSystem.prefab", typeof(GameObject)));
 		GameObject dualSticks = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/MobileDualStickControl.prefab", typeof(GameObject)));
+		GameObject player = (GameObject)GameObject.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/WalkingController/Player.prefab", typeof(GameObject)));
+		player.transform.localPosition = new Vector3(0, 0, 0);
 	}
 	
 	[Test]
@@ -140,11 +140,11 @@ public class WalkingTests {
 		player.TestUpdate();
 		Camera[] cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active.");
-		player.stereoEnabled = true;
+		player.CameraMode = FirstPersonController.Cam.StereoDurovis;
 		player.TestUpdate ();
 		cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 2, "There should be two cameras active in stereoscopic mode.");
-		player.stereoEnabled = false;
+		player.CameraMode = FirstPersonController.Cam.Mono;
 		player.TestUpdate ();
 		cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active after switching stereoscopic mode off.");
@@ -158,7 +158,7 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Vertical");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Horizontal");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
-		rig.testMode = true;
+		rig.overrideControls = true;
 		rig.EnableControlRig (true);
 		// Get left joystick
 		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
@@ -212,7 +212,7 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Vertical");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Horizontal");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
-		rig.testMode = true;
+		rig.overrideControls = true;
 		rig.EnableControlRig (true);
 		// Get left joystick
 		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
@@ -271,7 +271,7 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Mouse Y");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Mouse X");
 		MobileControlRig rig = GameObject.FindObjectOfType<MobileControlRig> ();
-		rig.testMode = true;
+		rig.overrideControls = true;
 		rig.EnableControlRig (true);
 		// Get right joystick
 		Joystick[] joysticks = rig.GetComponentsInChildren<Joystick> ();
