@@ -28,6 +28,9 @@ namespace UnityStandardAssets.CrossPlatformInput
 		CrossPlatformInputManager.VirtualAxis m_VerticalVirtualAxis; // Reference to the joystick in the cross platform input
 
 		public void Start() {
+			//float scale = (float)(Screen.height * Screen.dpi) / (720 * 120);
+			float scale = (float)(Screen.height) / (720);
+			MovementRange = (int)(MovementRange*scale);
 			m_StartPos = transform.localPosition;
 			holdingPos.x = 0;
 			holdingPos.y = 0;
@@ -60,13 +63,21 @@ namespace UnityStandardAssets.CrossPlatformInput
 			// create new axes based on axes to use
 			if (m_UseX)
 			{
-				m_HorizontalVirtualAxis = new CrossPlatformInputManager.VirtualAxis(horizontalAxisName);
-				CrossPlatformInputManager.RegisterVirtualAxis(m_HorizontalVirtualAxis);
+				if(CrossPlatformInputManager.VirtualAxisReference(horizontalAxisName) != null) {
+					m_HorizontalVirtualAxis = CrossPlatformInputManager.VirtualAxisReference(horizontalAxisName);
+				} else {
+					m_HorizontalVirtualAxis = new CrossPlatformInputManager.VirtualAxis(horizontalAxisName);
+					CrossPlatformInputManager.RegisterVirtualAxis(m_HorizontalVirtualAxis);
+				}
 			}
 			if (m_UseY)
 			{
-				m_VerticalVirtualAxis = new CrossPlatformInputManager.VirtualAxis(verticalAxisName);
-				CrossPlatformInputManager.RegisterVirtualAxis(m_VerticalVirtualAxis);
+				if(CrossPlatformInputManager.VirtualAxisReference(verticalAxisName) != null) {
+					m_VerticalVirtualAxis = CrossPlatformInputManager.VirtualAxisReference(verticalAxisName);
+				} else {
+					m_VerticalVirtualAxis = new CrossPlatformInputManager.VirtualAxis(verticalAxisName);
+					CrossPlatformInputManager.RegisterVirtualAxis(m_VerticalVirtualAxis);
+				}
 			}
 		}
 
@@ -107,14 +118,14 @@ namespace UnityStandardAssets.CrossPlatformInput
 		void OnDisable()
 		{
 			// remove the joysticks from the cross platform input
-			if (m_UseX)
+			/*if (m_UseX)
 			{
 				m_HorizontalVirtualAxis.Remove();
 			}
 			if (m_UseY)
 			{
 				m_VerticalVirtualAxis.Remove();
-			}
+			}*/
 		}
 	}
 }
