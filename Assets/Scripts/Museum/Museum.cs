@@ -32,7 +32,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public HTTP.Request req;
     private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
     private List<MuseumArt> artWaitingForDownload = new List<MuseumArt>();
-    private HashSet<int> artIDsDownloading = new HashSet<int>(); 
+    private HashSet<int> artIDsDownloading = new HashSet<int>();
+
+    public void Start() {
+        SetTile(0, 0, 0, 0, 0, 0);
+        Debug.Log("hi " + GetTile(0,0,0));
+    }
 
     Art GetArt(int id, MuseumArt ma = null) {
         if (!artDictionary.ContainsKey(id)) {
@@ -133,6 +138,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 			Util.Destroy(o.gameObject);
         }
         objects.Clear();
+        Start();
     }
 
     /// <summary>
@@ -299,7 +305,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="y"></param>
     /// <param name="z"></param>
     public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
-        RemoveTile(x, y, z);
+        RemoveTile(x, y, z, true);
         GameObject tileObject = new GameObject();
         tileObject.transform.parent = transform.parent;
         tileObject.transform.localPosition = new Vector3(x, y, z);
@@ -357,7 +363,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="z"></param>
-    public void RemoveTile(int x, int y, int z) {
+    /// <param name="forced">Overrides any exceptions that would prevent you from removing a tile.</param>
+    public void RemoveTile(int x, int y, int z, bool forced = false) {
         var tile = GetTile(x, y, z);
         if (tile != null) {
             RemoveArt(x, y, z);
@@ -392,6 +399,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             }
             if (frontTile != null){ 
                 frontTile.UpdateEdges();
+            }
+            if (x == 0 && y == 0 && z == 0 && !forced) {
+                SetTile(0, 0, 0, 0, 0, 0);
             }
         }
     }
