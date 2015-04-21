@@ -140,11 +140,11 @@ public class WalkingTests {
 		player.TestUpdate();
 		Camera[] cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active.");
-		player.StereoEnabled = true;
+		player.CameraMode = FirstPersonController.Cam.StereoDurovis;
 		player.TestUpdate ();
 		cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 2, "There should be two cameras active in stereoscopic mode.");
-		player.StereoEnabled = false;
+		player.CameraMode = FirstPersonController.Cam.Mono;
 		player.TestUpdate ();
 		cameras = GameObject.FindObjectsOfType<Camera> ();
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active after switching stereoscopic mode off.");

@@ -5,7 +5,7 @@ using System.Collections;
 public static class Catalog {
 	private static Dictionary<int, Art> artworksDictionary=new Dictionary<int, Art>();
     public static string[] objects = new string[] { "texmonkey", "Vase1", "Statue",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
+    "Lamp", "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
     "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
     "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
     "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
@@ -15,19 +15,23 @@ public static class Catalog {
     "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey"
     };
 
-    public static string[] walls = new string[] {"Wall1", "Wall2"
+    public static string[] walls = new string[] {"Wall1", "Wall2", "Wall3"
     };
 
-    public static string[] ceilings = new string[] {"Ceiling1", "Ceiling2"
+    public static string[] ceilings = new string[] {"Ceiling1", "Ceiling2", "Ceiling3"
     };
 
-    public static string[] floors = new string[] {"Floor1", "Floor2"
+    public static string[] floors = new string[] {"Floor1", "Floor2", "Floor3", "Floor4"
     };
+
+	public static string[] frames = new string[] {"Frame1", "Frame2"
+	};
 
     private static Dictionary<int, GameObject> objectDictionary = new Dictionary<int, GameObject>();
     private static Dictionary<int, GameObject> wallDictionary = new Dictionary<int, GameObject>();
     private static Dictionary<int, GameObject> ceilingDictionary = new Dictionary<int, GameObject>();
     private static Dictionary<int, GameObject> floorDictionary = new Dictionary<int, GameObject>();
+	private static Dictionary<int, GameObject> frameDictionary = new Dictionary<int, GameObject>();
 
     private static GameObject GetResource(int id, string[] names, string folder, Dictionary<int, GameObject> dictionary){
         if (!dictionary.ContainsKey(id)) {
@@ -100,7 +104,9 @@ public static class Catalog {
 
 		});
 
-
+	}
+	public static GameObject GetFrame(int objectID) {
+		return GetResource(objectID, frames, "Frames", frameDictionary);
 	}
 
 	public static Art getArt(int artID){
