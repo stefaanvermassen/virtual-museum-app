@@ -33,6 +33,11 @@ class PerformBuild
 		return "C:\\WebServer\\teamsite\\unity-web";
 	}
 
+	static string GetBuildPathStandaloneWindows64()
+	{
+		return "C:\\WebServer\\teamsite\\build.exe";
+	}
+
     [UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Android")]
     static void CommandLineBuildAndroid()
     {
@@ -59,5 +64,10 @@ class PerformBuild
 	[UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Unity Web Player")]
 	static void CommandLineBuildUnityWeb() {
 		BuildPipeline.BuildPlayer (GetBuildScenes (), GetBuildPathUnityWeb (), BuildTarget.WebPlayer, BuildOptions.InstallInBuildFolder);
+	}
+
+	[UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Standalone Windows")]
+	static void CommandLineBuildWindows64() {
+		BuildPipeline.BuildPlayer (GetBuildScenes (), GetBuildPathStandaloneWindows64 (), BuildTarget.StandaloneWindows64, BuildOptions.None);
 	}
 }
