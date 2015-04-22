@@ -123,6 +123,9 @@ public class FirstPersonController : MonoBehaviour {
 		}
 
 		// Control cameras
+		float deltaTime = Time.deltaTime;
+		if(testMode) deltaTime = 1f / 60f;
+		sensitivity *= deltaTime * 60f;
 		Rotate(mouseXAxis, mouseYAxis, sensitivity);
 
 		// Only the axes are modified via the different input methods, the actual move call remains the same.
