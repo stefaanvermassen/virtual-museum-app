@@ -21,10 +21,22 @@ public class BasicActions : MonoBehaviour {
 		var datastring = currentActivity.Call<string>("getIntentDataString");
 		if(datastring.Contains ("museum/")) {
 			string[] splitString = datastring.Split(new string[] {"museum/"}, StringSplitOptions.RemoveEmptyEntries);
-			int id = int.Parse(splitString[splitString.Length-1]);
-			LoadMuseum (id);
+			int id;
+			bool success = int.TryParse(splitString[splitString.Length-1], out id);
+			if(success) LoadMuseum (id);
+			//int id = int.Parse(splitString[splitString.Length-1]);
+			//LoadMuseum (id);
 		} else {
 			MuseumLoader.museumID = -1; // Don't load a museum
+		}
+#elif UNITY_STANDALONE_WIN
+		string[] args = Environment.GetCommandLineArgs();
+		for(int i = 0; i < args.Length; i++) {
+			if(args[i].Equals("-museum") && args.Length > i+1) {
+				int id;
+				bool success = int.TryParse(args[i+1], out id);
+				if(success) LoadMuseum (id);
+			}
 		}
 #endif
 	}
@@ -32,5 +44,9 @@ public class BasicActions : MonoBehaviour {
 	public void LoadMuseum(int id) {
 		MuseumLoader.museumID = id;
 		Application.LoadLevel ("WalkingController");
+	}
+
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
 	}
 }
