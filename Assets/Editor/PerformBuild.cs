@@ -35,7 +35,7 @@ class PerformBuild
 
 	static string GetBuildPathStandaloneWindows()
 	{
-		return "C:\\WebServer\\teamsite\\build.exe";
+		return "C:\\WebServer\\teamsite\\standalonebuild\\build.exe";
 	}
 
     [UnityEditor.MenuItem("CUSTOM/Test Command Line Build Step Android")]
