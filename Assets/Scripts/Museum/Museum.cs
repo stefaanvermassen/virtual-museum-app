@@ -14,12 +14,13 @@ using System.IO;
 /// </summary>
 public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 {
+    public Toast toast;
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
-    public int museumID;
+    public int museumID = 0;
     public string description;
     public API.Level privacy;
 
@@ -468,7 +469,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void SaveRemote()
     {
-        Debug.Log("Start saving Remote");
         cont = API.MuseumController.Instance;
         byte[] data;
         BinaryFormatter bf = new BinaryFormatter();
@@ -482,64 +482,26 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         apiM.Description = this.description;
         apiM.LastModified = DateTime.Now;
         apiM.Privacy = this.privacy;
-        Debug.Log("Start Preparing Request");
         AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
             () => {
-                Debug.Log("Started");
+                toast.Notify("Saving Museum...");
             },
             () => {
-                Debug.Log("Still loading");
-            },
-            () => {
-                Debug.Log("Loaded");
+                toast.Notify("Museum saved!");
             });
-        if (museumID == null)
-        {
-            Debug.Log("Start Request");
-            req = cont.CreateMuseum(apiM, (mus) =>
-            {
+        if (museumID == 0) {
+            req = cont.CreateMuseum(apiM,
+            (mus) => {
                 museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
-                
+                loader.forceDone = true;
             });
-        }
-        else
-        {
-            Debug.Log("Start Request");
+        } else {
             apiM.MuseumID = museumID;
             req = cont.UpdateMuseum(apiM, (mus) => {
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             });
-        }
-        //log when done
-        Debug.Log("Start Monitoring if done.");
-        
-        //Thread requestThread = new Thread(SavedMuseumThread);
-        //requestThread.Start();
-    }
-
-    private void SavedMuseumThread()
-    {
-        Debug.Log("Request started.");
-        while (true)
-        {
-            if (req.isDone)
-            {
-                Debug.Log("Request done.");
-                if (req.response.status == 200)
-                {
-                    Debug.Log("Request was 200 OK.");
-                    //TODO: alert user? -> e.g. Toast in Android
-                }
-                else
-                {
-                    //TODO: retry? throw exception? alert user?
-                }
-                break;
-            }
-            Debug.Log("Request not done, sleep and check again");
-            Thread.Sleep(200);
         }
     }
 
@@ -562,18 +524,21 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             });
     }
 
-    private void LoadMuseumThread()
-    {
-        Debug.Log("Request started.");
-        while (true)
-        {
-            if (req.isDone)
-            {
-                Debug.Log("Request done, copy data here.");
-                break;
-            }
-            Debug.Log("Request not done, sleep and check again");
-            Thread.Sleep(200);
-        }
+    public void DebugRegister() {
+        var controller = API.UserController.Instance;
+        controller.CreateUser("RianTest", "riangoossens@mailinator.com", "Password123/",
+            (success) => {
+                toast.Notify("Successfully registered!");
+            });
     }
+
+    public void DebugLogin() {
+        var controller = API.UserController.Instance;
+        controller.Login("RianTest", "Password123/",
+            (success) => {
+                SessionManager.Instance.LoginUser(success);
+                toast.Notify("Successfully logged in!");
+            });
+    }
+
 }
