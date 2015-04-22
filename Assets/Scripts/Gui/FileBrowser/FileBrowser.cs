@@ -58,9 +58,16 @@ public class FileBrowser: GUIControl
         // Attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
 		AndroidJNI.AttachCurrentThread();
 		
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 		// Create an androidFileBrowser...
-		androidFileBrowser = new AndroidJavaClass("tv/awesomepeople/virtualmuseum/FileBrowser");
+        androidFileBrowser = new AndroidJavaClass("tv.awesomepeople.virtualmuseum.FileBrowser");
+        activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+        {
+            androidFileBrowser.Call("startBrowser");
+        }));
 #endif
+
         currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         updateFileAndFolder();
 	}
@@ -70,8 +77,8 @@ public class FileBrowser: GUIControl
     {
         if (GUI.Button(new Rect(15, 125, 450, 100), path))
         {
-            path = androidFileBrowser.Call<string>("getFilePath");
-            Debug.Log("getFilePath returned " + path);
+            path = androidFileBrowser.Call<string>("getPath");
+            Debug.Log("getPath returned " + path);
         }
     }
 #endif

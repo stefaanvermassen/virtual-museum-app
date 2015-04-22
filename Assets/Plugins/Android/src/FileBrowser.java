@@ -8,28 +8,30 @@ import android.os.Bundle;
 
 public class FileBrowser extends UnityPlayerActivity
 {
-	private String path = null;
+	private String path = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-		Log.i("FileBrowser", "onCreate called");
+		Log.i("Unity", "onCreate called");
 	}
 
-	public String getFilePath() {
+	public void startBrowser() {
     	Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     	intent.setType("*/*");
     	startActivityForResult(intent, 0);
-    	while (path == null);
-
-    	return path;
+        Log.i("Unity", "intent send = " + path);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	super.onActivityResult(requestCode, resultCode, data);
      	path = data.getDataString();
-		Log.i("FileBrowser", "onActivityResult returns = " + path);
+		Log.i("Unity", "onActivityResult returns = " + path);
 	}
+
+    public String getPath() {
+        return path;
+    }
 }
