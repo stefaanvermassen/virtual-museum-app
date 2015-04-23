@@ -36,8 +36,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private HashSet<int> artIDsDownloading = new HashSet<int>();
 
     public void Start() {
+        museumID = 0;
         SetTile(0, 0, 0, 0, 0, 0);
-        Debug.Log("hi " + GetTile(0,0,0));
     }
 
     Art GetArt(int id, MuseumArt ma = null) {
@@ -482,6 +482,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         apiM.Description = this.description;
         apiM.LastModified = DateTime.Now;
         apiM.Privacy = this.privacy;
+        Debug.Log("MY ID IS " +museumID);
         AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
             () => {
                 toast.Notify("Saving Museum...");
@@ -490,12 +491,13 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 toast.Notify("Museum saved!");
             });
         if (museumID == 0) {
-            req = cont.CreateMuseum(apiM,
-            (mus) => {
+            req = cont.CreateMuseum(apiM, (mus) => {
                 museumID = mus.MuseumID;
+                Debug.Log("MUSEUMID " + museumID);
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
-            });
+            },
+            (error) => { Debug.Log(error + " Something went wrong"); });
         } else {
             apiM.MuseumID = museumID;
             req = cont.UpdateMuseum(apiM, (mus) => {
@@ -521,6 +523,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 BinaryFormatter deserializer = new BinaryFormatter();
                 MuseumData data = (MuseumData)deserializer.Deserialize(stream);
                 Load(data);
+                museumID = Convert.ToInt32(identifier);
             });
     }
 

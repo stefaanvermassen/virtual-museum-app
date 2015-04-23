@@ -40,6 +40,7 @@ public class AddMuseumInfo : MonoBehaviour
     /// This will load the museum remotely
     /// </summary>
     public void Load() {
+        
         Storage.Instance.LoadRemote(museum, "1");
         panel.SetActive(false);
     }
