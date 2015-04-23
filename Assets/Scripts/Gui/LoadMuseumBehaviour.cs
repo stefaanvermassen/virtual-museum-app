@@ -16,6 +16,7 @@ public class LoadMuseumBehaviour : MonoBehaviour {
     public void InitializeButtons() {
         RemoveButtons();
         var content = transform.FindChild("ScrollPanel").FindChild("Content");
+        var scrollbar = transform.FindChild("ScrollPanel").FindChild("Scrollbar").gameObject.GetComponent<Scrollbar>();
         var controller = API.MuseumController.Instance;
         controller.GetConnectedMuseums((success) => {
             var buttonMaster = Resources.Load("gui/Button");
