@@ -67,6 +67,11 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	public bool testMode = false;
 
+	/// <summary>
+	/// The museum you're walking around in. Used to check if center tile is loaded.
+	/// </summary>
+	public Museum museum;
+
 
 	float verticalVelocity = 0;
 	Vector3 startingPosition;
@@ -123,10 +128,19 @@ public class FirstPersonController : MonoBehaviour {
 		}
 
 		// Control cameras
+		float deltaTime = Time.deltaTime;
+		if(testMode) deltaTime = 1f / 60f;
+		sensitivity *= deltaTime * 60f;
 		Rotate(mouseXAxis, mouseYAxis, sensitivity);
 
 		// Only the axes are modified via the different input methods, the actual move call remains the same.
-		Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
+		if(museum != null) {
+			if(museum.GetTile(0,0,0) != null) {
+				Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
+			}
+		} else {
+			Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
+		}
 
 		// Check if out of bounds
 		if (transform.position.y < -100) JumpToStart ();

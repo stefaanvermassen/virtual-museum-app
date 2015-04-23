@@ -29,5 +29,8 @@ public class WalkingModeFunctions : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.V)) {
             TempSwitchVR();
         }
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			TempBack ();
+		}
     }
 }
