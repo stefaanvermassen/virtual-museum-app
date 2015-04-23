@@ -118,9 +118,9 @@ namespace API
         /// <param name="id">ArtWork Identifier. The ArtWorkID for which we request the data</param>
         /// <param name="success">Success. Returns a byte[]</param>
         /// <param name="error">Error.</param>
-        public Request GetArtworkData(string id, Action<byte[]> success = null, Action<API_Error> error = null)
+        public Request GetArtworkData(string id, Action<byte[]> success = null, Action<API_Error> error = null, ArtworkSizes size = ArtworkSizes.MOBILE_SMALL)
         {
-            return Get(BASE_URL + ARTWORK + "/" + id + "/data", (response =>
+            return Get(BASE_URL + ARTWORK + "/" + id + "/data?size=" + ((int)size).ToString(), (response =>
             {
                 if (success != null)
                 {
@@ -204,4 +204,12 @@ namespace API
             return aw;
         }
     }
+
+	public enum ArtworkSizes {
+		MOBILE_SMALL = 1,
+		DESKTOP_SMALL = 2,
+		MOBILE_LARGE = 3,
+		DESKTOP_LARGE = 4,
+	    ORIGINAL = 5
+	}
 }

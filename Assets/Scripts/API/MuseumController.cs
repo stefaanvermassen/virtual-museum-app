@@ -42,6 +42,30 @@ namespace API
             }), error);
         }
 
+		/// <summary>
+		/// Get the list of museums owned by the user
+		/// </summary>
+		/// <returns>The Request</returns>
+		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you the
+		///     list of museums which are owned by the user.</param>
+		/// <param name="error">Error.</param>
+		public Request GetConnectedMuseums(Action<ArrayList> success = null, Action<API_Error> error = null)
+		{
+			return Get(BASE_URL + MUSEUM + "/connected", (response =>
+			                 {
+				var apiList = (ArrayList) response.Object["Museums"];
+				var list = new ArrayList();
+				foreach (Hashtable val in apiList)
+				{
+					list.Add(Museum.FromDictionary(val));
+				}
+				if (success != null)
+				{
+					success(list);
+				}
+			}), error);
+		}
+
         /// <summary>
         ///     Creates the museum, should be the first task when creating a museum
         /// </summary>
