@@ -195,6 +195,8 @@ namespace API
         public string Description { get; set; }
         public DateTime LastModified { get; set; }
         public Level Privacy { get; set; }
+        public string Name { get; set; }
+        public string OwnerName { get; set; }
 
         public Dictionary<string, string> ToDictionary()
         {
@@ -203,7 +205,9 @@ namespace API
                 {"MuseumID", MuseumID.ToString()},
                 {"Description", Description},
                 {"LastModified", LastModified.ToString()},
-                {"Privacy", ((int) Privacy).ToString()}
+                {"Privacy", ((int) Privacy).ToString()},
+                {"Name", Name},
+                {"OwnerName", OwnerName}
             };
 
             return dict;
@@ -216,7 +220,9 @@ namespace API
                 MuseumID = (int) dict["MuseumID"],
                 Description = (string) dict["Description"],
                 LastModified = DateTime.Parse((string) dict["LastModified"]),
-                Privacy = (Level) dict["Privacy"]
+                Privacy = (Level) dict["Privacy"],
+                Name = (string) dict["Name"],
+                OwnerName = (string) dict["OwnerName"]
             };
 
             return m;
