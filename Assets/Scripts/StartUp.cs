@@ -30,6 +30,9 @@ public class StartUp : MonoBehaviour {
 		var datastring = currentActivity.Call<string>("getIntentDataString");
 		if(datastring.StartsWith("virtualmuseum://")) {
 			HandleURLProtocol(datastring);
+		} else if(datastring.Contains ("filter/")) {
+			string[] splitString = datastring.Split(new string[] {"filter/"}, StringSplitOptions.RemoveEmptyEntries);
+			LoadFilter(splitString[splitString.Length-1]);
 		} else if(datastring.Contains ("museum/")) {
 			string[] splitString = datastring.Split(new string[] {"museum/"}, StringSplitOptions.RemoveEmptyEntries);
 			int id;
@@ -63,7 +66,9 @@ public class StartUp : MonoBehaviour {
 	void HandleURLProtocol(string fullURL) {
 		int id;
 		string url = fullURL.Replace ("virtualmuseum://", "");
-		if(url.StartsWith("art/")) {
+		if(url.StartsWith("filter/")) {
+			LoadFilter(url.Substring("filter/".Length));
+		} else if(url.StartsWith("art/")) {
 			bool success = int.TryParse(url.Replace("art/","").Replace ("/",""), out id);
 			if(success) LoadArt (id);
 		} else if (url.StartsWith("museum/")) {
@@ -125,6 +130,12 @@ public class StartUp : MonoBehaviour {
 
 	public void LoadArt(int id) {
 		statusText.text = "Loading art...";
+		loading = true;
+		// TODO: To be implemented
+	}
+
+	public void LoadFilter(string filter) {
+		statusText.text = "Parsing filter...";
 		loading = true;
 		// TODO: To be implemented
 	}
