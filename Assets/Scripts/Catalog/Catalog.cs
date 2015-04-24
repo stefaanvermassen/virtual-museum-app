@@ -4,14 +4,7 @@ using System.Collections.Generic;
 public static class Catalog {
 
     public static string[] objects = new string[] { "texmonkey", "Vase1", "Statue",
-    "Lamp", "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey",
-    "texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey","texmonkey"
+    "Lamp"
     };
 
     public static string[] walls = new string[] {"Wall1", "Wall2", "Wall3"
