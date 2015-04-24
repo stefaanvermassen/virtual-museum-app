@@ -13,7 +13,7 @@
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="http"
-		      android:host="api.awesomepeople.tv"
+		      android:host="museum.awesomepeople.tv"
               android:pathPrefix="/museum" />
       </intent-filter>
       <intent-filter>
@@ -21,25 +21,23 @@
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="http"
-		      android:host="awesomepeople.tv"
-              android:pathPrefix="/museum" />
+		      android:host="museum.awesomepeople.tv"
+              android:pathPrefix="/art" />
       </intent-filter>
 	  <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="http"
-		      android:host="www.awesomepeople.tv"
-              android:pathPrefix="/museum" />
+		      android:host="museum.awesomepeople.tv"
+              android:pathPrefix="/filter" />
       </intent-filter>
 	  <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="http"
-		      android:host="student-design5.intec.ugent.be"
-              android:pathPrefix="/museum" />
-      </intent-filter>
+        <data android:scheme="virtualmuseum" />
+	  </intent-filter>
       <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
     </activity>
   </application>
