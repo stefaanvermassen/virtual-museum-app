@@ -153,6 +153,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
         int y = 0;
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+		if(GetTile(x,y,z) == null) return;
         RemoveArt(x, y, z);
         MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
         
