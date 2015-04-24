@@ -16,6 +16,7 @@ public class RegisterView : MonoBehaviour
     public InputField emailField;
     public InputField passwordField;
     public InputField confirmPasswordField;
+    public Toast toast;
     public GameObject panel;
 
     /// <summary>
@@ -27,7 +28,6 @@ public class RegisterView : MonoBehaviour
         string username = usernameField.text;
         string email = emailField.text;
         string password = passwordField.text;
-        Toast toast = gameObject.AddComponent<Toast>();
 
         if (String.IsNullOrEmpty(password)
             || String.IsNullOrEmpty(username)
@@ -49,12 +49,10 @@ public class RegisterView : MonoBehaviour
         {
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Successfully registered!");
+            panel.SetActive(false);
         }, (error) =>
         {
             toast.Notify("Login failed. Please try again...");
-            return;
         });
-
-        panel.SetActive(false);
     }
 }

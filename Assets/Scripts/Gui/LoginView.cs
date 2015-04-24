@@ -15,6 +15,7 @@ public class LoginView : MonoBehaviour
     public InputField usernameField;
     public InputField passwordField;
     public GameObject panel;
+    public Toast toast;
 
     /// <summary>
     /// This logs in the user
@@ -24,7 +25,6 @@ public class LoginView : MonoBehaviour
     {
         string username = usernameField.text;
         string password = passwordField.text;
-        Toast toast = new Toast();
 
         if (String.IsNullOrEmpty(password)
             || String.IsNullOrEmpty(username))
@@ -38,12 +38,10 @@ public class LoginView : MonoBehaviour
         {
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Successfully registered!");
+            panel.SetActive(false);
         }, (error) =>
         {
             toast.Notify("Login failed. Please try again...");
-            return;
         });
-
-        panel.SetActive(false);
     }
 }
