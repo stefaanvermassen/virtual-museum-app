@@ -478,11 +478,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             bf.Serialize(ms, md);
             data = ms.ToArray();
         }
-        API.Museum apiM = new API.Museum();
-        apiM.Description = this.description;
-        apiM.LastModified = DateTime.Now;
-        apiM.Privacy = this.privacy;
-        Debug.Log("MY ID IS " +museumID);
+        API.Museum museum = new API.Museum();
+        museum.Description = this.description;
+        museum.LastModified = DateTime.Now;
+        museum.Privacy = this.privacy;
+        museum.Name = this.museumName;
+        museum.OwnerName = "";
         AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
             () => {
                 toast.Notify("Saving Museum...");
@@ -491,16 +492,15 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 toast.Notify("Museum saved!");
             });
         if (museumID == 0) {
-            req = cont.CreateMuseum(apiM, (mus) => {
+            req = cont.CreateMuseum(museum, (mus) => {
                 museumID = mus.MuseumID;
-                Debug.Log("MUSEUMID " + museumID);
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             },
             (error) => { Debug.Log(error + " Something went wrong"); });
         } else {
-            apiM.MuseumID = museumID;
-            req = cont.UpdateMuseum(apiM, (mus) => {
+            museum.MuseumID = museumID;
+            req = cont.UpdateMuseum(museum, (mus) => {
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             });
@@ -511,13 +511,14 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     {
         museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
-        req = cont.GetMuseum("" + museumID,
+        req = cont.GetMuseum(identifier,
             success: (museum) => {
                 description = museum.Description;
-                museumName = museum.Description;
+                museumName = museum.Name;
                 privacy = museum.Privacy;
-            }); //dit gebruikt denk ik de unityVersion check -> confirmed
-        req = cont.GetMuseumData("" + museumID,
+                museumID = Convert.ToInt32(identifier);
+            });
+        req = cont.GetMuseumData(identifier,
             success: (museum) => {
                 Stream stream = new MemoryStream(museum);
                 BinaryFormatter deserializer = new BinaryFormatter();
