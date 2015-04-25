@@ -61,7 +61,18 @@ public class DrawController : MonoBehaviour {
     public void SetCurrentObject(int objectID) {
         this.currentObject = objectID;
     }
-
+	public void SetCurrentFrame(int frameID){
+		this.currentFrame = frameID;
+	}
+	public void SetCurrentCeiling(int ceilingID){
+		this.currentCeiling = ceilingID;
+	}
+	public void SetCurrentFloor(int floorID){
+		this.currentFloor = floorID;
+	}
+	public void SetCurrentWall(int wallID){
+		this.currentWall = wallID;
+	}
     bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
             if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {

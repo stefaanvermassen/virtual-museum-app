@@ -204,6 +204,23 @@ namespace API
 
             return aw;
         }
+		public static ArtWork FromArt (Art art)
+		{
+			return new ArtWork ()
+			{
+				ArtWorkID = art.ID,
+				ArtistID = art.owner.ID,
+				Name = art.name
+			};
+		}
+		public static Art ToArt (ArtWork artwork)
+		{
+			Art art = new Art ();
+			art.ID = artwork.ArtWorkID;
+			art.owner.ID = artwork.ArtistID;
+			art.name = artwork.Name;
+			return art;
+		}
     }
 
 	public enum ArtworkSizes {

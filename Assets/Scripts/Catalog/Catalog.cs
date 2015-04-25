@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public static class Catalog {
-
+	private static Dictionary<int, Art> artworksDictionary=new Dictionary<int, Art>();
     public static string[] objects = new string[] { "texmonkey", "Vase1", "Statue",
     "Lamp"
     };
@@ -44,10 +45,67 @@ public static class Catalog {
     public static GameObject GetFloor(int objectID) {
         return GetResource(objectID, floors, "Styles", floorDictionary);
     }
+	//check zith timestamp if catalog changed
+	private static bool catalogArtChanged;
+	//this method should check the server if there were objects added and if so start an update
+	//use timestamp to check periodically if the catalog has to be updated
+	public static void Refresh(){
+
+		RefreshArtWork ();
+	}
+	private static bool hasArt(int artID){
+		return artworksDictionary.ContainsKey (artID);
+
+	}
+	//TODO: add filters on collection of requested art
+	//warning this method waits to finish, this should always be called 
+	/// <summary>
+	/// Loads all art from server available to user.
+	/// A filter can be applied to refine the scope of the collection.
+	/// </summary>
+	/// <returns>A collection Art.</returns>
+	public static void RefreshArtWork(){
+		Debug.Log ("start");
+		//TODO make sure a user is logged in
+		API.ArtworkController ac = API.ArtworkController.Instance;
+		//load all artworks
+		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+			() => {
+			Debug.Log("Started");
+			ac.GetAllArtworks (success: (response) => {
+				foreach (API.ArtWork child in response) {
+					//we save the child, because else it is overwwritten in the loval scope of the closure
+					var artwork = child;
+					//check if catalog has it
+					if(!hasArt(artwork.ArtWorkID)){
+						Art newArt = new Art();
+						
+						Storage.Instance.Load(newArt,artwork.ArtWorkID+"");
+						//we use the id from the artwork instance because there's no guarantee for the newart instance to be loaded already
+						artworksDictionary.Add(artwork.ArtWorkID,newArt);
+					}
+				}
+			},
+			error: (error) => {
+				Debug.Log ("An error occured while loading all artworks");
+			}); 
+		},
+		() => {
+		},
+		() => {
+			Debug.Log("Loaded");
+
+		});
+
+	}
 	public static GameObject GetFrame(int objectID) {
 		return GetResource(objectID, frames, "Frames", frameDictionary);
 	}
 
-
-
+	public static Art getArt(int artID){
+		return artworksDictionary [artID];
+	}
+	public static Dictionary<int, Art> getAllArt(){
+		return artworksDictionary;
+	}
 }
