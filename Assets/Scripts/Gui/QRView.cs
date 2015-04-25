@@ -17,7 +17,6 @@ public class QRView : MonoBehaviour
     private void Start()
     {
         set = false;
-        QR.enabled = false;
         
         // Register screen
         statistics = Statistics.getInstance();
@@ -32,7 +31,6 @@ public class QRView : MonoBehaviour
         if (!set && image != null)
         {
             set = true;
-            QR.enabled = true;
             QR.sprite = Sprite.Create(image, new Rect(0, 0, image.width, image.height), Vector2.zero);
         }
     }
