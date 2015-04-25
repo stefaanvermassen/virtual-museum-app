@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using HTTP;
 using UnityEngine;
@@ -80,13 +81,13 @@ namespace API
         /// <param name="success">Success. Closure that gets run if downloading the file is succesfull</param>
         /// <param name="error">Error. Closure that gets run if downloading the file is unsuccesfull</param>
         /// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
-        protected Request Post(string url, Dictionary<string, string> formData, Action<Response> success = null,
+        protected Request Post(string url, Hashtable formData, Action<Response> success = null,
             Action<API_Error> error = null, bool authToken = true)
         {
             var form = new WWWForm();
-            foreach (var pair in formData)
+            foreach (DictionaryEntry pair in formData)
             {
-                form.AddField(pair.Key, pair.Value);
+                form.AddField((string)pair.Key, (string)pair.Value);
             }
             return PostForm(url, form, success, error, authToken);
         }
@@ -114,16 +115,36 @@ namespace API
             return SendRequest(postRequest, success, error, authToken);
         }
 
-        protected Request Put(string url, Dictionary<string, string> formData, Action<Response> success = null,
+        protected Request Put(string url, Hashtable formData, Action<Response> success = null,
             Action<API_Error> error = null, bool authToken = true)
         {
             var form = new WWWForm();
-            foreach (var pair in formData)
+            foreach (DictionaryEntry pair in formData)
             {
-                form.AddField(pair.Key, pair.Value);
+                form.AddField((string)pair.Key, (string)pair.Value);
             }
 
             return PostOrPutForm("put", url, form, success, error, authToken);
+        }
+
+        protected Request PostJsonRequest(string url, Hashtable json, Action<Response> success = null,
+            Action<API_Error> error = null, bool authToken = true)
+        {
+            return PostOrPutJsonRequest("post", url, json, success, error, authToken);
+        }
+
+        protected Request PutJsonRequest(string url, Hashtable json, Action<Response> success = null,
+            Action<API_Error> error = null, bool authToken = true)
+        {
+            return PostOrPutJsonRequest("put", url, json, success, error, authToken);
+        }
+
+        protected Request PostOrPutJsonRequest(string method, string url, Hashtable json, Action<Response> success = null,
+            Action<API_Error> error = null, bool authToken = true)
+        {
+            var request = new Request(method, url, json);
+
+            return SendRequest(request, success, error, authToken);
         }
 
         /// <summary>

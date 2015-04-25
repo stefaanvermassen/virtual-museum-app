@@ -121,7 +121,7 @@ public class Art : Savable<Art, ArtData>
 			Debug.Log("Started");
 		},() => {
 			//either wait for image to be uploaded or there was nu upload necessary
-			return req==null || req.callbackCompleted;
+			return req==null | req.callbackCompleted;
 		},
 		() => {
 		},
@@ -147,11 +147,11 @@ public class Art : Savable<Art, ArtData>
             success: (art) => {
 			imageFile=art;
 
-			Debug.Log ("file"+imageFile.Length);
             image = new Texture2D(1, 1);
 			image.LoadImage(imageFile);
 
             },
+		//test
 		error: (error) => { throw new DownloadFailedException ("Failed to download artwork data: "+error); }
         ); 
 		//loading an image can take a long time, make it possible to check this and report to user
