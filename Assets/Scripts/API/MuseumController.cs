@@ -57,7 +57,7 @@ namespace API
 				var list = new ArrayList();
 				foreach (Hashtable val in apiList)
 				{
-					list.Add(Museum.FromDictionary(val));
+					list.Add(Museum.Create(val));
 				}
 				if (success != null)
 				{
@@ -83,7 +83,7 @@ namespace API
 				var list = new ArrayList();
 				foreach (Hashtable val in apiList)
 				{
-					list.Add(Museum.FromDictionary(val));
+					list.Add(Museum.Create(val));
 				}
 				if (success != null)
 				{
