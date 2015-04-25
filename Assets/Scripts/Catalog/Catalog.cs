@@ -1,8 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 public static class Catalog {
+	public enum CatalogType
+	{
+		OBJECT,
+		WALL,
+		FLOOR,
+		CEILING,
+		FRAME,
+		ART
+	}
+
 	private static Dictionary<int, Art> artworksDictionary=new Dictionary<int, Art>();
     public static string[] objects = new string[] { "texmonkey", "Vase1", "Statue",
     "Lamp"
@@ -32,7 +43,28 @@ public static class Catalog {
         }
         return dictionary[id];
     }
+	public static int[] getResourceIDs(CatalogType type){
+			switch (type) {
+			case Catalog.CatalogType.OBJECT:
+				return objectDictionary.Keys.ToArray ();
+			case Catalog.CatalogType.FRAME:
+				return frameDictionary.Keys.ToArray ();
 
+			case Catalog.CatalogType.WALL:
+				return wallDictionary.Keys.ToArray ();
+
+			case Catalog.CatalogType.FLOOR:
+				return floorDictionary.Keys.ToArray ();
+
+			case Catalog.CatalogType.CEILING:
+				return ceilingDictionary.Keys.ToArray ();
+
+			case Catalog.CatalogType.ART:
+				return artworksDictionary.Keys.ToArray ();
+			default:
+				return null;
+		}
+	}
     public static GameObject GetObject(int objectID) {
         return GetResource(objectID, objects, "Objects", objectDictionary);
     }

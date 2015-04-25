@@ -44,6 +44,8 @@ public class DrawController : MonoBehaviour {
 	void Start () {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
         wallLayerMask = (1 << LayerMask.NameToLayer("Walls"));
+		//load art info & thumbnail
+		Catalog.RefreshArtWork ();
 	}
 
     /// <summary>
@@ -72,6 +74,9 @@ public class DrawController : MonoBehaviour {
 	}
 	public void SetCurrentWall(int wallID){
 		this.currentWall = wallID;
+	}
+	public void SetCurrentArt(int artID){
+		this.currentArt = artID;
 	}
     bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
