@@ -171,7 +171,7 @@ namespace API
             _expires = expires;
         }
 
-        public static Token CreateFromDictionary(Hashtable hash)
+        public static Token Create(Hashtable hash)
         {
             return new Token((string) hash["access_token"], DateTime.Parse((string) hash[".expires"]));
         }
