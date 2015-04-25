@@ -126,10 +126,13 @@ public class Storage : MonoBehaviour {
         DateTime dtLocal = File.GetLastWriteTime(path);
         DateTime dtRemote = st.LastModified(identification);
 
-        //local file most recent
-        if (dtLocal.CompareTo(dtRemote) <= 0)
-        {
+        Debug.Log("STORAGE: Local File Last Modified: " + dtLocal.ToString());
+        Debug.Log("STORAGE: Remote File Last Modified: " + dtRemote.ToString());
 
+        //local file most recent
+        if (dtLocal.CompareTo(dtRemote) > 0)
+        {
+            
             LoadLocal<T,D>(st, path);
             return;
 
@@ -353,7 +356,7 @@ public class Storage : MonoBehaviour {
     public void SaveRemote<T,D>(Savable<T,D> savable) where D : Data<T>
     {
         savable.SaveRemote();
-        Debug.Log("Data Saved Remotely.");
+        Debug.Log("STORAGE: Data Saved Remotely.");
     }
 
     /// <summary>
@@ -374,7 +377,7 @@ public class Storage : MonoBehaviour {
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
         TestFileStream.Close();
-        Debug.Log("Data Saved Locally to "+path);
+        Debug.Log("STORAGE: Data Saved Locally to " + path);
     }
 
     /// <summary>
@@ -384,7 +387,7 @@ public class Storage : MonoBehaviour {
     public void SaveRemote(SavableData data)
     {
         data.SaveRemote();
-        Debug.Log("Data Saved Remotely.");
+        Debug.Log("STORAGE: Data Saved Remotely.");
     }
 
 
@@ -404,7 +407,7 @@ public class Storage : MonoBehaviour {
         BinaryFormatter serializer = new BinaryFormatter();
         serializer.Serialize(TestFileStream, data);
         TestFileStream.Close();
-        Debug.Log("Data Saved Locally.");
+        Debug.Log("STORAGE: Data Saved Locally.");
     }
 
 
@@ -448,7 +451,7 @@ public class Storage : MonoBehaviour {
     public SavableData LoadRemote(SavableData data, string identifier)
     {
         data.LoadRemote(identifier);
-        Debug.Log("Data Loaded Remotely.");
+        Debug.Log("STORAGE: Data Loaded Remotely.");
         return data;
     }
 
@@ -466,7 +469,7 @@ public class Storage : MonoBehaviour {
                 BinaryFormatter deserializer = new BinaryFormatter();
                 data = (SavableData)deserializer.Deserialize(TestFileStream);
                 TestFileStream.Close();
-                Debug.Log("Data Loaded Locally.");
+                Debug.Log("STORAGE: Data Loaded Locally.");
                 return data;
             }
             else throw new FileLoadException("Wrong file extension, data could not be loaded into this class.");
@@ -484,7 +487,7 @@ public class Storage : MonoBehaviour {
     /// <returns>if these are of the same type (file extension matches)</returns>
     private bool CheckFileExtension<T, D>(Savable<T, D> savable, string path) where D : Data<T>
     {
-        Debug.Log("Checking file extension");
+        Debug.Log("STORAGE: Checking file extension");
         string[] splitPath = path.Split('.');
         return splitPath[splitPath.Length - 1].Equals(savable.getExtension());
     }
@@ -497,7 +500,7 @@ public class Storage : MonoBehaviour {
     /// <returns>if these are of the same type (file extension matches)</returns>
     private bool CheckFileExtension(SavableData data, string path)
     {
-        Debug.Log("Checking file extension");
+        Debug.Log("STORAGE: Checking file extension");
         string[] splitPath = path.Split('.');
         return splitPath[splitPath.Length - 1].Equals(data.getExtension());
     }

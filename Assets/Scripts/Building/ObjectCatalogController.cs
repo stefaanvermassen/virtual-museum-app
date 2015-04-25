@@ -1,35 +1,44 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
-public class ObjectCatalogController : GUIControl {
+public class ObjectCatalogController : GUIControl
+{
 	//Unity editor note: for the content to be scrolled to the begin on opening, the pivot of it's rect transform should be set to 1 for Y
 
 
 	public GUIControl catalogContent;
 	// Objects are loaded on initialisation, a collection is dynamic, on the change of a collecition the loadObjects should be called again
 	// or load objects every time the catalog is shown
-	void Start () {
-		loadObjects ();
+
+	public void Open (string catalogType)
+	{
+		Open ();
+		OnTop ();
+		//change header text
+		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
+		
 	}
-	
-	public void loadObjects(){
+
+
+	//use objects id'd as strings in catalog to build the gui
+	public void loadObjects (Catalog.CatalogType type)
+	{
+
 		//empty catalog
-		catalogContent.removeAllChildren ();
+		catalogContent.RemoveAllChildren ();
 		//fill with objects from collection
-		for (int i = 0; i < getNrOfOwnedObjects(); i++) {
-			GUIControl item = catalogContent.addDynamicChild();
-			ObjectCatalogItemController controller = item.GetComponent<ObjectCatalogItemController>();
-			controller.init(i);
+		int[] ids = Catalog.getResourceIDs (type);
+		for (int i = 0; i < ids.Length; i++) {
+			GUIControl item = catalogContent.AddDynamicChild ();
+			ObjectCatalogItemController controller = item.GetComponent<ObjectCatalogItemController> ();
+			controller.init (ids[i], type);
 		}
-		//position content on top
-		setRelativePosition (0, 0);
+		//position content on topcatalogContent.AddDynamicChild ();
+		SetRelativePosition (0, 0);
 	}
+
 	//the objects array should be loaded from the users collection of objects this is a stub
 
-	public string[] getOwnedObjects(){
-		return Catalog.objects;
-	}
-	public int getNrOfOwnedObjects(){
-		return Catalog.objects.Length;
-	}
+
 }
