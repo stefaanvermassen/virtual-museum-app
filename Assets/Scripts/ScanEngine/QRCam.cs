@@ -14,7 +14,7 @@ public class QRCam : MonoBehaviour {
     private Thread scanThread;
 
 
-    void onGUI()
+    void OnGUI()
     {
         GUI.DrawTexture(paneRect, camTexture, ScaleMode.ScaleAndCrop);
     }

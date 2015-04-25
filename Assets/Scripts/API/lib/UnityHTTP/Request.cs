@@ -48,6 +48,7 @@ namespace HTTP
         public bool synchronous = false;
 
         public Action< HTTP.Request > completedCallback = null;
+		public bool callbackCompleted = false;
 
         Dictionary<string, List<string>> headers = new Dictionary<string, List<string>> ();
         static Dictionary<string, string> etags = new Dictionary<string, string> ();
@@ -208,6 +209,7 @@ namespace HTTP
             {
                 if (synchronous) {
                     completedCallback(this);
+					callbackCompleted = true;
                 } else {
                     // we have to use this dispatcher to avoid executing the callback inside this worker thread
                     ResponseCallbackDispatcher.Singleton.requests.Enqueue( this );

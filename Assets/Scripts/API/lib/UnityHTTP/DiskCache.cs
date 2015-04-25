@@ -120,6 +120,7 @@ namespace HTTP
             if ( callback != null )
             {
                 callback( request );
+				request.callbackCompleted = true;
             }
         }
 

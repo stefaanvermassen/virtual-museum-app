@@ -1,76 +1,56 @@
+using System;
+using HTTP;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 
-namespace API {
+namespace API
+{
+    /// <summary>
+    ///     User controller. Does all request concerning the User, such as OAuth, and user management tasks.
+    /// </summary>
+    public class UserController : APIConnection
+    {
+        protected UserController()
+        {
+        }
 
-	/// <summary>
-	/// User controller. Does all request concerning the User, such as OAuth, and user management tasks.
-	/// </summary>
-	public class UserController : APIConnection
-	{
-		public User user;
+        private static readonly UserController _Instance = new UserController();
 
-		protected UserController() {
-			//TODO: load user from cache or settings
-			if (user == null || string.IsNullOrEmpty (user.accessToken)) {
-				stubLogin();
-			}
-		}
+        public static UserController Instance
+        {
+            get { return _Instance; }
+        }
 
-		private static readonly UserController _instance = new UserController();
+        public Request CreateUser(string username, string email, string password, Action<User> succes = null,
+            Action<API_Error> error = null)
+        {
+            return Post(BASE_URL + "account/register",
+                new[] {"UserName", "Email", "Password", "ConfirmPassword"},
+                new[] {username, email, password, password},
+                (response => { Login(username, password, succes, error); }), error, false);
+        }
 
-		public static UserController Instance {
-			get {
-				return _instance;
-			}
-		}
-		
-		public bool createUser(User user){
-				return false;
-		}
+        public bool UpdateCredit(User user, int credit)
+        {
+            //TODO: needs to be implemented in API
+            return false;
+        }
 
-		public bool loginUser(User user, string password) {
-				return false;
-		}
-
-		public bool updateCredit(User user, int credit) {
-				//TODO: needs to be implemented in API
-				return false;
-		}
-
-		public void stubLogin()
-		{	
-			string name = "Virtual Museum";
-			user = new User (name, null);
-			post("http://api.awesomepeople.tv/Token", 
-				new string[] { "grant_type", "username", "password" }, 
-				new string[] { "password", "VirtualMuseum", "@wesomePeople_20" }, 
-			((response) => {
-				string accessToken = (string)response.Object["access_token"];
-				Debug.Log (accessToken);
-				user.accessToken = accessToken;
-			}), ((API_Error)=>{
-				Debug.Log("An error  occured while requesting the token.");
-			}), false);
-		}
-	}
-
-	public class User {
-		private string Name;
-		//TODO: fix this and use long lived OAuth tokens, instead of requesting new ones every time
-		public string accessToken { get; set;}
-		private int CurrentArtist = 1;
-
-		public User(string name, string accessToken) {
-			Name = name;
-			this.accessToken = accessToken;
-		}
-
-		public void clearToken() {
-			accessToken = null;
-		}
-	}
-
+        public Request Login(string username, string password, Action<User> succes = null,
+            Action<API_Error> error = null)
+        {
+            return Post("http://api.awesomepeople.tv/Token",
+                new[] {"grant_type", "username", "password"},
+                new[] {"password", username, password},
+                (response =>
+                {
+                    var token = Token.CreateFromDictionary(response.Object);
+                    Debug.Log(token.AccessToken());
+                    var user = new User((string) response.Object["userName"], token);
+                    if (succes != null)
+                    {
+                        succes(user);
+                    }
+                }), error, false);
+        }
+    }
 }

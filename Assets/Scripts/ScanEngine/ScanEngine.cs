@@ -14,9 +14,9 @@ namespace Scanning
     public class ScanEngine
     {
 
-        private static ScanEngine instance;
+        private static ScanEngine Instance;
 
-        private static Scanner scanner;
+        private static Scanner Scanner;
 
         public ScanTechnology Tech { get; set; }
 
@@ -25,25 +25,25 @@ namespace Scanning
             //empty constructor
         }
 
-        public static ScanEngine get(ScanTechnology tech)
+        public static ScanEngine Get(ScanTechnology tech)
         {
 
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = new ScanEngine();
+                Instance = new ScanEngine();
             }
-            instance.Tech = tech;
+            Instance.Tech = tech;
             //create Scanner
             switch (tech)
             {
                 case ScanTechnology.QR:
-                    scanner = new QRScanner();
+                    Scanner = new QRScanner();
                     break;
                 default:
                     //should not happen
                     throw new UnsupportedScanTechnologyException("Technology not supported: " + tech);
             }
-            return instance;
+            return Instance;
         }
 
 
@@ -52,24 +52,24 @@ namespace Scanning
          * */
         public Scannable scan(ScanIdentity scanId)
         {
-            scanner.Scan();
-            return scanner.getScanResult();
+            Scanner.Scan();
+            return Scanner.GetScanResult();
         }
 
         /**
          * Methode used to link a ScanIdentity to a Scannable (eg for BLE tags)
          * */
-        public ScanIdentity makeScannable(ScanIdentity scanId, Scannable scannable)
+        public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable)
         {
-            return scanner.MakeScannable(scanId, scannable);
+            return Scanner.MakeScannable(scanId, scannable);
         }
 
         /**
          * Methode used to generate a ScanIdentity for a Scannable (eg for QR codes)
          * */
-        public ScanIdentity makeScannable(Scannable scannable)
+        public ScanIdentity MakeScannable(Scannable scannable)
         {
-            return makeScannable(null, scannable);
+            return MakeScannable(null, scannable);
         }
 
 

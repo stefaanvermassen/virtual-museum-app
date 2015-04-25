@@ -77,7 +77,7 @@ namespace Scanning
                 {
                     Filter = new ArtFilter();
                     LastResult = result.Text;
-                    Filter.configure(result.Text);
+                    Filter.Configure(result.Text);
                     Debug.Log("QR code found :");
                     return;
                 }
@@ -92,7 +92,7 @@ namespace Scanning
         }
 
 
-        public Scannable getScanResult()
+        public Scannable GetScanResult()
         {
             if(Filter != null){
                 return Filter;
