@@ -49,12 +49,14 @@ public class ArtCatalog : MonoBehaviour
 		content.RemoveAllChildren ();
 		//get all art from catalog
 		 allArt = Catalog.getAllArt ().Values;
+		Debug.Log (Catalog.getAllArt ().Count);
 		//load art in gui, check for each art is it's still loading or not
 		foreach (Art art in allArt) {
 			if(art.loadingImage){
 				Debug.Log ("Art is still loading, image will not be displayed.");
+			}else{
+				AddArtToCatalog(art,content);
 			}
-			//AddArtToCatalog(art,content);
 		}
 	}
 }
