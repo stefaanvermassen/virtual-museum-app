@@ -42,6 +42,55 @@ namespace API
             }), error);
         }
 
+		/// <summary>
+		/// Get the list of museums owned by the user
+		/// </summary>
+		/// <returns>The Request</returns>
+		/// <param name="success">Success. A closure which will be executed when creating the museum is a succes, gives you the
+		///     list of museums which are owned by the user.</param>
+		/// <param name="error">Error.</param>
+		public Request GetConnectedMuseums(Action<ArrayList> success = null, Action<API_Error> error = null)
+		{
+			return Get(BASE_URL + MUSEUM + "/connected", (response =>
+			                 {
+				var apiList = (ArrayList) response.Object["Museums"];
+				var list = new ArrayList();
+				foreach (Hashtable val in apiList)
+				{
+					list.Add(Museum.FromDictionary(val));
+				}
+				if (success != null)
+				{
+					success(list);
+				}
+			}), error);
+		}
+
+		
+		/// <summary>
+		///     Lists the museums.
+		/// </summary>
+		/// <returns>The museums.</returns>
+		/// <param name="success">Success.</param>
+		/// <param name="error">Error.</param>
+		public Request GetMuseums(MuseumSearchModel msm = null, Action<ArrayList> success = null, Action<API_Error> error = null)
+		{
+			msm = msm != null ? msm : new MuseumSearchModel ();
+			return Get (BASE_URL + MUSEUM + msm.QueryString() ,
+			          (response =>
+		    {
+				var apiList = (ArrayList) response.Object["Museums"];
+				var list = new ArrayList();
+				foreach (Hashtable val in apiList)
+				{
+					list.Add(Museum.FromDictionary(val));
+				}
+				if (success != null)
+				{
+					success(list);
+				}
+			}), error);
+		}
         /// <summary>
         ///     Creates the museum, should be the first task when creating a museum
         /// </summary>
@@ -114,18 +163,6 @@ namespace API
         }
 
         /// <summary>
-        ///     Lists the museums.
-        /// </summary>
-        /// <returns>The museums.</returns>
-        /// <param name="success">Success.</param>
-        /// <param name="error">Error.</param>
-        public Request ListMuseums(Action<Response> success = null, Action<API_Error> error = null)
-        {
-            throw new NotImplementedException();
-            return null;
-        }
-
-        /// <summary>
         ///     Gets the museum data.
         /// </summary>
         /// <returns>HTTP.Reuqest</returns>
@@ -171,6 +208,8 @@ namespace API
         public string Description { get; set; }
         public DateTime LastModified { get; set; }
         public Level Privacy { get; set; }
+        public string Name { get; set; }
+        public string OwnerName { get; set; }
 
         public Hashtable ToHash()
         {
@@ -179,7 +218,9 @@ namespace API
                 {"MuseumID", MuseumID.ToString()},
                 {"Description", Description},
                 {"LastModified", LastModified.ToString()},
-                {"Privacy", ((int) Privacy).ToString()}
+                {"Privacy", ((int) Privacy).ToString()},
+                {"Name", Name},
+                {"OwnerName", OwnerName}
             };
 
             return dict;
@@ -192,7 +233,9 @@ namespace API
                 MuseumID = (int) dict["MuseumID"],
                 Description = (string) dict["Description"],
                 LastModified = DateTime.Parse((string) dict["LastModified"]),
-                Privacy = (Level) dict["Privacy"]
+                Privacy = (Level) dict["Privacy"],
+                Name = (string) dict["Name"],
+                OwnerName = (string) dict["OwnerName"]
             };
 
             return m;
@@ -204,4 +247,40 @@ namespace API
         PRIVATE = 0,
         PUBLIC = 1
     }
+
+	public class MuseumSearchModel
+	{
+		/// <summary>
+		/// Substring of the description
+		/// </summary>
+		public string Description { get; set; }
+		
+		/// <summary>
+		/// Substring of the ownername that needs to be found
+		/// </summary>
+		public string OwnerName { get; set; }
+		
+		/// <summary>
+		/// Substring of the museum name
+		/// </summary>
+		public string Name { get; set; }
+		
+		/// <summary>
+		/// The rating of the museums
+		/// </summary>
+		public int Rating { get; set; }
+
+		public MuseumSearchModel() 
+		{
+			Description = "";
+			OwnerName = "";
+			Name = "";
+			Rating = 0;
+		}
+
+		public string QueryString()
+		{
+			return "?Description=" + Description + "&OwnerName=" + OwnerName + "&Name=" + Name + "&Rating=" + Rating.ToString ();
+		}
+	}
 }

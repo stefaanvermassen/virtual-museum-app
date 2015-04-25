@@ -14,12 +14,13 @@ using System.IO;
 /// </summary>
 public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 {
+    public Toast toast;
     public List<MuseumTile> tiles = new List<MuseumTile>();
     public List<MuseumObject> objects = new List<MuseumObject>();
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
-    public int museumID;
+    public int museumID = 0;
     public string description;
     public API.Level privacy;
 
@@ -32,7 +33,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public HTTP.Request req;
     private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
     private List<MuseumArt> artWaitingForDownload = new List<MuseumArt>();
-    private HashSet<int> artIDsDownloading = new HashSet<int>(); 
+    private HashSet<int> artIDsDownloading = new HashSet<int>();
+
+    public void Start() {
+        museumID = 0;
+        SetTile(0, 0, 0, 0, 0, 0);
+    }
 
     Art GetArt(int id, MuseumArt ma = null) {
         if (!artDictionary.ContainsKey(id)) {
@@ -97,7 +103,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         }
         foreach (var artData in data.Art) {
-            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale);
+            AddArt(artData.Art.ID, new Vector3(artData.X, artData.Y, artData.Z), new Vector3(artData.RX, artData.RY, artData.RZ), artData.Scale, artData.FrameStyle);
         }
         foreach (var objectData in data.Objects) {
             AddObject(objectData.ObjectID, objectData.X, objectData.Y, objectData.Z, objectData.Angle);
@@ -133,6 +139,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 			Util.Destroy(o.gameObject);
         }
         objects.Clear();
+        Start();
     }
 
     /// <summary>
@@ -141,11 +148,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="artID"></param>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
-    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale) {
+    public void AddArt(int artID, Vector3 position, Vector3 rotation, float scale, int frameStyle = 0) {
         var normal = Quaternion.Euler(rotation) * Vector3.forward;
         int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
         int y = 0;
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+		if(GetTile(x,y,z) == null) return;
         RemoveArt(x, y, z);
         MuseumArt ma = new GameObject().AddComponent<MuseumArt>();
         
@@ -157,7 +165,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         }
         ma.position = position;
         ma.rotation = rotation;
-        ma.material = frontMaterial;
+		ma.frameStyle = frameStyle;
         ma.texture = debugTexture;
         ma.art = a;
         ma.tileX = x;
@@ -299,7 +307,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="y"></param>
     /// <param name="z"></param>
     public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
-        RemoveTile(x, y, z);
+        RemoveTile(x, y, z, true);
         GameObject tileObject = new GameObject();
         tileObject.transform.parent = transform.parent;
         tileObject.transform.localPosition = new Vector3(x, y, z);
@@ -357,7 +365,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="z"></param>
-    public void RemoveTile(int x, int y, int z) {
+    /// <param name="forced">Overrides any exceptions that would prevent you from removing a tile.</param>
+    public void RemoveTile(int x, int y, int z, bool forced = false) {
         var tile = GetTile(x, y, z);
         if (tile != null) {
             RemoveArt(x, y, z);
@@ -392,6 +401,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             }
             if (frontTile != null){ 
                 frontTile.UpdateEdges();
+            }
+            if (x == 0 && y == 0 && z == 0 && !forced) {
+                SetTile(0, 0, 0, 0, 0, 0);
             }
         }
     }
@@ -458,7 +470,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void SaveRemote()
     {
-        Debug.Log("Start saving Remote");
         cont = API.MuseumController.Instance;
         byte[] data;
         BinaryFormatter bf = new BinaryFormatter();
@@ -468,68 +479,32 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             bf.Serialize(ms, md);
             data = ms.ToArray();
         }
-        API.Museum apiM = new API.Museum();
-        apiM.Description = this.description;
-        apiM.LastModified = DateTime.Now;
-        apiM.Privacy = this.privacy;
-        Debug.Log("Start Preparing Request");
+        API.Museum museum = new API.Museum();
+        museum.Description = this.description;
+        museum.LastModified = DateTime.Now;
+        museum.Privacy = this.privacy;
+        museum.Name = this.museumName;
+        museum.OwnerName = "";
         AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
             () => {
-                Debug.Log("Started");
+                toast.Notify("Saving Museum...");
             },
             () => {
-                Debug.Log("Still loading");
-            },
-            () => {
-                Debug.Log("Loaded");
+                toast.Notify("Museum saved!");
             });
-        if (museumID == null)
-        {
-            Debug.Log("Start Request");
-            req = cont.CreateMuseum(apiM, (mus) =>
-            {
+        if (museumID == 0) {
+            req = cont.CreateMuseum(museum, (mus) => {
                 museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
-                
-            });
-        }
-        else
-        {
-            Debug.Log("Start Request");
-            apiM.MuseumID = museumID;
-            req = cont.UpdateMuseum(apiM, (mus) => {
+                loader.forceDone = true;
+            },
+            (error) => { Debug.Log(error + " Something went wrong"); });
+        } else {
+            museum.MuseumID = museumID;
+            req = cont.UpdateMuseum(museum, (mus) => {
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             });
-        }
-        //log when done
-        Debug.Log("Start Monitoring if done.");
-        
-        //Thread requestThread = new Thread(SavedMuseumThread);
-        //requestThread.Start();
-    }
-
-    private void SavedMuseumThread()
-    {
-        Debug.Log("Request started.");
-        while (true)
-        {
-            if (req.isDone)
-            {
-                Debug.Log("Request done.");
-                if (req.response.status == 200)
-                {
-                    Debug.Log("Request was 200 OK.");
-                    //TODO: alert user? -> e.g. Toast in Android
-                }
-                else
-                {
-                    //TODO: retry? throw exception? alert user?
-                }
-                break;
-            }
-            Debug.Log("Request not done, sleep and check again");
-            Thread.Sleep(200);
         }
     }
 
@@ -537,33 +512,38 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     {
         museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
-        req = cont.GetMuseum("" + museumID,
+        req = cont.GetMuseum(identifier,
             success: (museum) => {
                 description = museum.Description;
-                museumName = museum.Description;
+                museumName = museum.Name;
                 privacy = museum.Privacy;
-            }); //dit gebruikt denk ik de unityVersion check -> confirmed
-        req = cont.GetMuseumData("" + museumID,
+                museumID = Convert.ToInt32(identifier);
+            });
+        req = cont.GetMuseumData(identifier,
             success: (museum) => {
                 Stream stream = new MemoryStream(museum);
                 BinaryFormatter deserializer = new BinaryFormatter();
                 MuseumData data = (MuseumData)deserializer.Deserialize(stream);
                 Load(data);
+                museumID = Convert.ToInt32(identifier);
             });
     }
 
-    private void LoadMuseumThread()
-    {
-        Debug.Log("Request started.");
-        while (true)
-        {
-            if (req.isDone)
-            {
-                Debug.Log("Request done, copy data here.");
-                break;
-            }
-            Debug.Log("Request not done, sleep and check again");
-            Thread.Sleep(200);
-        }
+    public void DebugRegister() {
+        var controller = API.UserController.Instance;
+        controller.CreateUser("RianTest", "riangoossens@mailinator.com", "Password123/",
+            (success) => {
+                toast.Notify("Successfully registered!");
+            });
     }
+
+    public void DebugLogin() {
+        var controller = API.UserController.Instance;
+        controller.Login("RianTest", "Password123/",
+            (success) => {
+                SessionManager.Instance.LoginUser(success);
+                toast.Notify("Successfully logged in!");
+            });
+    }
+
 }

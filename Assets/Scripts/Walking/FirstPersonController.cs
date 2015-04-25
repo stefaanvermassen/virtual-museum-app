@@ -28,19 +28,21 @@ public class FirstPersonController : MonoBehaviour {
 	/// Enables or disables the secret/debug jump functionality
 	/// </summary>
 	public bool jumpEnabled = false;
-	
-	private bool stereoEnabled = false;
+
+	public enum Cam{Mono, StereoDurovis, StereoOculus};
+	private Cam cameraMode = Cam.Mono;
 
 	/// <summary>
-	/// Enables stereo camera view and disables mono camera view.
+	/// The active camera mode. Usually, this would be mono.
+	/// Separate from active VR so you can combine VR controls with different camera mode.
 	/// </summary>
-	public bool StereoEnabled {
-		get { return stereoEnabled; }
+	public Cam CameraMode {
+		get { return cameraMode; }
 		set { SwitchCameraMode (value); }
 	}
 
 	public enum VR{None, Durovis, Oculus};
-	public VR activeVR = VR.None;
+	private VR activeVR = VR.None;
 
 	/// <summary>
 	/// The active Virtual Reality mode. Usually, this would be no VR at all.
@@ -64,6 +66,11 @@ public class FirstPersonController : MonoBehaviour {
 	/// Whether or not test mode is active. This will allow the test to call the Start and Update methods manually
 	/// </summary>
 	public bool testMode = false;
+
+	/// <summary>
+	/// The museum you're walking around in. Used to check if center tile is loaded.
+	/// </summary>
+	public Museum museum;
 
 
 	float verticalVelocity = 0;
@@ -106,14 +113,6 @@ public class FirstPersonController : MonoBehaviour {
 			// Modify Horizontal/Vertical axis values depending on vertical rotation (look at ground = stop/start).
 			verticalAxis = Mathf.Cos(Mathf.Deg2Rad*verticalRotation) * 0.4f;
 			// Mouse X and Y axes are not used for rotation (head tracking sets the rotation directly with SetRotation).
-		} else if (activeVR == VR.Oculus) {
-            mouseXAxis = 0;
-            mouseYAxis = 0;
-            var center = ovrCamera.transform.FindChild("TrackingSpace").transform.FindChild("CenterEyeAnchor");
-            SetRotation(center.transform.rotation);
-            ovrCamera.transform.position = monoCamera.transform.position;
-			// TODO: Complete Oculus Rift movement and looking implementation.
-            //verticalAxis = Mathf.Cos(Mathf.Deg2Rad * verticalRotation) * 0.4f;
 		} else {
 			if (CrossPlatformInputManager.GetActiveInputMethod ().Equals (CrossPlatformInputManager.ActiveInputMethod.Touch)) {
 				// Mobile "thumbstick" controls
@@ -129,10 +128,19 @@ public class FirstPersonController : MonoBehaviour {
 		}
 
 		// Control cameras
+		float deltaTime = Time.deltaTime;
+		if(testMode) deltaTime = 1f / 60f;
+		sensitivity *= deltaTime * 60f;
 		Rotate(mouseXAxis, mouseYAxis, sensitivity);
 
 		// Only the axes are modified via the different input methods, the actual move call remains the same.
-		Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
+		if(museum != null) {
+			if(museum.GetTile(0,0,0) != null) {
+				Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
+			}
+		} else {
+			Move(horizontalAxis, verticalAxis, defaultMovementSpeed);
+		}
 
 		// Check if out of bounds
 		if (transform.position.y < -100) JumpToStart ();
@@ -155,9 +163,8 @@ public class FirstPersonController : MonoBehaviour {
 #endif
 		} else if(vrMode == VR.Oculus) {
 			// Disable joysticks
-			//mobileControlRig.overrideControls = true;
-            //mobileControlRig.EnableControlRig(false);
-            mobileControlRig.overrideControls = false;
+			mobileControlRig.overrideControls = true;
+			mobileControlRig.EnableControlRig(false);
 #if UNITY_EDITOR
 			CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
 #endif
@@ -172,41 +179,27 @@ public class FirstPersonController : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Changes the cameras depending on whether or not stereo view is enabled.
+	/// Changes the active camera. Only called by setting the property CameraMode!
 	/// </summary>
-	/// <param name="stereo">Whether or not stereo cameras should be enabled.</param>
-	public void SwitchCameraMode(bool stereo) {
-        if (!stereo) {
-            activeVR = VR.None;
-            ovrCamera.gameObject.SetActive(false);
-            monoCamera.gameObject.SetActive(true);
-            stereoCameraController.gameObject.SetActive(false);
-            mobileControlRig.overrideControls = false;
-#if MOBILE_INPUT
-            mobileControlRig.EnableControlRig(true);
-            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Touch);
-#endif
-        }else if (Application.isMobilePlatform) {
-            activeVR = VR.Durovis;
+	/// <param name="camMode">What the new camera mode should be</param>
+	void SwitchCameraMode(Cam camMode) {
+		if (ovrCamera == null) {
+			ovrCamera = FindObjectOfType<OVRCameraRig> ();
+		}
+        if (camMode == Cam.Mono) {
+			stereoCameraController.gameObject.SetActive(false);
+			ovrCamera.gameObject.SetActive(false);
+			monoCamera.gameObject.SetActive(true);
+        } else if (camMode == Cam.StereoDurovis) {
+			ovrCamera.gameObject.SetActive(false);
+			monoCamera.gameObject.SetActive(false);
             stereoCameraController.gameObject.SetActive(true);
-            ovrCamera.gameObject.SetActive(false);
-            monoCamera.gameObject.SetActive(false);
-            mobileControlRig.overrideControls = true;
-            mobileControlRig.EnableControlRig(false);
-#if UNITY_EDITOR
-            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
-#endif
-        }else if (Application.isEditor) {
-            activeVR = VR.Oculus;
+        } else if (camMode == Cam.StereoOculus) {
             stereoCameraController.gameObject.SetActive(false);
-            ovrCamera.gameObject.SetActive(true);
             monoCamera.gameObject.SetActive(false);
-            mobileControlRig.overrideControls = false;
-#if UNITY_EDITOR
-            CrossPlatformInputManager.SwitchActiveInputMethod(CrossPlatformInputManager.ActiveInputMethod.Hardware);
-#endif
+			ovrCamera.gameObject.SetActive(true);
         }
-        stereoEnabled = stereo;
+		cameraMode = camMode;
 	}
 
 	/// <summary>
@@ -218,6 +211,10 @@ public class FirstPersonController : MonoBehaviour {
 	void Rotate(float xAxis, float yAxis, float sensitivity) {
 		if (activeVR == VR.Durovis) {
 			stereoCameraController.Rotate (xAxis, yAxis, this);
+		} else if (activeVR == VR.Oculus) {
+			var center = ovrCamera.transform.FindChild("TrackingSpace").transform.FindChild("CenterEyeAnchor");
+			SetRotation(center.transform.rotation);
+			ovrCamera.transform.position = monoCamera.transform.position;
 		} else {
 			RotateHorizontal(xAxis * sensitivity);
 			RotateVertical (-yAxis * sensitivity);

@@ -35,7 +35,7 @@ namespace API
 
         private Request GetBaseArtist(string url, Action<ArrayList> success = null, Action<API_Error> error = null)
         {
-            return Get(url, (response =>
+			return Get(BASE_URL + ARTIST + url, (response =>
             {
                 var apiList = (ArrayList) response.Object["Artists"];
                 var list = new ArrayList();
