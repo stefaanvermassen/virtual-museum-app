@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using HTTP;
+using UnityEngine;
 
 namespace API
 {
 	public class CreditController: APIConnection
 	{
-		private const string ARTWORK = "credit";
+		private const string CREDIT = "credit";
 		
 		protected CreditController()
 		{
@@ -21,15 +25,31 @@ namespace API
 			get { return _Instance; }
 		}
 
-		public HTTP.Request AddCredit(Action<ArtWork> success = null, Action<API_Error> error = null)
+		public Request AddCredit(CreditModel cm, Action<Response> success = null, Action<API_Error> error = null)
 		{
-			return Post
+			return PostJsonRequest (BASE_URL + CREDIT, cm.ToHash(), success, error);
 		}
 	}
 
 	public class CreditModel
 	{
+		public CreditActions Action { get; set; }
+		public int id { get; set; }
 
+		public Hashtable ToHash()
+		{
+			var hash = new Hashtable {
+			    {"Actions", (int)Action},
+				{"ID", id}
+			};
+
+			return hash;
+		}
+		
+		public static CreditModel Create(Hashtable dict)
+		{
+			return null;
+		}
 	}
 
 	public enum CreditActions { 

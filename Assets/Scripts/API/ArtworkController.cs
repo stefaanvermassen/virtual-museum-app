@@ -181,13 +181,12 @@ namespace API
 
         public Hashtable ToHash()
         {
-            var temp = new ArrayList() {"description", "test description"};
             var dict = new Hashtable
             {
                 {"ArtWorkID", ArtWorkID.ToString()},
                 {"ArtistID", ArtistID.ToString()},
                 {"Name", Name},
-                {"Metadata", temp}
+                {"Metadata", Metadata}
             };
 
             return dict;
@@ -199,7 +198,8 @@ namespace API
             {
                 ArtWorkID = ((int) dict["ArtWorkID"]),
                 ArtistID = ((int) dict["ArtistID"]),
-                Name = (string) dict["Name"]
+                Name = (string) dict["Name"],
+				Metadata = (ArrayList) dict["Metadata"]
             };
 
             return aw;
