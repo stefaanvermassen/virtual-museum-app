@@ -76,11 +76,21 @@ public class ObjectCatalogItemController : GUIControl
 	private int[] position;
 	private int[] objectRotation = {0,180,0};
 	private int[] frameRotation = {270,180,0};
+	private int[] floorRotation = {90,180,0};
+	private int[] ceilingRotation = {90,0,0};
+	private int[] wallRotation = {0,180,0};
+
 	private int[] objectPosition = {50,0,-30} ;
 	private int[] framePosition = {50,50,-30} ;
+	private int[] ceilingPosition = {10,90,-150} ;
+	private int[] wallPosition = {83,5,-5} ;
+	private int[] floorPosition = {90,90,-5} ;
 
 	private float objectScale = 100;
 	private float frameScale = 80;
+	private float floorScale = 80;
+	private float ceilingScale = 80;
+	private float wallScale = 60;
 	private void ConfigLayout(ObjectCatalogController.CatalogType type){
 		switch (type) {
 		case ObjectCatalogController.CatalogType.OBJECT:
@@ -94,19 +104,19 @@ public class ObjectCatalogItemController : GUIControl
 			position=framePosition;
 			break;
 		case ObjectCatalogController.CatalogType.WALL:
-			rotation=  frameRotation;
-			scale=frameScale;
-			position=framePosition;
+			rotation=  wallRotation;
+			scale=wallScale;
+			position=wallPosition;
 			break;
 		case ObjectCatalogController.CatalogType.FLOOR:
-			rotation=  frameRotation;
-			scale=frameScale;
-			position=framePosition;
+			rotation=  floorRotation;
+			scale=floorScale;
+			position=floorPosition;
 			break;
 		case ObjectCatalogController.CatalogType.CEILING:
-			rotation=  frameRotation;
-			scale=frameScale;
-			position=framePosition;
+			rotation=  ceilingRotation;
+			scale=ceilingScale;
+			position=ceilingPosition;
 			break;
 		default:
 			break;

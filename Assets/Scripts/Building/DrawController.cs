@@ -144,13 +144,13 @@ public class DrawController : MonoBehaviour {
                     Move(dragOffsetWorld);
                     break;
                 case Tools.Rotating:
-                    Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Display.main.renderingHeight * 180, frameOffsetScreen.x / Display.main.renderingWidth * 180, 0));
+                    Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Screen.height * 180, frameOffsetScreen.x / Screen.width * 180, 0));
                     break;
                 case Tools.Erasing:
                     Erase(dragPointWorld);
                     break;
                 case Tools.Scaling:
-                    Scale(Mathf.Pow(2, -frameOffsetScreen.y / Display.main.renderingHeight));
+                    Scale(Mathf.Pow(2, -frameOffsetScreen.y / Screen.height));
                     break;
                 case Tools.PlacingObject:
                     PlaceObject(dragPointWorld, anchorPointWorld);
@@ -183,7 +183,7 @@ public class DrawController : MonoBehaviour {
             float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
             float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
-            Scale(Mathf.Pow(2, deltaMagnitudeDiff*2 / Display.main.renderingHeight));
+            Scale(Mathf.Pow(2, deltaMagnitudeDiff*2 / Screen.height));
         }
     }
 
@@ -220,7 +220,7 @@ public class DrawController : MonoBehaviour {
             return;
         }
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
-        var scale = 0.5f + 4*diff / Display.main.renderingWidth;
+        var scale = 0.5f + 4*diff / Screen.width;
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale,currentFrame);
     }
 }

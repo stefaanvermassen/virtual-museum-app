@@ -113,7 +113,6 @@ public class Art : Savable<Art, ArtData>
 		Debug.Log("Start saving Remote");
 		API.ArtworkController cont = API.ArtworkController.Instance;
 		//TODO make sure a user is logged in
-		//TODO: use async loader
 
 		HTTP.Request req = UploadImage(cont);
 		Debug.Log (req.isDone);
@@ -140,7 +139,7 @@ public class Art : Savable<Art, ArtData>
                 ID = art.ArtWorkID;
                 name = art.Name;
                 },
-		error: (error) => { throw new UploadFailedException ("Failed to download artwork info."); }
+		error: (error) => { throw new DownloadFailedException ("Failed to download artwork info."); }
         );
 
 		HTTP.Request req = ArtworkController.Instance.GetArtworkData(
@@ -153,7 +152,7 @@ public class Art : Savable<Art, ArtData>
 			image.LoadImage(imageFile);
 
             },
-		error: (error) => { throw new UploadFailedException ("Failed to download artwork data."); }
+		error: (error) => { throw new DownloadFailedException ("Failed to download artwork data: "+error); }
         ); 
 		//loading an image can take a long time, make it possible to check this and report to user
 		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(

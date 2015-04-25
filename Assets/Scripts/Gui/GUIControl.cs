@@ -164,7 +164,10 @@ public class GUIControl : MonoBehaviour
 
 	public GUIControl GetChild (int index)
 	{
-		return this.transform.GetChild (index).GetComponent<GUIControl> ();
+		if(transform.childCount>index){
+			return this.transform.GetChild (index).GetComponent<GUIControl> ();
+		}
+		return null;
 	}
 
 	//on initialisation sometimes a gameobject is scaled

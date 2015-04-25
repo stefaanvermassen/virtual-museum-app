@@ -8,7 +8,9 @@ public class ArtCatalog : MonoBehaviour
 {
 
 
-
+	void Start(){
+		Catalog.RefreshArtWork ();
+	}
 
     //show new art panel in catalog
 	public void AddNewArtToCatalog (GUIControl content)
