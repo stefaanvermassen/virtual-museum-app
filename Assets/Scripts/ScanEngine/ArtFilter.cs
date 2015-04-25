@@ -33,8 +33,8 @@ namespace Scanning
 
         string Scannable.GetUniqueString()
         {
-            
-            String s = "artist:" + ArtistName + ":tags:";
+
+            String s = "virtualmuseum://filter/artist:" + ArtistName + ":tags:";
             foreach (string tag in Tags)
             {
                 s += tag + ",";

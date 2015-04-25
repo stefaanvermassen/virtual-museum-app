@@ -32,22 +32,17 @@ public class QRGenerator : MonoBehaviour {
 
         Texture2D qrTexture = new Texture2D(256, 256);
         Debug.Log("number of pixels in array:" + QRCodeImage.Length);
-        qrTexture.SetPixels32(0, 0, 256, 256, QRCodeImage);
+        qrTexture.SetPixels32(QRCodeImage);
+        Color32[] pixels = qrTexture.GetPixels32();
 
         view.image = qrTexture;
 
         // Print the QRCode
-        /*string s = "";
-        int i = 0;
-        foreach (Color32 c in QRCodeImage)
+        foreach (Color32 c in pixels)
         {
-            s+=c;
-            if (i++ % 256 == 0)
-            {
-                Debug.Log(s);
-                s = "";
-            }
-        }*/
+            if (c.r != 255 || c.g != 255 || c.b != 255)
+                Debug.Log("pixels: non white pixel: " + c);
+        }
 
         // Test if the QRView works
         /*
