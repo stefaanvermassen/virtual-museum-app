@@ -37,7 +37,7 @@ namespace API
             {
                 if (success != null)
                 {
-                    success(Museum.FromDictionary(response.Object));
+                    success(Museum.Create(response.Object));
                 }
             }), error);
         }
@@ -57,7 +57,7 @@ namespace API
 				var list = new ArrayList();
 				foreach (Hashtable val in apiList)
 				{
-					list.Add(Museum.FromDictionary(val));
+					list.Add(Museum.Create(val));
 				}
 				if (success != null)
 				{
@@ -83,7 +83,7 @@ namespace API
 				var list = new ArrayList();
 				foreach (Hashtable val in apiList)
 				{
-					list.Add(Museum.FromDictionary(val));
+					list.Add(Museum.Create(val));
 				}
 				if (success != null)
 				{
@@ -106,13 +106,13 @@ namespace API
         /// <param name="error">Error. Handle errors</param>
         public Request CreateMuseum(Museum museum, Action<Museum> success = null, Action<API_Error> error = null)
         {
-            var form = museum.ToDictionary();
+            var form = museum.ToHash();
 
             return Post(BASE_URL + MUSEUM, form, (response =>
             {
                 if (success != null)
                 {
-                    var m = Museum.FromDictionary(response.Object);
+                    var m = Museum.Create(response.Object);
                     success(m);
                 }
             }), error, true);
@@ -131,13 +131,13 @@ namespace API
         /// <param name="error">Error.</param>
         public Request UpdateMuseum(Museum museum, Action<Museum> success = null, Action<API_Error> error = null)
         {
-            var form = museum.ToDictionary();
+            var form = museum.ToHash();
 
             return Put(BASE_URL + MUSEUM + "/" + museum.MuseumID, form, (response =>
             {
                 if (success != null)
                 {
-                    var m = Museum.FromDictionary(response.Object);
+                    var m = Museum.Create(response.Object);
                     success(m);
                 }
             }), error, true);
@@ -192,7 +192,7 @@ namespace API
             {
                 if (success != null)
                 {
-                    var m = Museum.FromDictionary(response.Object);
+                    var m = Museum.Create(response.Object);
                     success(m);
                 }
             }), error);
@@ -211,9 +211,9 @@ namespace API
         public string Name { get; set; }
         public string OwnerName { get; set; }
 
-        public Dictionary<string, string> ToDictionary()
+        public Hashtable ToHash()
         {
-            var dict = new Dictionary<string, string>
+            var dict = new Hashtable()
             {
                 {"MuseumID", MuseumID.ToString()},
                 {"Description", Description},
@@ -226,7 +226,7 @@ namespace API
             return dict;
         }
 
-        public static Museum FromDictionary(Hashtable dict)
+        public static Museum Create(Hashtable dict)
         {
             var m = new Museum
             {
