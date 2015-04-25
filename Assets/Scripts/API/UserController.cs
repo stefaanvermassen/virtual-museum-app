@@ -43,7 +43,7 @@ namespace API
                 new[] {"password", username, password},
                 (response =>
                 {
-                    var token = Token.CreateFromDictionary(response.Object);
+                    var token = Token.Create(response.Object);
                     Debug.Log(token.AccessToken());
                     var user = new User((string) response.Object["userName"], token);
                     if (succes != null)
