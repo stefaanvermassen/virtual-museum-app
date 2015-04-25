@@ -151,6 +151,7 @@ public class Art : Savable<Art, ArtData>
 			image.LoadImage(imageFile);
 
             },
+		//test
 		error: (error) => { throw new DownloadFailedException ("Failed to download artwork data: "+error); }
         ); 
 		//loading an image can take a long time, make it possible to check this and report to user
