@@ -21,12 +21,21 @@ public class GUIControl : MonoBehaviour
 		FileBrowser
 	}
 
-	void Start () {
+	void Start ()
+	{
+		SaveDynamicChild ();
+	}
+
+	public void SaveDynamicChild ()
+	{
 		//dynamic child is edited in Unity editor but not shown
 		if (dynamicChild != null) {
-			//detach dynmic child, because else it will be removed if children are removed
-			transform.DetachChildren();
-			dynamicChild.Close ();
+			if (GetChild (0)!=null && GetChild (0).Equals (dynamicChild)) {
+				//detach dynmic child, because else it will be removed if children are removed
+				transform.DetachChildren ();
+				dynamicChild.Close ();
+			}
+		
 		}
 	}
 
@@ -46,7 +55,8 @@ public class GUIControl : MonoBehaviour
 	/// <summary>
 	/// Flips the close open.
 	/// </summary>
-	public void FlipCloseOpen(){
+	public void FlipCloseOpen ()
+	{
 		if (IsOpen ()) {
 			Close ();
 		} else {
@@ -56,18 +66,17 @@ public class GUIControl : MonoBehaviour
 	//add gui control to children
 	public void Add (GUIControl control)
 	{
-		control.gameObject.transform.SetParent (this.gameObject.transform,false);
+		control.gameObject.transform.SetParent (this.gameObject.transform, false);
 		//when an transform is added to it's parent it is scaled, for the sake of layout, performance and graphics all GUIControls are scale 1
 		control.Normalise ();
 	}
 
-	public GUIControl AddDynamicChild(){
+	public GUIControl AddDynamicChild ()
+	{
 		if (dynamicChild != null) {
 			GUIControl newDynamicChild = GUIControl.Init (dynamicChild);
-
-			newDynamicChild.Open();
+			newDynamicChild.Open ();
 			this.Add (newDynamicChild);
-
 			return newDynamicChild;
 		}
 		return null;
@@ -92,25 +101,26 @@ public class GUIControl : MonoBehaviour
 	{
 		//activate all scripts
 		foreach (MonoBehaviour script in instance.GetComponents<MonoBehaviour>()) {
-			if(script !=null)script.enabled = true;
+			if (script != null)
+				script.enabled = true;
 		}
 		//activate all children
 		for (int i=0; i<instance.childCount; i++) {
-			ActivateAllChildScripts(instance.GetChild (i));
+			ActivateAllChildScripts (instance.GetChild (i));
 		}
 	}
 
 	//show guicontrol on top of all siblings
 	public void OnTop ()
 	{
-		this.gameObject.transform.SetSiblingIndex (this.gameObject.transform.parent.childCount-1);
+		this.gameObject.transform.SetSiblingIndex (this.gameObject.transform.parent.childCount - 1);
 	}
 
 	public void SetRelativePosition (float x, float y)
 	{
 		RectTransform rectTransform = GetComponent<RectTransform> ();
 		if (rectTransform == null) {
-			rectTransform=this.gameObject.AddComponent<RectTransform>();
+			rectTransform = this.gameObject.AddComponent<RectTransform> ();
 		}
 		rectTransform.anchoredPosition = new Vector2 (x, y);
 	}
@@ -119,7 +129,7 @@ public class GUIControl : MonoBehaviour
 	{
 		RectTransform rectTransform = GetComponent<RectTransform> ();
 		if (rectTransform == null) {
-			rectTransform=this.gameObject.AddComponent<RectTransform>();
+			rectTransform = this.gameObject.AddComponent<RectTransform> ();
 		}
 		return rectTransform.anchoredPosition.x;
 	}
@@ -128,7 +138,7 @@ public class GUIControl : MonoBehaviour
 	{
 		RectTransform rectTransform = GetComponent<RectTransform> ();
 		if (rectTransform == null) {
-			rectTransform=this.gameObject.AddComponent<RectTransform>();
+			rectTransform = this.gameObject.AddComponent<RectTransform> ();
 		}
 		return rectTransform.anchoredPosition.y;
 	}
@@ -144,9 +154,11 @@ public class GUIControl : MonoBehaviour
 
 	public void RemoveAllChildren ()
 	{
+		//sometimes a GUIControl is not yet opened, thus the dynamic child has to be loaded before clearing children
+		SaveDynamicChild ();
 		int children = this.transform.childCount;
 		for (int i = 0; i < children; i++) {
-			GameObject.DestroyImmediate(this.transform.GetChild (0).gameObject);
+			GameObject.DestroyImmediate (this.transform.GetChild (0).gameObject);
 		}
 	}
 
@@ -160,7 +172,7 @@ public class GUIControl : MonoBehaviour
 	public void Normalise ()
 	{
 		transform.localScale = Vector3.one;
-        transform.localRotation = Quaternion.Euler(Vector3.zero);
+		transform.localRotation = Quaternion.Euler (Vector3.zero);
 	}
 
 	public bool IsOpen ()
