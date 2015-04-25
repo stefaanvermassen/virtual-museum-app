@@ -4,6 +4,8 @@ using System;
 using System.Threading;
 using ZXing;
 using ZXing.QrCode;
+using System.IO;
+using System.Runtime.InteropServices;
 
 
 namespace Scanning
@@ -24,6 +26,8 @@ namespace Scanning
         public QRScanner()
         {
             LastResult = "default";
+            Height = 256;
+            Width = 256;
         }
 
         public ScanIdentity MakeScannable(ScanIdentity scanId, Scannable scannable)
@@ -42,7 +46,15 @@ namespace Scanning
                 }
             };
 
+            Debug.Log("Generate QR");
             id.Image = writer.Write(scannable.GetUniqueString());
+            //Color32[] image = writer.Write("pleasegivemeQR");
+            foreach (Color32 c in id.Image)
+            {
+                if (c.r != 255 || c.g != 255 || c.b != 255)
+                    Debug.Log("non white pixel: " + c);
+            }
+
             return id;
         }
 
