@@ -37,7 +37,7 @@ public class LoginView : MonoBehaviour
         Request response = userController.Login(username, password, (success) =>
         {
             SessionManager.Instance.LoginUser(success);
-            toast.Notify("Successfully registered!");
+            toast.Notify("Login successful!");
             panel.SetActive(false);
         }, (error) =>
         {
