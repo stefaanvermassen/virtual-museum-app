@@ -45,7 +45,7 @@ public class DrawController : MonoBehaviour {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
         wallLayerMask = (1 << LayerMask.NameToLayer("Walls"));
 		//load art info & thumbnail
-		Catalog.RefreshArtWork ();
+		Catalog.Refresh();
 	}
 
     /// <summary>

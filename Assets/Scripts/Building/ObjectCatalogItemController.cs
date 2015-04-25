@@ -13,16 +13,15 @@ public class ObjectCatalogItemController : GUIControl
 	public void init (int i, Catalog.CatalogType type)
 	{
 		index = i; //important because addlistener would use i by reference instead of by value
-		OnSelect (index, type);
-		var model = GetGameObject (index, type);
-		ConfigLayout (type);
+		ConfigLayout (index, type);
+
 
 
 
 	}
 	// on click the index of the chosen object is saved and the catalog closed
 
-	private void OnSelect (int index, Catalog.CatalogType type)
+	private void ConfigLayout (int index, Catalog.CatalogType type)
 	{
 		var model = GetGameObject (index, type);
 		switch (type) {
@@ -124,38 +123,6 @@ public class ObjectCatalogItemController : GUIControl
 	private float ceilingScale = 80;
 	private float wallScale = 60;
 
-	private void ConfigLayout (Catalog.CatalogType type)
-	{
-		switch (type) {
-		case Catalog.CatalogType.OBJECT:
-			rotation = objectRotation;
-			scale = objectScale;
-			position = objectPosition;
-			break;
-		case Catalog.CatalogType.FRAME:
-			rotation = frameRotation;
-			scale = frameScale;
-			position = framePosition;
-			break;
-		case Catalog.CatalogType.WALL:
-			rotation = wallRotation;
-			scale = wallScale;
-			position = wallPosition;
-			break;
-		case Catalog.CatalogType.FLOOR:
-			rotation = floorRotation;
-			scale = floorScale;
-			position = floorPosition;
-			break;
-		case Catalog.CatalogType.CEILING:
-			rotation = ceilingRotation;
-			scale = ceilingScale;
-			position = ceilingPosition;
-			break;
-		default:
-			break;
-		}
-	}
 
 	private GameObject GetGameObject (int index, Catalog.CatalogType type)
 	{
