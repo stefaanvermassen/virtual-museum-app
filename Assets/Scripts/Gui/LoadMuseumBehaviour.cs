@@ -56,14 +56,10 @@ public class LoadMuseumBehaviour : MonoBehaviour {
                 var closedM = m;
                 button.onClick.AddListener(() => {
                     museum.LoadRemote(""+closedM.MuseumID);
-                    GetComponent<GUIControl>().close();
+                    GetComponent<GUIControl>().Close();
                 });
             }
         });
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

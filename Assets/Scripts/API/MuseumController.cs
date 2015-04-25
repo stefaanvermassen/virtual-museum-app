@@ -37,7 +37,7 @@ namespace API
             {
                 if (success != null)
                 {
-                    success(Museum.FromDictionary(response.Object));
+                    success(Museum.Create(response.Object));
                 }
             }), error);
         }
@@ -57,7 +57,7 @@ namespace API
 				var list = new ArrayList();
 				foreach (Hashtable val in apiList)
 				{
-					list.Add(Museum.FromDictionary(val));
+					list.Add(Museum.Create(val));
 				}
 				if (success != null)
 				{
@@ -66,6 +66,31 @@ namespace API
 			}), error);
 		}
 
+		
+		/// <summary>
+		///     Lists the museums.
+		/// </summary>
+		/// <returns>The museums.</returns>
+		/// <param name="success">Success.</param>
+		/// <param name="error">Error.</param>
+		public Request GetMuseums(MuseumSearchModel msm = null, Action<ArrayList> success = null, Action<API_Error> error = null)
+		{
+			msm = msm != null ? msm : new MuseumSearchModel ();
+			return Get (BASE_URL + MUSEUM + msm.QueryString() ,
+			          (response =>
+		    {
+				var apiList = (ArrayList) response.Object["Museums"];
+				var list = new ArrayList();
+				foreach (Hashtable val in apiList)
+				{
+					list.Add(Museum.Create(val));
+				}
+				if (success != null)
+				{
+					success(list);
+				}
+			}), error);
+		}
         /// <summary>
         ///     Creates the museum, should be the first task when creating a museum
         /// </summary>
@@ -81,13 +106,13 @@ namespace API
         /// <param name="error">Error. Handle errors</param>
         public Request CreateMuseum(Museum museum, Action<Museum> success = null, Action<API_Error> error = null)
         {
-            var form = museum.ToDictionary();
+            var form = museum.ToHash();
 
             return Post(BASE_URL + MUSEUM, form, (response =>
             {
                 if (success != null)
                 {
-                    var m = Museum.FromDictionary(response.Object);
+                    var m = Museum.Create(response.Object);
                     success(m);
                 }
             }), error, true);
@@ -106,13 +131,13 @@ namespace API
         /// <param name="error">Error.</param>
         public Request UpdateMuseum(Museum museum, Action<Museum> success = null, Action<API_Error> error = null)
         {
-            var form = museum.ToDictionary();
+            var form = museum.ToHash();
 
             return Put(BASE_URL + MUSEUM + "/" + museum.MuseumID, form, (response =>
             {
                 if (success != null)
                 {
-                    var m = Museum.FromDictionary(response.Object);
+                    var m = Museum.Create(response.Object);
                     success(m);
                 }
             }), error, true);
@@ -135,18 +160,6 @@ namespace API
             var form = new WWWForm();
             form.AddBinaryData("museum", museum, name, "museum/binary");
             return PostForm(BASE_URL + MUSEUM + "/" + id, form, success, error, true);
-        }
-
-        /// <summary>
-        ///     Lists the museums.
-        /// </summary>
-        /// <returns>The museums.</returns>
-        /// <param name="success">Success.</param>
-        /// <param name="error">Error.</param>
-        public Request ListMuseums(Action<Response> success = null, Action<API_Error> error = null)
-        {
-            throw new NotImplementedException();
-            return null;
         }
 
         /// <summary>
@@ -179,7 +192,7 @@ namespace API
             {
                 if (success != null)
                 {
-                    var m = Museum.FromDictionary(response.Object);
+                    var m = Museum.Create(response.Object);
                     success(m);
                 }
             }), error);
@@ -198,9 +211,9 @@ namespace API
         public string Name { get; set; }
         public string OwnerName { get; set; }
 
-        public Dictionary<string, string> ToDictionary()
+        public Hashtable ToHash()
         {
-            var dict = new Dictionary<string, string>
+            var dict = new Hashtable()
             {
                 {"MuseumID", MuseumID.ToString()},
                 {"Description", Description},
@@ -213,7 +226,7 @@ namespace API
             return dict;
         }
 
-        public static Museum FromDictionary(Hashtable dict)
+        public static Museum Create(Hashtable dict)
         {
             var m = new Museum
             {
@@ -234,4 +247,40 @@ namespace API
         PRIVATE = 0,
         PUBLIC = 1
     }
+
+	public class MuseumSearchModel
+	{
+		/// <summary>
+		/// Substring of the description
+		/// </summary>
+		public string Description { get; set; }
+		
+		/// <summary>
+		/// Substring of the ownername that needs to be found
+		/// </summary>
+		public string OwnerName { get; set; }
+		
+		/// <summary>
+		/// Substring of the museum name
+		/// </summary>
+		public string Name { get; set; }
+		
+		/// <summary>
+		/// The rating of the museums
+		/// </summary>
+		public int Rating { get; set; }
+
+		public MuseumSearchModel() 
+		{
+			Description = "";
+			OwnerName = "";
+			Name = "";
+			Rating = 0;
+		}
+
+		public string QueryString()
+		{
+			return "?Description=" + Description + "&OwnerName=" + OwnerName + "&Name=" + Name + "&Rating=" + Rating.ToString ();
+		}
+	}
 }

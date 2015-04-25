@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Scanning
 {
@@ -10,7 +11,8 @@ namespace Scanning
 
         public ArtFilter()
         {
-
+            Tags = new List<string>();
+            Genres = new List<string>();
         }
 
         public string ArtistName { get; set; }
@@ -31,7 +33,8 @@ namespace Scanning
 
         string Scannable.GetUniqueString()
         {
-            String s = "artist:" + ArtistName + ":tags:";
+
+            String s = "virtualmuseum://filter/artist:" + ArtistName + ":tags:";
             foreach (string tag in Tags)
             {
                 s += tag + ",";
@@ -43,6 +46,7 @@ namespace Scanning
                 s += genre + ",";
             }
             s = s.Substring(0, s.Length - 1);
+            Debug.Log("Scannable string generated succesfully");
             return s;
         }
     }
