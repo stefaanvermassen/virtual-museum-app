@@ -88,7 +88,6 @@ public class FileBrowser: GUIControl
 
     private void UpdateFileAndFolder ()
 	{
-        WWW.UnEscapeURL(selectedFilePath);
 		if (directoryLabel == null) {
 			Debug.Log ("DirectoryLabel is null.");
 		} else if (currentDirectory == null) {
