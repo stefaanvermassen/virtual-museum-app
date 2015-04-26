@@ -34,7 +34,18 @@ namespace API
 				}
 			}, error);
 		}
+
+		public Request GetUserCredits(Action<UserInfo> success = null, Action<API_Error> error = null)
+		{
+			return Get (BASE_URL + CREDIT, (response) => {
+				if (success != null)
+				{
+					success(UserInfo.Create(response.Object));
+				}
+			}, error);
+		}
 	}
+
 
 	public class CreditModel
 	{
