@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 public class FileBrowser extends UnityPlayerActivity
 {
-	private String path = "path";
+	private String path = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
