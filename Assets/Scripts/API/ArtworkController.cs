@@ -43,7 +43,7 @@ namespace API
             {
                 if (success != null)
                 {
-                    success(ArtWork.FromDictionary(response.Object));
+                    success(ArtWork.Create(response.Object));
                 }
             }), error);
         }
@@ -104,7 +104,7 @@ namespace API
                     var list = new ArrayList();
                     foreach (Hashtable val in apiList)
                     {
-                        list.Add(ArtWork.FromDictionary(val));
+                        list.Add(ArtWork.Create(val));
                     }
                     success(list);
                 }
@@ -118,9 +118,9 @@ namespace API
         /// <param name="id">ArtWork Identifier. The ArtWorkID for which we request the data</param>
         /// <param name="success">Success. Returns a byte[]</param>
         /// <param name="error">Error.</param>
-        public Request GetArtworkData(string id, Action<byte[]> success = null, Action<API_Error> error = null)
+        public Request GetArtworkData(string id, Action<byte[]> success = null, Action<API_Error> error = null, ArtworkSizes size = ArtworkSizes.MOBILE_SMALL)
         {
-            return Get(BASE_URL + ARTWORK + "/" + id + "/data", (response =>
+            return Get(BASE_URL + ARTWORK + "/" + id + "/data?size=" + ((int)size).ToString(), (response =>
             {
                 if (success != null)
                 {
@@ -146,12 +146,10 @@ namespace API
             form.AddBinaryData(imageLocation, image, name, MIME + mime);
             return PostForm(BASE_URL + ARTWORK, form, (response =>
             {
-                if (success != null)
-                {
-                    var respArray = (ArrayList) response.Object["ArtWorks"];
-                    var artWork = ArtWork.FromDictionary((Hashtable) respArray[0]);
-                    success(artWork);
-                }
+                if (success == null) return;
+                var respArray = (ArrayList) response.Object["ArtWorks"];
+                var artWork = ArtWork.Create((Hashtable) respArray[0]);
+                success(artWork);
             }), error, true);
         }
 
@@ -164,9 +162,9 @@ namespace API
         /// <param name="error">Error.</param>
         public Request UpdateArtWork(ArtWork artwork, Action<Response> success = null, Action<API_Error> error = null)
         {
-            var form = artwork.ToDictionary();
+            var form = artwork.ToHash();
 
-            return Put(BASE_URL + ARTWORK + "/" + artwork.ArtWorkID, form, success, error);
+            return PutJsonRequest(BASE_URL + ARTWORK + "/" + artwork.ArtWorkID, form, success, error);
         }
     }
 
@@ -179,20 +177,23 @@ namespace API
         public int ArtistID;
         //make sure string is not null
         public string Name = "";
+        public ArrayList Metadata;
 
-        public Dictionary<string, string> ToDictionary()
+        public Hashtable ToHash()
         {
-            var dict = new Dictionary<string, string>
+            var temp = new ArrayList() {"description", "test description"};
+            var dict = new Hashtable
             {
                 {"ArtWorkID", ArtWorkID.ToString()},
                 {"ArtistID", ArtistID.ToString()},
-                {"Name", Name}
+                {"Name", Name},
+                {"Metadata", temp}
             };
 
             return dict;
         }
 
-        public static ArtWork FromDictionary(Hashtable dict)
+        public static ArtWork Create(Hashtable dict)
         {
             var aw = new ArtWork
             {
@@ -203,5 +204,30 @@ namespace API
 
             return aw;
         }
+		public static ArtWork FromArt (Art art)
+		{
+			return new ArtWork ()
+			{
+				ArtWorkID = art.ID,
+				ArtistID = art.owner.ID,
+				Name = art.name
+			};
+		}
+		public static Art ToArt (ArtWork artwork)
+		{
+			Art art = new Art ();
+			art.ID = artwork.ArtWorkID;
+			art.owner.ID = artwork.ArtistID;
+			art.name = artwork.Name;
+			return art;
+		}
     }
+
+	public enum ArtworkSizes {
+		MOBILE_SMALL = 1,
+		DESKTOP_SMALL = 2,
+		MOBILE_LARGE = 3,
+		DESKTOP_LARGE = 4,
+	    ORIGINAL = 5
+	}
 }

@@ -8,7 +8,8 @@ public class MuseumTests {
     private static int TEST_CASES = 10;
     private static int SEED = 123;
 
-    public MuseumTests() {
+    [SetUp]
+    public void Init() {
         Random.seed = SEED;
     }
 
@@ -26,7 +27,8 @@ public class MuseumTests {
         return s;
     }
 
-    void DestroyEverything() {
+    [TearDown]
+    public void DestroyEverything() {
         var objects = GameObject.FindObjectsOfType<GameObject>();
         foreach (var o in objects) {
             GameObject.DestroyImmediate(o);
@@ -42,7 +44,6 @@ public class MuseumTests {
             museum.museumName = name;
             Assert.AreEqual(museum.museumName, name, "Name should be correctly set to "+name+" but it's "+museum.museumName);
         }
-        DestroyEverything();
     }
 
     [Test]
@@ -54,7 +55,6 @@ public class MuseumTests {
             museum.description = description;
             Assert.AreEqual(museum.description, description, "Description should be correctly set to " + description + " but it's " + museum.description);
         }
-        DestroyEverything();
     }
 
     [Test]
@@ -77,7 +77,6 @@ public class MuseumTests {
             Assert.AreEqual(tile.ceilingStyle, ceilingStyle, "Ceilingstyle not correctly set");
             museum.Clear();
         }
-        DestroyEverything();
     }
 
     [Test]
@@ -88,14 +87,14 @@ public class MuseumTests {
             int x = RandomInt(-100, 100);
             int y = 0;
             int z = RandomInt(-100, 100);
-            museum.SetTile(0, 0, 0, x, y, z);
+            museum.SetTile(1, 1, 1, x, y, z);
             var tile = museum.GetTile(x, y, z);
             Assert.IsTrue(tile.left && tile.right && tile.front && tile.back, "Tile should have no neighbours");
             museum.Clear();
         }
-        DestroyEverything();
     }
 
+    [Test]
     public void PlacingAndRemovingTiles_PlacingNeighbours_WallsDisappear() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
@@ -103,21 +102,21 @@ public class MuseumTests {
             int x = RandomInt(-100, 100);
             int y = 0;
             int z = RandomInt(-100, 100);
-            museum.SetTile(0, 0, 0, x, y, z);
+            museum.SetTile(1, 1, 1, x, y, z);
             var tile = museum.GetTile(x, y, z);
-            museum.SetTile(0, 0, 0, x-1, y, z);
+            museum.SetTile(1, 1, 1, x-1, y, z);
             Assert.IsFalse(tile.left, "Tile has left neighbour now");
-            museum.SetTile(0, 0, 0, x+1, y, z);
+            museum.SetTile(1, 1, 1, x+1, y, z);
             Assert.IsFalse(tile.right, "Tile has right neighbour now");
-            museum.SetTile(0, 0, 0, x, y, z-1);
+            museum.SetTile(1, 1, 1, x, y, z-1);
             Assert.IsFalse(tile.back, "Tile has back neighbour now");
-            museum.SetTile(0, 0, 0, x, y, z+1);
+            museum.SetTile(1, 1, 1, x, y, z+1);
             Assert.IsFalse(tile.front, "Tile has front neighbour now");
             museum.Clear();
         }
-        DestroyEverything();
     }
 
+    [Test]
     public void PlacingAndRemovingTiles_RemoveTile_TileIsGone() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
@@ -125,32 +124,48 @@ public class MuseumTests {
             int x = RandomInt(-100, 100);
             int y = 0;
             int z = RandomInt(-100, 100);
-            museum.SetTile(0, 0, 0, x, y, z);
+            museum.SetTile(1, 1, 1, x, y, z);
             museum.RemoveTile(x, y, z);
             Assert.IsFalse(museum.ContainsTile(x, y, z), "Tile should be erased");
             museum.Clear();
         }
-        DestroyEverything();
     }
 
+    [Test]
     public void PlacingAndRemovingTiles_RemoveTileWhereObjectIsLocated_ObjectRemoved() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(0, 0, 0, 10, 0, 15);
+        museum.SetTile(1, 1, 1, 10, 0, 15);
         museum.AddObject(0, 10, 0, 15, 0);
         museum.RemoveTile(10, 0, 15);
         Assert.IsFalse(museum.ContainsObject(10, 0, 15), "Object should be gone");
-        DestroyEverything();
     }
 
+    [Test]
     public void PlacingAndRemovingTiles_RemoveTileWhereArtIsLocated_ArtRemoved() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(0, 0, 0, 10, 0, 15);
-        museum.AddArt(0, new Vector3(10, 0, 15), new Vector3(0, 0, 0), 1);
+        museum.SetTile(1, 1, 1, 10, 0, 15);
+        museum.AddArt(0, new Vector3(10, 0, 15), new Vector3(1, 1, 1), 1);
         museum.RemoveTile(10, 0, 15);
         Assert.IsFalse(museum.ContainsArt(10, 0, 15), "Art should be gone");
-        DestroyEverything();
+    }
+
+    [Test]
+    public void PlacingAndRemovingTiles_DoNothing_CenterTileAvailable() {
+        var ob = new GameObject();
+        var museum = ob.AddComponent<Museum>();
+        museum.Start();
+        Assert.IsTrue(museum.ContainsTile(0,0,0), "Center tile should be initialized");
+    }
+
+    [Test]
+    public void PlacingAndRemovingTiles_RemoveTileAtCenter_TileNotRemoved() {
+        var ob = new GameObject();
+        var museum = ob.AddComponent<Museum>();
+        museum.Start();
+        museum.RemoveTile(0, 0, 0);
+        Assert.IsTrue(museum.ContainsTile(0, 0, 0), "Center tile should not be removed");
     }
 
     [Test]
@@ -160,93 +175,86 @@ public class MuseumTests {
         Assert.IsFalse(museum.ContainsObject(10, 0, 15), "Museum should not contain this object");
         museum.AddObject(0, 10, 0, 15, 0);
         Assert.IsFalse(museum.ContainsObject(10, 0, 15), "Museum should still not contain this object, because there is no tile");
-        DestroyEverything();
     }
 
     [Test]
     public void AddingAndRemovingObjects_AddObjectOnTile_CorrectObjectCreated() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(0, 0, 0, 10, 0, 15);
+        museum.SetTile(1, 1, 1, 10, 0, 15);
         museum.AddObject(0, 10, 0, 15, 1.5f);
         Assert.IsTrue(museum.ContainsObject(10, 0, 15), "Museum should contain this object");
         var o = museum.GetObject(10, 0, 15);
         Assert.AreEqual(o.angle, 1.5f, "Angle not correctly set");
-        DestroyEverything();
     }
 
     [Test]
     public void AddingAndRemovingObjects_RemoveObject_ObjectRemoved() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(0, 0, 0, 10, 0, 15);
+        museum.SetTile(1, 1, 1, 10, 0, 15);
         museum.AddObject(0, 10, 0, 15, 0);
         museum.RemoveObject(10, 0, 15);
         Assert.IsFalse(museum.ContainsObject(10, 0, 15), "Object should be erased");
-        DestroyEverything();
     }
 
     [Test]
     public void AddingAndRemovingArt_AddArtWithoutTile_ArtNotAdded() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.AddArt(0, new Vector3(10, 0, 15), new Vector3(0, 0, 0), 1);
+        museum.AddArt(0, new Vector3(10, 0, 15), new Vector3(0,0,0), 1);
         Assert.IsFalse(museum.ContainsArt(10, 0, 15), "Art should not be placed");
-        DestroyEverything();
     }
 
     [Test]
     public void AddingAndRemovingArt_AddArtOnTile_ArtAdded() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(0, 0, 0, 10, 0, 15);
-        museum.AddArt(0, new Vector3(10, 0.5f, 14.5f), new Vector3(0, 0, 0), 1);
+        museum.SetTile(1, 1, 1, 10, 0, 15);
+        museum.AddArt(0, new Vector3(10, 0.5f, 14.5f), new Vector3(1, 1, 1), 1);
         Assert.IsTrue(museum.ContainsArt(10, 0, 15), "Art should be placed");
-        DestroyEverything();
     }
 
     [Test]
     public void AddingAndRemovingArt_RemoveArt_ArtRemoved() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(0, 0, 0, 10, 0, 15);
-        museum.AddArt(0, new Vector3(10, 0, 15), new Vector3(0, 0, 0), 1);
+        museum.SetTile(1, 1, 1, 10, 0, 15);
+        museum.AddArt(0, new Vector3(10, 0, 15), new Vector3(1, 1, 1), 1);
         museum.RemoveArt(10, 0, 15);
         Assert.IsFalse(museum.ContainsArt(10, 0, 15), "Art should be removed");
-        DestroyEverything();
     }
 
     [Test]
     public void SerializingMuseum_LoadingSavedMuseum_MuseumIsLoadedWithCorrectInformation() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
-        museum.SetTile(1, 2, 3, 0, 0, 0);
+        museum.SetTile(1, 2, 3, 1, 1, 1);
         museum.SetTile(4, 5, 6, 1, 0, 1);
-        museum.AddObject(123, 0, 0, 0, 0.5f);
-        museum.AddArt(456, new Vector3(1, 0.5f, 0.5f), new Vector3(0,0,0), 1);
+        museum.AddObject(123, 1, 1, 1, 0.5f);
+        museum.AddArt(456, new Vector3(1, 0.5f, 0.5f), new Vector3(1, 1, 1), 1);
 
         var museumData = museum.Save();
         museum.Clear();
-        Assert.IsFalse(museum.ContainsTile(0, 0, 0), "Museum should be empty: tile 000");
+        Assert.IsFalse(museum.ContainsTile(1, 1, 1), "Museum should be empty: tile 000");
         Assert.IsFalse(museum.ContainsTile(1,0,1),"Museum should be empty: tile 101");
-        Assert.IsFalse(museum.ContainsObject(0,0,0),"Museum should be empty: object");
+        Assert.IsFalse(museum.ContainsObject(1, 1, 1),"Museum should be empty: object");
         Assert.IsFalse(museum.ContainsArt(1,0,1),"Museum should be empty: art");
         museum.Load(museumData);
-        Assert.IsTrue(museum.ContainsTile(0, 0, 0), "Museum should be loaded: tile 000");
+        Assert.IsTrue(museum.ContainsTile(1, 1, 1), "Museum should be loaded: tile 000");
         Assert.IsTrue(museum.ContainsTile(1, 0, 1), "Museum should be loaded: tile 101");
-        Assert.IsTrue(museum.ContainsObject(0, 0, 0), "Museum should be loaded: object");
+        Assert.IsTrue(museum.ContainsObject(1, 1, 1), "Museum should be loaded: object");
         Assert.IsTrue(museum.ContainsArt(1, 0, 1), "Museum should be loaded: art");
 
-        Assert.AreEqual(museum.GetTile(0, 0, 0).wallStyle, 1);
-        Assert.AreEqual(museum.GetTile(0, 0, 0).floorStyle, 2);
-        Assert.AreEqual(museum.GetTile(0, 0, 0).ceilingStyle, 3);
+        Assert.AreEqual(museum.GetTile(1, 1, 1).wallStyle, 1);
+        Assert.AreEqual(museum.GetTile(1, 1, 1).floorStyle, 2);
+        Assert.AreEqual(museum.GetTile(1, 1, 1).ceilingStyle, 3);
         Assert.AreEqual(museum.GetTile(1, 0, 1).wallStyle, 4);
         Assert.AreEqual(museum.GetTile(1, 0, 1).floorStyle, 5);
         Assert.AreEqual(museum.GetTile(1, 0, 1).ceilingStyle, 6);
-        Assert.AreEqual(museum.GetObject(0, 0, 0).objectID, 123);
-        Assert.AreEqual(museum.GetObject(0, 0, 0).angle, 0.5f);
+        Assert.AreEqual(museum.GetObject(1, 1, 1).objectID, 123);
+        Assert.AreEqual(museum.GetObject(1, 1, 1).angle, 0.5f);
         Assert.AreEqual(museum.GetArt(1, 0, 1).art.ID, 456);
-        DestroyEverything();
     }
 
 }

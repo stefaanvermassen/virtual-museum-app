@@ -35,13 +35,13 @@ namespace API
 
         private Request GetBaseArtist(string url, Action<ArrayList> success = null, Action<API_Error> error = null)
         {
-            return Get(url, (response =>
+			return Get(BASE_URL + ARTIST + url, (response =>
             {
                 var apiList = (ArrayList) response.Object["Artists"];
                 var list = new ArrayList();
                 foreach (Hashtable val in apiList)
                 {
-                    list.Add(Artist.FromDictionary(val));
+                    list.Add(Artist.Create(val));
                 }
                 if (success != null)
                 {
@@ -54,7 +54,7 @@ namespace API
         {
             return Get(BASE_URL + ARTIST + "/" + id, (response =>
             {
-                var artist = Artist.FromDictionary(response.Object);
+                var artist = Artist.Create(response.Object);
                 if (success != null)
                 {
                     success(artist);
@@ -66,7 +66,7 @@ namespace API
         {
             return Post(BASE_URL + ARTIST, new[] {"id", "Name"}, new[] {"0", artist.Name}, (response =>
             {
-                var a = Artist.FromDictionary(response.Object);
+                var a = Artist.Create(response.Object);
                 if (success != null)
                 {
                     success(a);
@@ -76,9 +76,9 @@ namespace API
 
         public Request UpdateArtist(Artist artist, Action<Artist> success = null, Action<API_Error> error = null)
         {
-            return Put(BASE_URL + ARTIST + "/" + artist.ID, artist.ToDictionary(), (response =>
+            return Put(BASE_URL + ARTIST + "/" + artist.ID, artist.ToHash(), (response =>
             {
-                var a = Artist.FromDictionary(response.Object);
+                var a = Artist.Create(response.Object);
                 if (success != null)
                 {
                     success(a);
@@ -92,9 +92,9 @@ namespace API
         public string Name;
         public int ID;
 
-        public Dictionary<string, string> ToDictionary()
+        public Hashtable ToHash()
         {
-            var dict = new Dictionary<string, string>
+            var dict = new Hashtable()
             {
                 {"Name", Name},
                 {"ArtistID", ID.ToString()}
@@ -103,7 +103,7 @@ namespace API
             return dict;
         }
 
-        public static Artist FromDictionary(Hashtable hash)
+        public static Artist Create(Hashtable hash)
         {
             return new Artist
             {
