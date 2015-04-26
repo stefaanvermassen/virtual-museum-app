@@ -47,7 +47,7 @@ namespace API
                 {
                     var token = Token.Create(response.Object);
                     Debug.Log(token.AccessToken());
-                    var user = new User((string) response.Object["UserName"], token);
+                    var user = new User((string) response.Object["userName"], token);
                     if (succes != null)
                     {
                         succes(user);
