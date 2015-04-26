@@ -56,7 +56,7 @@ public class LoadMuseumBehaviour : MonoBehaviour {
             var closedM = m;
             button.onClick.AddListener(() => {
                 museum.LoadRemote("" + closedM.MuseumID);
-                GetComponent<GUIControl>().Close();
+                GetComponent<GUIControl>().close();
             });
         }
     }
@@ -78,7 +78,33 @@ public class LoadMuseumBehaviour : MonoBehaviour {
                 emptyText.text = "You currently don't have any museums, go make some!";
                 emptyText.transform.SetParent(content, false);
             }
+<<<<<<< HEAD
             ShowMuseums(success);
+=======
+            foreach (API.Museum m in success) {
+                var button = ((GameObject) GameObject.Instantiate(buttonMaster)).GetComponent<Button>();
+                var name = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
+                var author = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
+                var description = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
+                name.text = m.Name;
+                name.fontSize = 20;
+                author.text = m.OwnerName;
+                author.fontSize = 20;
+                description.text = m.Description;
+                description.fontSize = 20;
+                button.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperLeft;
+                Destroy(button.transform.FindChild("Text").gameObject);
+                name.transform.SetParent(button.transform, false);
+                author.transform.SetParent(button.transform, false);
+                description.transform.SetParent(button.transform, false);
+                button.transform.SetParent(content, false);
+                var closedM = m;
+                button.onClick.AddListener(() => {
+                    museum.LoadRemote(""+closedM.MuseumID);
+                    GetComponent<GUIControl>().Close();
+                });
+            }
+>>>>>>> FETCH_HEAD
         });
 	}
 	
