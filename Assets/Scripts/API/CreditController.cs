@@ -25,9 +25,14 @@ namespace API
 			get { return _Instance; }
 		}
 
-		public Request AddCredit(CreditModel cm, Action<Response> success = null, Action<API_Error> error = null)
+		public Request AddCredit(CreditModel cm, Action<UserInfo> success = null, Action<API_Error> error = null)
 		{
-			return PostJsonRequest (BASE_URL + CREDIT, cm.ToHash(), success, error);
+			return PostJsonRequest (BASE_URL + CREDIT, cm.ToHash(), (response) => {
+				if (success != null)
+				{
+					success(UserInfo.Create(response.Object));
+				}
+			}, error);
 		}
 	}
 

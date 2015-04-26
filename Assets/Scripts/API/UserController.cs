@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using HTTP;
 using UnityEngine;
 
@@ -45,7 +47,7 @@ namespace API
                 {
                     var token = Token.Create(response.Object);
                     Debug.Log(token.AccessToken());
-                    var user = new User((string) response.Object["userName"], token);
+                    var user = new User((string) response.Object["UserName"], token);
                     if (succes != null)
                     {
                         succes(user);
@@ -53,4 +55,26 @@ namespace API
                 }), error, false);
         }
     }
+
+	public class UserInfo
+	{
+		public string UserName { get; set; }
+		public int Credits { get; set; }
+		public bool CreditsAdded { get; set; }
+
+		public Hashtable ToHash()
+		{
+			return null;
+		}
+		
+		public static UserInfo Create(Hashtable dict)
+		{
+			var ui = new UserInfo (){
+				UserName = (string)dict["UserName"],
+				Credits = (int)dict["Credits"],
+				CreditsAdded = (bool)dict["CreditsAdded"]
+			};
+			return ui;
+		}
+	}
 }
