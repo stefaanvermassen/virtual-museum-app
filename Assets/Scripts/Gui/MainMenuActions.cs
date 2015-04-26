@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class MainMenuActions : MonoBehaviour {
 
+	public int currentMuseumID = -1;
+
 	void Start () {}
 
 	public void NewMuseum() {
@@ -17,6 +19,22 @@ public class MainMenuActions : MonoBehaviour {
 		MuseumLoader.museumID = museumID;
 		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Edit;
 		Application.LoadLevel ("BuildMuseum");
+	}
+
+	public void VisitMuseum(bool owner) {
+		VisitMuseum (currentMuseumID, owner);
+	}
+
+	public void EditMuseum() {
+		EditMuseum (currentMuseumID);
+	}
+
+	public void DeleteMuseum() {
+		DeleteMuseum (currentMuseumID);
+	}
+
+	public void DeleteMuseum (int museumID) {
+		// TODO: Implement this
 	}
 
 	/// <summary>

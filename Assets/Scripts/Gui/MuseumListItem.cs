@@ -7,6 +7,10 @@ public class MuseumListItem : MonoBehaviour {
 	public string museumDescription;
 	public int museumID;
 
+	public GUIControl museumPopUp;
+	public Text popUpName;
+	public Text popUpDescription;
+
 	public void UpdateLabels() {
 		Text[] labels = GetComponentsInChildren<Text> ();
 		foreach (Text label in labels) {
@@ -18,9 +22,9 @@ public class MuseumListItem : MonoBehaviour {
 				}
 			} else if(label.name.Contains ("Description")) {
 				if(museumName.Length < 55) {
-					label.text = museumName;
+					label.text = museumDescription;
 				} else {
-					label.text = museumName.Substring(0,52) + "...";
+					label.text = museumDescription.Substring(0,52) + "...";
 				}
 			}
 		}
@@ -29,8 +33,10 @@ public class MuseumListItem : MonoBehaviour {
 	public void OnClick() {
 		MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
 		if (actions != null) {
-			actions.VisitMuseum (museumID, true);
+			actions.currentMuseumID = museumID;
 		}
-		// TODO: Open dialog with museum name, description, 2 big buttons: walk, edit, 2 small buttons: back, delete
+		museumPopUp.FlipCloseOpen ();
+		popUpName.text = museumName;
+		popUpDescription.text = museumDescription;
 	}
 }

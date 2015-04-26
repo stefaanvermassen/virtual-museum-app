@@ -6,6 +6,10 @@ public class MuseumList : MonoBehaviour {
 
 	public Text selectText;
 
+	public GUIControl museumPopUp;
+	public Text popUpName;
+	public Text popUpDescription;
+
 	void Start () {
 		InitList();
 	}
@@ -35,6 +39,9 @@ public class MuseumList : MonoBehaviour {
 				item.transform.SetParent (transform, false);
 				item.museumName = m.Name;
 				item.museumDescription = m.Description;
+				item.museumPopUp = museumPopUp;
+				item.popUpName = popUpName;
+				item.popUpDescription = popUpDescription;
 				item.UpdateLabels();
 			}
 		});
