@@ -4,7 +4,7 @@ using System;
 
 using UnityEngine.UI;
 
-public class BasicActions : MonoBehaviour {
+public class MainMenuActions : MonoBehaviour {
 
 	void Start () {}
 
