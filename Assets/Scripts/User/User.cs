@@ -4,7 +4,7 @@ using System.Collections;
 public class User : Storable<User, UserData>
 {
 
-    public int ID { get; private set; }
+    public int ID { get; set; }
     public string name;
 
     /// <summary>
