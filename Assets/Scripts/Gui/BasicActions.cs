@@ -8,7 +8,7 @@ public class BasicActions : MonoBehaviour {
 
 	void Start () {}
 
-	public void startGame()
+	public void StartGame()
 	{
 		Application.LoadLevel("BuildMuseum");
 	}
@@ -16,7 +16,16 @@ public class BasicActions : MonoBehaviour {
 		PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "This is a test info");
 	}
 
+	public void Exit() {
+#if UNITY_EDITOR
+		UnityEditor.EditorApplication.isPlaying = false;
+#endif
+		Application.Quit();
+	}
+
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			Exit ();
+		}
 	}
 }
