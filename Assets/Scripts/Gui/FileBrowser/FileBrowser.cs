@@ -60,16 +60,22 @@ public class FileBrowser: GUIControl
 		
         AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
         AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        Debug.Log("Activity: " + activity);
 		// Create an androidFileBrowser...
         androidFileBrowser = new AndroidJavaClass("tv.awesomepeople.virtualmuseum.FileBrowser");
+        Debug.Log("androidFileBrowser: " + androidFileBrowser);
         activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
         {
             androidFileBrowser.Call("startBrowser");
+            Debug.Log("Browser started");
         }));
 #endif
 
         currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         updateFileAndFolder();
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        unityPlayer.Call<string>("uma");
 	}
     
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -79,6 +85,7 @@ public class FileBrowser: GUIControl
         {
             path = androidFileBrowser.Call<string>("getPath");
             Debug.Log("getPath returned " + path);
+            Debug.Log("Accessing field: " + androidFileBrowser.Get<string>("path"));
         }
     }
 #endif
