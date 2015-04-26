@@ -26,11 +26,6 @@ public class FileBrowser: GUIControl
 	public GUIControl placeHolder;
 	private FileBrowserListener listener;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-    private AndroidJavaClass androidFileBrowser;
-    private string path = "Push to get filepath";
-#endif
-
     private enum Type
     {
         FOLDER,
@@ -53,6 +48,12 @@ public class FileBrowser: GUIControl
 	public void Open(FileBrowserListener listener){
 		this.listener = listener;
 		placeHolder.Replace (this);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        GetAndroidPath();
+        Debug.Log(GetSelectedFile());
+        Close();
+#endif
 	}
 
 	public override void Close(){
@@ -62,41 +63,32 @@ public class FileBrowser: GUIControl
 
 	void Start ()
 	{
-#if UNITY_ANDROID && !UNITY_EDITOR
-        // Attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
-		AndroidJNI.AttachCurrentThread();
-		
-        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-        Debug.Log("Activity: " + activity);
-		// Create an androidFileBrowser...
-        androidFileBrowser = new AndroidJavaClass("tv.awesomepeople.virtualmuseum.FileBrowser");
-        Debug.Log("androidFileBrowser: " + androidFileBrowser);
-        activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-        {
-            androidFileBrowser.Call("startBrowser");
-            Debug.Log("Browser started");
-        }));
-#endif
-
         currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         UpdateFileAndFolder();
 	}
     
 #if UNITY_ANDROID && !UNITY_EDITOR
-    void OnGUI()
+    void GetAndroidPath()
     {
-        if (GUI.Button(new Rect(15, 125, 450, 100), path))
+        // Attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
+		AndroidJNI.AttachCurrentThread();
+		
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+        activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
         {
-            path = androidFileBrowser.Call<string>("getPath");
-            Debug.Log("getPath returned " + path);
-            Debug.Log("Accessing field: " + androidFileBrowser.Get<string>("path"));
-        }
+            activity.Call("startBrowser");
+        }));
+        
+        while (string.IsNullOrEmpty(activity.Call<string>("getPath")));
+        selectedFilePath = WWW.UnEscapeURL(activity.Call<string>("getPath")).Replace("content://fm.clean/document/", "");
     }
 #endif
 
-	private void UpdateFileAndFolder ()
+    private void UpdateFileAndFolder ()
 	{
+        WWW.UnEscapeURL(selectedFilePath);
 		if (directoryLabel == null) {
 			Debug.Log ("DirectoryLabel is null.");
 		} else if (currentDirectory == null) {
