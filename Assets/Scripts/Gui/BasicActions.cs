@@ -12,6 +12,9 @@ public class BasicActions : MonoBehaviour {
 	{
 		Application.LoadLevel("BuildMuseum");
 	}
+	public void ShowtestMessage(){
+		PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "This is a test info");
+	}
 
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
