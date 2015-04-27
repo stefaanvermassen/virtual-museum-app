@@ -36,9 +36,22 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private HashSet<int> artIDsDownloading = new HashSet<int>();
     private bool loaded = false;
 
+    private Selectable selected;
+
     public void Start() {
         museumID = 0;
         SetTile(0, 0, 0, 0, 0, 0);
+    }
+
+    public void SetSelected(Selectable o) {
+        if (selected != null) {
+            selected.Selected = Selectable.SelectionMode.None;
+        }
+        selected = o;
+        if (o != null) {
+            selected.Start();
+            selected.Selected = Selectable.SelectionMode.Selected;
+        }
     }
 
     Art GetArt(int id, MuseumArt ma = null) {

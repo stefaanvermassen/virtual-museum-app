@@ -15,7 +15,8 @@ public class DrawController : MonoBehaviour {
         Erasing,
         Scaling,
         PlacingObject,
-        PlacingArt
+        PlacingArt,
+        Selecting
     }
 
     public GameObject toDraw;
@@ -40,6 +41,8 @@ public class DrawController : MonoBehaviour {
 
     private LayerMask groundLayerMask;
     private LayerMask wallLayerMask;
+
+    private MuseumObject selectedObject;
 
 	void Start () {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
@@ -163,6 +166,9 @@ public class DrawController : MonoBehaviour {
                 case Tools.PlacingArt:
                     PlaceArt(dragPointWorld, anchorPointWorld, anchorNormalWorld, dragPointScreen, anchorPointScreen);
                     break;
+                case Tools.Selecting:
+                    Select(dragPointWorld, anchorPointWorld);
+                    break;
             }
             lastDragPointScreen = dragPointScreen;
         }
@@ -227,5 +233,28 @@ public class DrawController : MonoBehaviour {
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
         var scale = 0.5f + 4*diff / Screen.width;
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale,currentFrame);
+    }
+
+    void Select(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
+        var x = (int)Mathf.Floor(dragPointWorld.x + 0.5f);
+        var y = 0;
+        var z = (int)Mathf.Floor(dragPointWorld.z + 0.5f);
+        if (Vector3.Distance(dragPointWorld, anchorPointWorld) < 0.1f) {
+            selectedObject = currentMuseum.GetObject(x, y, z);
+            if (selectedObject != null) {
+                currentMuseum.SetSelected(selectedObject.GetGameObject().GetComponent<Selectable>());
+            }
+        }
+        if (selectedObject != null) {
+            var id = selectedObject.objectID;
+            var angle = selectedObject.angle;
+            currentMuseum.RemoveObject(selectedObject.x, selectedObject.y, selectedObject.z);
+            currentMuseum.AddObject(id, x, y, z, angle);
+            selectedObject = currentMuseum.GetObject(x, y, z);
+            if (selectedObject != null) {
+                selectedObject.Start();
+                currentMuseum.SetSelected(selectedObject.GetGameObject().GetComponent<Selectable>());
+            }
+        }
     }
 }

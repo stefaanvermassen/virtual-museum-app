@@ -25,7 +25,7 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
         Start();
     }
 
-    void Start() {
+    public void Start() {
         Remove();
         var master = Catalog.GetObject(objectID);
         ob = (GameObject) Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
@@ -36,5 +36,9 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
     /// </summary>
     public void Remove() {
         if(ob != null) Destroy(ob);
+    }
+
+    public GameObject GetGameObject() {
+        return ob;
     }
 }
