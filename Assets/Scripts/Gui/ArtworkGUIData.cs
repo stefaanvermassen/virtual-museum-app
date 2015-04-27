@@ -26,9 +26,7 @@ public class ArtworkGUIData : FileBrowserListener
 				changed = true;
 				Refresh ();
 			}
-
 		}
-
 	}
 
 	public void Refresh ()
@@ -50,8 +48,6 @@ public class ArtworkGUIData : FileBrowserListener
 			texture.LoadImage (artWork.imageFile);
 			thumbNail.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
 		}
-
-
 	}
 
 	public void Save ()
@@ -64,9 +60,7 @@ public class ArtworkGUIData : FileBrowserListener
 		if (changed) {
 			//save changes
 			artWork.Save ();
-
 		}
-	
 	}
 
 	public ArtworkGUIData ()
@@ -86,6 +80,4 @@ public class ArtworkGUIData : FileBrowserListener
 			return this.artWork;
 		}
 	}
-
-
 }

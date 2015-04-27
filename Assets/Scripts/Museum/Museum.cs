@@ -553,5 +553,4 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public bool IsLoaded() {
         return loaded;
     }
-
 }

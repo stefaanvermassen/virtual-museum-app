@@ -27,10 +27,12 @@ public class FileBrowser: GUIControl
         FOLDER,
         FILE
     };
+
 	public static bool PathIsValid(string path){
 		return  !string.IsNullOrEmpty (path);
 	}
-	public static string CropString(string s){
+	
+    public static string CropString(string s){
 		return s.Substring (Math.Max (0, s.Length - maxNrOfNameChars));
 	}
 
@@ -53,6 +55,7 @@ public class FileBrowser: GUIControl
 	{
 		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
 		UpdateFileAndFolder ();
+        screenName = "FileBrowser";
 	}
 
 	private void UpdateFileAndFolder ()

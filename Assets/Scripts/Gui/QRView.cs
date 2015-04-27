@@ -2,25 +2,20 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class QRView : MonoBehaviour
+public class QRView : StatisticsBehaviour
 {
     public GameObject panel;
     public Texture2D image;
     public Image QR;
     private bool set;
-    private Statistics statistics;
-    private string screenName = "QR";
 
     /// <summary>
     /// Initialize the QR view
     /// </summary>
-    private void Start()
+    protected void Start()
     {
         set = false;
-        
-        // Register screen
-        statistics = Statistics.getInstance();
-        statistics.RegisterScreen(screenName);
+        StartStatistics("QR");
     }
 
     /// <summary>
@@ -42,11 +37,7 @@ public class QRView : MonoBehaviour
     public void Close(int useless)
     {
         panel.SetActive(false);
-
-        // Remove screen and report the button clicked
-        statistics.ButtonClicked("Close");
-        statistics.RemoveScreen();
-
+        ClosingButton("Close");
     }
 
     /// <summary>
@@ -57,9 +48,6 @@ public class QRView : MonoBehaviour
     {
         // TODO: Implement save
         panel.SetActive(false);
-
-        // Report button clicked
-        statistics.ButtonClicked("Save");
-        statistics.RemoveScreen();
+        ClosingButton("Save");
     }
 }

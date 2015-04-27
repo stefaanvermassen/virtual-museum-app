@@ -4,11 +4,14 @@ using System;
 
 using UnityEngine.UI;
 
-public class MainMenuActions : MonoBehaviour {
+public class MainMenuActions : StatisticsBehaviour {
 
 	public int currentMuseumID = -1;
 
-	void Start () {}
+	void Start ()
+    {
+        StartStatistics("MainMenu");
+    }
 
 	public void NewMuseum() {
 		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Preview;
@@ -57,6 +60,7 @@ public class MainMenuActions : MonoBehaviour {
 	}
 
 	public void Exit() {
+        ClosingButton("Exit");
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
 #endif

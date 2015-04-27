@@ -9,13 +9,18 @@ using API;
 /// <summary>
 /// This class controls the UI to login
 /// </summary>
-public class LoginView : MonoBehaviour
+public class LoginView : StatisticsBehaviour
 {
 
     public InputField usernameField;
     public InputField passwordField;
     public GameObject panel;
     public Toast toast;
+
+    public void Start()
+    {
+        StartStatistics("Login");
+    }
 
     /// <summary>
     /// This logs in the user
@@ -39,6 +44,7 @@ public class LoginView : MonoBehaviour
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Login successful!");
             panel.SetActive(false);
+            ClosingButton("Login");
         }, (error) =>
         {
             toast.Notify("Login failed. Please try again...");

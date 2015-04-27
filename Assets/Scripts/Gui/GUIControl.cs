@@ -5,7 +5,7 @@ using System.Collections;
 /// notes: watch out when using objects from the editor as parameter in events!!!
 /// Sometimes the argument will always convert to null
 /// </summary>
-public class GUIControl : MonoBehaviour
+public class GUIControl : StatisticsBehaviour
 {
 	public GUIControl dynamicChild;
 	//Todo
@@ -46,10 +46,12 @@ public class GUIControl : MonoBehaviour
 	public virtual void Close ()
 	{
 		gameObject.SetActive (false);
+        End();
 	}
 
 	public virtual void Open ()
 	{
+        StartStatistics();
 		gameObject.SetActive (true);
 	}
 	/// <summary>
@@ -184,5 +186,4 @@ public class GUIControl : MonoBehaviour
 	{
 		return this.gameObject.activeSelf;
 	}
-
 }

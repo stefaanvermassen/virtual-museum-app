@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class Toast : MonoBehaviour {
+public class Toast : StatisticsBehaviour {
 
     private Animator animator;
     private Text text;
@@ -10,6 +10,7 @@ public class Toast : MonoBehaviour {
 	void Start () {
         animator = GetComponent<Animator>();
         text = gameObject.transform.FindChild("Text").gameObject.GetComponent<Text>();
+        StartStatistics("Toast");
 	}
 
     /// <summary>
@@ -19,5 +20,6 @@ public class Toast : MonoBehaviour {
     public void Notify(string message) {
         text.text = message;
         animator.SetTrigger("Play");
+        ClosingButton(message);
     }
 }
