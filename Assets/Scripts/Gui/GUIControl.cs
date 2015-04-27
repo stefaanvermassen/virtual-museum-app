@@ -152,8 +152,8 @@ public class GUIControl : StatisticsBehaviour
 		float y = control.GetRelativeY ();
 		control.SetRelativePosition (GetRelativeX (), GetRelativeY ());
 		SetRelativePosition (x, y);
-		control.gameObject.SetActive (true);
-		gameObject.SetActive (false);
+        control.Open();
+        Close();
 	}
 
 	public void RemoveAllChildren ()
