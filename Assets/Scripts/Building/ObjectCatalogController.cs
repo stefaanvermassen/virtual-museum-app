@@ -29,6 +29,7 @@ public class ObjectCatalogController : GUIControl
 		catalogContent.RemoveAllChildren ();
 		//fill with objects from collection
 		int[] ids = Catalog.getResourceIDs (type);
+		Debug.Log (ids.Length);
 		for (int i = 0; i < ids.Length; i++) {
 			GUIControl item = catalogContent.AddDynamicChild ();
 			ObjectCatalogItemController controller = item.GetComponent<ObjectCatalogItemController> ();

@@ -1,13 +1,32 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using System.Collections;
 
 public class LoadMuseumBehaviour : MonoBehaviour {
 
     public Museum museum;
 
+    private Object buttonMaster;
+    private Object textMaster;
+    private Transform content;
+    private Scrollbar scrollbar;
+    private bool initialized = false;
+
+    void Start() {
+        buttonMaster = Resources.Load("gui/Button");
+        textMaster = Resources.Load("gui/Label");
+        content = transform.FindChild("ScrollPanel").FindChild("Content");
+        scrollbar = transform.FindChild("ScrollPanel").FindChild("Scrollbar").gameObject.GetComponent<Scrollbar>();
+        initialized = true;
+    }
+
+    void Initialize() {
+        if (!initialized) {
+            Start();
+        }
+    }
+
     void RemoveButtons() {
-        var content = transform.FindChild("ScrollPanel").FindChild("Content");
         foreach (var b in content.GetComponentsInChildren<Button>()) {
             Destroy(b.gameObject);
         }
@@ -16,12 +35,35 @@ public class LoadMuseumBehaviour : MonoBehaviour {
         }
     }
 
+    public void ShowMuseums(ArrayList museums) {
+        foreach (API.Museum m in museums) {
+            var button = ((GameObject)GameObject.Instantiate(buttonMaster)).GetComponent<Button>();
+            var name = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
+            var author = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
+            var description = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
+            name.text = m.Name;
+            name.fontSize = 20;
+            author.text = m.OwnerName;
+            author.fontSize = 20;
+            description.text = m.Description;
+            description.fontSize = 20;
+            button.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperLeft;
+            Destroy(button.transform.FindChild("Text").gameObject);
+            name.transform.SetParent(button.transform, false);
+            author.transform.SetParent(button.transform, false);
+            description.transform.SetParent(button.transform, false);
+            button.transform.SetParent(content, false);
+            var closedM = m;
+            button.onClick.AddListener(() => {
+                museum.LoadRemote("" + closedM.MuseumID);
+                GetComponent<GUIControl>().Close();
+            });
+        }
+    }
+
     public void InitializeButtons() {
-        var buttonMaster = Resources.Load("gui/Button");
-        var textMaster = Resources.Load("gui/Label");
+        Initialize();
         RemoveButtons();
-        var content = transform.FindChild("ScrollPanel").FindChild("Content");
-        var scrollbar = transform.FindChild("ScrollPanel").FindChild("Scrollbar").gameObject.GetComponent<Scrollbar>();
         var museumController = API.MuseumController.Instance;
         var userController = API.UserController.Instance;
         var panelText = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
@@ -36,29 +78,7 @@ public class LoadMuseumBehaviour : MonoBehaviour {
                 emptyText.text = "You currently don't have any museums, go make some!";
                 emptyText.transform.SetParent(content, false);
             }
-            foreach (API.Museum m in success) {
-                var button = ((GameObject) GameObject.Instantiate(buttonMaster)).GetComponent<Button>();
-                var name = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
-                var author = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
-                var description = ((GameObject)GameObject.Instantiate(textMaster)).GetComponent<Text>();
-                name.text = m.Name;
-                name.fontSize = 20;
-                author.text = m.OwnerName;
-                author.fontSize = 20;
-                description.text = m.Description;
-                description.fontSize = 20;
-                button.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperLeft;
-                Destroy(button.transform.FindChild("Text").gameObject);
-                name.transform.SetParent(button.transform, false);
-                author.transform.SetParent(button.transform, false);
-                description.transform.SetParent(button.transform, false);
-                button.transform.SetParent(content, false);
-                var closedM = m;
-                button.onClick.AddListener(() => {
-                    museum.LoadRemote(""+closedM.MuseumID);
-                    GetComponent<GUIControl>().Close();
-                });
-            }
+            ShowMuseums(success);
         });
 	}
 	
