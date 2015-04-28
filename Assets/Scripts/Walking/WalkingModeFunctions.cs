@@ -5,6 +5,7 @@ using System.Collections;
 public class WalkingModeFunctions : MonoBehaviour {
 
 	public FirstPersonController player;
+    public Museum museum;
 
 	public void TempSwitchVR() {
         if (player.ActiveVR == FirstPersonController.VR.None) {
@@ -32,5 +33,23 @@ public class WalkingModeFunctions : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			TempBack ();
 		}
+    }
+
+    public void TempShareFB()
+    {
+        /*if (!FB.IsLoggedIn)
+        {
+            GUI.Label((new Rect(179, 11, 287, 160)), "Login to Facebook", MenuSkin.GetStyle("text_only"));
+            if (GUI.Button(LoginButtonRect, "", MenuSkin.GetStyle("button_login")))
+            {
+                FB.Login("email,publish_actions");
+            }
+        }*/
+
+        FB.Feed(
+            linkCaption: "I just visited " + museum.museumName,
+            linkName: "Join me in Virtual Museum!",
+            link: "http://apps.facebook.com/" + FB.AppId + "/?virtualmuseum=" + FB.UserId
+            );                   
     }
 }
