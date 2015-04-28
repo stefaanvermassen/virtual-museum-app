@@ -150,6 +150,8 @@ public class GUIControl : MonoBehaviour
 		float y = control.GetRelativeY ();
 		control.SetRelativePosition (GetRelativeX (), GetRelativeY ());
 		SetRelativePosition (x, y);
+		control.gameObject.SetActive (true);
+		gameObject.SetActive (false);
 	}
 
 	public void RemoveAllChildren ()

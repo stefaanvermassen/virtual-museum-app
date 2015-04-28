@@ -7,11 +7,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class MuseumLoader : MonoBehaviour {
 
 	public static int museumID = -1;
+	public enum MuseumAction{Visit, Preview, Edit};
+	public static MuseumAction currentAction = MuseumAction.Preview;
 	public Museum museum;
 
 	// Use this for initialization
 	void Start () {
-		if(museumID == -1) { // Preview mode
+		if(currentAction == MuseumAction.Preview) { // Preview mode
 			if (File.Exists(Application.persistentDataPath + "/test.bin")) {
 				Stream TestFileStream = File.OpenRead(Application.persistentDataPath + "/test.bin");
 				BinaryFormatter deserializer = new BinaryFormatter();
@@ -19,8 +21,8 @@ public class MuseumLoader : MonoBehaviour {
 				TestFileStream.Close();
 				museum.Load(data);
 			}
-		} else { // Visit mode
-			Storage.Instance.LoadRemote(museum, museumID.ToString());
+		} else if(currentAction == MuseumAction.Visit) { // Visit mode
+			if(museumID != -1) Storage.Instance.LoadRemote(museum, museumID.ToString());
 		}
 	}
 	

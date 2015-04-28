@@ -34,6 +34,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private Dictionary<int, Art> artDictionary = new Dictionary<int, Art>();
     private List<MuseumArt> artWaitingForDownload = new List<MuseumArt>();
     private HashSet<int> artIDsDownloading = new HashSet<int>();
+    private bool loaded = false;
 
     public void Start() {
         museumID = 0;
@@ -511,6 +512,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void LoadRemote(string identifier)
     {
+        loaded = false;
         museumID = Convert.ToInt32(identifier);
         cont = API.MuseumController.Instance;
         req = cont.GetMuseum(identifier,
@@ -527,6 +529,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 MuseumData data = (MuseumData)deserializer.Deserialize(stream);
                 Load(data);
                 museumID = Convert.ToInt32(identifier);
+                loaded = true;
             });
     }
 
@@ -545,6 +548,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 SessionManager.Instance.LoginUser(success);
                 toast.Notify("Successfully logged in!");
             });
+    }
+
+    public bool IsLoaded() {
+        return loaded;
     }
 
 }
