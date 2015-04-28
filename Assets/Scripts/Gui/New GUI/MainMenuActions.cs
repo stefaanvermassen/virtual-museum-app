@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class MainMenuActions : MonoBehaviour {
 
 	public int currentMuseumID = -1;
+	public int currentArtID = -1;
 
 	void Start () {}
 
