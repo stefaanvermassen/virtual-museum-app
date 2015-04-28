@@ -79,8 +79,13 @@ namespace Scanning
                 {
                     Filter = new ArtFilter();
 					Debug.Log("QR found: " + result.Text);
-                    /*LastResult = result.Text;
-                    Filter.Configure(result.Text);*/
+                    //TODO make new ArtFilter and push to the server !!!
+
+					// !!!!!!!!!!!
+					//
+					//TODO: pop up toast that art is collected !!
+					//
+					//
                     return;
                 }
                 Debug.Log("Decoding failed: set Color to null");
