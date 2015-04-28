@@ -205,6 +205,19 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     }
 
     /// <summary>
+    /// True if contains art by using the wallposition and wallrotation instead of the tile coordinates.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    public bool ContainsArt(Vector3 position, Vector3 rotation) {
+        var normal = Quaternion.Euler(rotation) * Vector3.forward;
+        int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+        int y = 0;
+        int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+        return ContainsArt(x, y, z);
+    }
+
+    /// <summary>
     /// Returns the art at position x,y,z. Returns null when there is none.
     /// </summary>
     /// <param name="x"></param>
@@ -238,6 +251,19 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             toRemove.Remove();
 			Util.Destroy(toRemove.gameObject);
         }
+    }
+
+    /// <summary>
+    /// Removes art by using the wallposition and wallrotation instead of the tile coordinates.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    public void RemoveArt(Vector3 position, Vector3 rotation) {
+        var normal = Quaternion.Euler(rotation) * Vector3.forward;
+        int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+        int y = 0;
+        int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+        RemoveArt(x, y, z);
     }
 
     /// <summary>

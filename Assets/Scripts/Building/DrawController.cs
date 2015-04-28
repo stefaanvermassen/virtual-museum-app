@@ -122,7 +122,10 @@ public class DrawController : MonoBehaviour {
         var mask = groundLayerMask;
         if (tool == Tools.PlacingArt) {
             mask = wallLayerMask;
+        } else if (tool == Tools.Erasing) {
+            mask = wallLayerMask | groundLayerMask;
         }
+        var click = false;
         if (Input.GetMouseButtonDown(mouseButton) && !IsPointerBusy()) {
             cameraAnchor = Camera.main.transform.position;
             dragging[mouseButton] = true;
@@ -132,6 +135,7 @@ public class DrawController : MonoBehaviour {
             anchorNormalWorld = anchorWorld.normal;
             lastDragPointScreen = anchorPointScreen;
             centerPointWorld = raycast(cameraAnchor, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask).point;
+            click = true;
         }
         if (Input.GetMouseButtonUp(mouseButton)) {
             dragging[mouseButton] = false;
@@ -155,7 +159,7 @@ public class DrawController : MonoBehaviour {
                     Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Screen.height * 180, frameOffsetScreen.x / Screen.width * 180, 0));
                     break;
                 case Tools.Erasing:
-                    Erase(dragPointWorld);
+                    Erase(dragPointWorld, anchorPointWorld, anchorNormalWorld, click);
                     break;
                 case Tools.Scaling:
                     Scale(Mathf.Pow(2, -frameOffsetScreen.y / Screen.height));
@@ -202,8 +206,20 @@ public class DrawController : MonoBehaviour {
         currentMuseum.SetTile(currentWall, currentFloor, currentCeiling, (int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f));
     }
 
-    void Erase(Vector3 dragPointWorld) {
-        currentMuseum.RemoveTile((int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f));
+    void Erase(Vector3 dragPointWorld, Vector3 anchorPointWorld, Vector3 anchorNormalWorld, bool click) {
+        int x = (int)Mathf.Floor(dragPointWorld.x + 0.5f);
+        int y = 0;
+        int z = (int)Mathf.Floor(dragPointWorld.z + 0.5f);
+        if (click || Vector3.Distance(dragPointWorld, anchorPointWorld) > 0.1f) {
+            var rotation = Quaternion.LookRotation(anchorNormalWorld).eulerAngles;
+            if (currentMuseum.ContainsArt(anchorPointWorld,rotation)) {
+                currentMuseum.RemoveArt(anchorPointWorld,rotation);
+            } else if (currentMuseum.ContainsObject(x, y, z)) {
+                currentMuseum.RemoveObject(x, y, z);
+            } else {
+                currentMuseum.RemoveTile(x, y, z);
+            }
+        }
     }
 
     void Move(Vector3 movement) {
