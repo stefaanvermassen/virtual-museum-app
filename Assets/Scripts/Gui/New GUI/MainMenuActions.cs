@@ -38,6 +38,14 @@ public class MainMenuActions : MonoBehaviour {
 		// TODO: Implement this
 	}
 
+	public void ResetArtID() {
+		currentArtID = -1;
+	}
+
+	public void ResetMuseumID() {
+		currentMuseumID = -1;
+	}
+
 	/// <summary>
 	/// Visit the museum with the designated museum ID
 	/// </summary>

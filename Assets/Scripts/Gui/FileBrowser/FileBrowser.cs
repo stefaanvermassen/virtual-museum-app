@@ -41,11 +41,15 @@ public class FileBrowser: GUIControl
 
 	public void Open(FileBrowserListener listener){
 		this.listener = listener;
-		placeHolder.Replace (this);
+		base.Open ();
+		//FlipCloseOpen ();
+		//placeHolder.Replace (this);
 	}
 
 	public override void Close(){
-		placeHolder.Replace (this);
+		//placeHolder.Replace (this);
+		//FlipCloseOpen ();
+		base.Close ();
 		listener.FileIsSelected ();
 	}
 

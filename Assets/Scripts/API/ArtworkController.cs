@@ -163,7 +163,7 @@ namespace API
         public Request UpdateArtWork(ArtWork artwork, Action<Response> success = null, Action<API_Error> error = null)
         {
             var form = artwork.ToHash();
-
+			Debug.Log (BASE_URL + ARTWORK + "/" + artwork.ArtWorkID);
             return PutJsonRequest(BASE_URL + ARTWORK + "/" + artwork.ArtWorkID, form, success, error);
         }
     }
@@ -211,11 +211,16 @@ namespace API
 				Name = art.owner.name,
 				ID = art.owner.ID
 			};
+			var list = new ArrayList ();
+			if(art.description != null) {
+				//list.Add (new KeyValuePair<string, string>("description",art.description));
+			}
 			return new ArtWork ()
 			{
 				ArtWorkID = art.ID,
 				Artist = artist,
-				Name = art.name
+				Name = art.name,
+				Metadata = list
 			};
 		}
 
