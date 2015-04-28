@@ -15,13 +15,23 @@ public class MuseumList : MonoBehaviour {
 	}
 
 	void ClearList() {
-		MuseumListItem[] listItems = GetComponentsInChildren<MuseumListItem> ();
+		for (int i = transform.childCount - 1; i >= 0; --i) {
+			GameObject.Destroy(transform.GetChild(i).gameObject);
+		}
+		transform.DetachChildren();
+
+		/*MuseumListItem[] listItems = GetComponentsInChildren<MuseumListItem> ();
 		foreach (var o in listItems) {
 			Destroy(o.gameObject);
 		}
+		Image[] separators = GetComponentsInChildren<Image> ();
+		Image currentImage = GetComponent<Image> ();
+		foreach (var o in separators) {
+			if(!o.Equals (currentImage)) Destroy(o.gameObject);
+		}*/
 	}
 
-	void InitList() {
+	public void InitList() {
 		ClearList ();
 		var listItem = Resources.Load("gui/MuseumListItem");
 		var separatorLine = Resources.Load ("gui/ListItemSeparator");

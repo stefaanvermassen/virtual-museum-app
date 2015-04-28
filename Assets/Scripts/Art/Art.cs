@@ -22,6 +22,7 @@ public class Art : Savable<Art, ArtData>
 
 	//checks if the artworks image is loading or not
 	public bool loadingImage;
+	public event EventHandler ArtLoaded;
 
     public Art() {
         owner = new User();
@@ -168,11 +169,24 @@ public class Art : Savable<Art, ArtData>
 		() => {
 			Debug.Log("Loaded");
 			loadingImage=false;
+			OnArtLoaded(new EventArgs());
+			/*if(eventArgs == null) {
+				eventArgs = new EventArgs();
+				OnArtLoaded(eventArgs);
+			}*/
 		});
     }
 
     public DateTime LastModified(string identifier) {
         return DateTime.Now;
     }
+
+	protected void OnArtLoaded(EventArgs e)
+	{
+		EventHandler handler = ArtLoaded;
+		if (handler != null) {
+			handler (this, e);
+		}
+	}
 
 }

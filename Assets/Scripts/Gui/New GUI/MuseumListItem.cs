@@ -21,7 +21,7 @@ public class MuseumListItem : MonoBehaviour {
 					label.text = museumName.Substring(0,14) + "...";
 				}
 			} else if(label.name.Contains ("Description")) {
-				if(museumName.Length < 55) {
+				if(museumDescription.Length < 55) {
 					label.text = museumDescription;
 				} else {
 					label.text = museumDescription.Substring(0,52) + "...";

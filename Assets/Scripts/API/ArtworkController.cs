@@ -102,7 +102,7 @@ namespace API
                 {
                     var apiList = (ArrayList) response.Object["ArtWorks"];
                     var list = new ArrayList();
-                    foreach (Hashtable val in apiList)
+					foreach (Hashtable val in apiList)
                     {
                         list.Add(ArtWork.Create(val));
                     }
@@ -174,7 +174,7 @@ namespace API
     public class ArtWork
     {
         public int ArtWorkID;
-        public int ArtistID;
+        public Artist Artist;
         //make sure string is not null
         public string Name = "";
         public ArrayList Metadata;
@@ -184,7 +184,7 @@ namespace API
             var dict = new Hashtable
             {
                 {"ArtWorkID", ArtWorkID.ToString()},
-                {"ArtistID", ArtistID.ToString()},
+                {"ArtistID", Artist.ID.ToString()},
                 {"Name", Name},
                 {"Metadata", Metadata}
             };
@@ -197,27 +197,34 @@ namespace API
             var aw = new ArtWork
             {
                 ArtWorkID = ((int) dict["ArtWorkID"]),
-                ArtistID = ((int) dict["ArtistID"]),
+                Artist = Artist.Create((Hashtable)dict["Artist"]),
                 Name = (string) dict["Name"],
 				Metadata = (ArrayList) dict["Metadata"]
             };
 
             return aw;
         }
+
 		public static ArtWork FromArt (Art art)
 		{
+			var artist = new Artist (){
+				Name = art.owner.name,
+				ID = art.owner.ID
+			};
 			return new ArtWork ()
 			{
 				ArtWorkID = art.ID,
-				ArtistID = art.owner.ID,
+				Artist = artist,
 				Name = art.name
 			};
 		}
+
 		public static Art ToArt (ArtWork artwork)
 		{
 			Art art = new Art ();
 			art.ID = artwork.ArtWorkID;
-			art.owner.ID = artwork.ArtistID;
+			art.owner.ID = artwork.Artist.ID;
+			art.owner.name = artwork.Artist.Name;
 			art.name = artwork.Name;
 			return art;
 		}
