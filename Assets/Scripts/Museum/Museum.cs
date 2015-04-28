@@ -36,21 +36,27 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private HashSet<int> artIDsDownloading = new HashSet<int>();
     private bool loaded = false;
 
-    private Selectable selected;
+    private MuseumObject selected;
 
     public void Start() {
         museumID = 0;
         SetTile(0, 0, 0, 0, 0, 0);
     }
 
-    public void SetSelected(Selectable o) {
+    public void SetSelected(MuseumObject o) {
         if (selected != null) {
-            selected.Selected = Selectable.SelectionMode.None;
+            selected.Select(Selectable.SelectionMode.None, Color.yellow);
+            if (!ContainsTile(selected.x, selected.y, selected.z) && selected != o) {
+                RemoveObject(selected.x, selected.y, selected.z);
+            }
         }
         selected = o;
         if (o != null) {
-            selected.Start();
-            selected.Selected = Selectable.SelectionMode.Selected;
+            if (ContainsTile(o.x, o.y, o.z)) {
+                o.Select(Selectable.SelectionMode.Selected, Color.yellow);
+            } else {
+                o.Select(Selectable.SelectionMode.Preview, Color.red);
+            }
         }
     }
 
@@ -336,6 +342,15 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             }
         }
         return null;
+    }
+
+    public void MoveObject(MuseumObject o, int newX, int newY, int newZ) {
+        if (o != null) {
+            o.GetGameObject().transform.Translate(new Vector3(newX - o.x, newY - o.y, newZ - o.z), Space.World);
+            o.x = newX;
+            o.y = newY;
+            o.z = newZ;
+        }
     }
 
     /// <summary>

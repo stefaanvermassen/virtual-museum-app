@@ -31,7 +31,7 @@ public class Selectable : MonoBehaviour {
 	}
 
 	// Use this for initialization
-	public void Start () {
+	void Awake () {
 		if(mesh == null) mesh = GetComponent<MeshRenderer>();
 		if(mesh == null) mesh = transform.GetComponentInChildren<MeshRenderer>();
 		originalMaterials = mesh.materials;
@@ -51,7 +51,9 @@ public class Selectable : MonoBehaviour {
 	}
 
 	void UpdateSelectionMode(SelectionMode mode) {
-		if(mode == selected) return;
+        if (mode == selected) {
+            return;
+        }
 		if (mode == SelectionMode.None) {
 			mesh.materials = originalMaterials;
 		} else if (mode == SelectionMode.Selected) {

@@ -28,7 +28,14 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
     public void Start() {
         Remove();
         var master = Catalog.GetObject(objectID);
-        ob = (GameObject) Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
+        ob = (GameObject)Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
+    }
+
+    public Selectable Select(Selectable.SelectionMode mode, Color color) {
+        var selectable = ob.GetComponent<Selectable>();
+        selectable.Selected = mode;
+        selectable.OutlineColor = color;
+        return selectable;
     }
 
     /// <summary>

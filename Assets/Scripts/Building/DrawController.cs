@@ -257,20 +257,10 @@ public class DrawController : MonoBehaviour {
         var z = (int)Mathf.Floor(dragPointWorld.z + 0.5f);
         if (Vector3.Distance(dragPointWorld, anchorPointWorld) < 0.1f) {
             selectedObject = currentMuseum.GetObject(x, y, z);
-            if (selectedObject != null) {
-                currentMuseum.SetSelected(selectedObject.GetGameObject().GetComponent<Selectable>());
-            }
         }
         if (selectedObject != null) {
-            var id = selectedObject.objectID;
-            var angle = selectedObject.angle;
-            currentMuseum.RemoveObject(selectedObject.x, selectedObject.y, selectedObject.z);
-            currentMuseum.AddObject(id, x, y, z, angle);
-            selectedObject = currentMuseum.GetObject(x, y, z);
-            if (selectedObject != null) {
-                selectedObject.Start();
-                currentMuseum.SetSelected(selectedObject.GetGameObject().GetComponent<Selectable>());
-            }
+            currentMuseum.MoveObject(selectedObject, x, y, z);
         }
+        currentMuseum.SetSelected(selectedObject);
     }
 }
