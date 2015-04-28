@@ -1,23 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Gui\New GUI\ArtListItem.cs">
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Gui\New GUI\ArtList.cs">
     <Files>
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtList.cs" Line="13" Column="26" />
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtListItem.cs" Line="139" Column="40" />
-      <File FileName="Assets\Scripts\Gui\ArtworkGUIData.cs" Line="43" Column="3" />
-      <File FileName="Assets\Scripts\Gui\New GUI\MainMenuActions.cs" Line="10" Column="31" />
-      <File FileName="Assets\Scripts\Gui\ArtCatalog.cs" Line="58" Column="7" />
-      <File FileName="Assets\Scripts\Gui\New GUI\MuseumList.cs" Line="42" Column="39" />
-      <File FileName="Assets\Scripts\Art\Art.cs" Line="154" Column="15" />
-      <File FileName="Assets\Scripts\Catalog\Catalog.cs" Line="170" Column="46" />
-      <File FileName="Assets\Scripts\API\ArtworkController.cs" Line="121" Column="34" />
-      <File FileName="Assets\Scripts\Museum\Museum.cs" Line="63" Column="17" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ArtList.cs" Line="81" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/Harald/Documents/Informatica/Master1/Design Project/unity/app/Assets/Scripts/Art/Art.cs" line="147" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

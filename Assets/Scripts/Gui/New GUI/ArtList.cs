@@ -63,7 +63,6 @@ public class ArtList : MonoBehaviour {
 	
 	public void InitList() {
 		EventHandler handler = new EventHandler (OnArtLoaded);
-		print ("init called");
 		ClearList ();
 		Catalog.RefreshArtWork (handler);		
 	}
@@ -78,11 +77,11 @@ public class ArtList : MonoBehaviour {
 		elementCount++;
 		item.transform.SetParent (transform, false);
 		item.artID = (art.ID == null ? -1 : art.ID);
-		item.artArtist = "Feliciaan";
+		item.artArtist = (art.owner.name == null ? "" : art.owner.name);
+		//item.artArtist = "Feliciaan";
 		//item.artArtist = "Yolo"; //art.owner.name;
 		item.artDescription = (art.description == null ? "" : art.description);
 		item.artTitle = (art.name == null ? "" : art.name);
-		//print (art.name);
 
 		item.owner = (art.owner.ID == userID);
 
