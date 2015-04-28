@@ -4,7 +4,11 @@ using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using   System;
+using System;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 
 public class FileBrowser: GUIControl
 {
@@ -27,9 +31,11 @@ public class FileBrowser: GUIControl
         FOLDER,
         FILE
     };
+
 	public static bool PathIsValid(string path){
 		return  !string.IsNullOrEmpty (path);
 	}
+
 	public static string CropString(string s){
 		return s.Substring (Math.Max (0, s.Length - maxNrOfNameChars));
 	}
@@ -41,25 +47,46 @@ public class FileBrowser: GUIControl
 
 	public void Open(FileBrowserListener listener){
 		this.listener = listener;
-		base.Open ();
-		//FlipCloseOpen ();
-		//placeHolder.Replace (this);
+		placeHolder.Replace (this);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        GetAndroidPath();
+        Debug.Log(GetSelectedFile());
+        Close();
+#endif
 	}
 
 	public override void Close(){
-		//placeHolder.Replace (this);
-		//FlipCloseOpen ();
-		base.Close ();
+		placeHolder.Replace (this);
 		listener.FileIsSelected ();
 	}
 
 	void Start ()
 	{
-		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
-		UpdateFileAndFolder ();
+        currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        UpdateFileAndFolder();
 	}
+    
+#if UNITY_ANDROID && !UNITY_EDITOR
+    void GetAndroidPath()
+    {
+        // Attach our thread to the java vm; obviously the main thread is already attached but this is good practice..
+		AndroidJNI.AttachCurrentThread();
+		
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
-	private void UpdateFileAndFolder ()
+        activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+        {
+            activity.Call("startBrowser");
+        }));
+        
+        while (string.IsNullOrEmpty(activity.Call<string>("getPath")));
+        selectedFilePath = WWW.UnEscapeURL(activity.Call<string>("getPath")).Replace("content://fm.clean/document/", "");
+    }
+#endif
+
+    private void UpdateFileAndFolder ()
 	{
 		if (directoryLabel == null) {
 			Debug.Log ("DirectoryLabel is null.");
