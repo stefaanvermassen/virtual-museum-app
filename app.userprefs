@@ -1,17 +1,20 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Gui\QRView.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MuseumLoader.cs">
     <Files>
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtListItem.cs" Line="96" Column="3" />
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtList.cs" Line="26" Column="21" />
-      <File FileName="Assets\Scripts\Gui\New GUI\MainMenuActions.cs" Line="46" Column="24" />
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtEditPanel.cs" Line="86" Column="18" />
-      <File FileName="Assets\Scripts\Art\Art.cs" Line="159" Column="1" />
-      <File FileName="Assets\Scripts\API\MuseumController.cs" Line="107" Column="9" />
+      <File FileName="Assets\Scripts\Gui\New GUI\MainMenuActions.cs" Line="12" Column="17" />
+      <File FileName="Assets\Scripts\Searching\SearchMuseumBehaviour.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\FileBrowser\FileBrowser.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ArtListItem.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ArtList.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ArtEditPanel.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Art\Art.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\API\MuseumController.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\Gui\New GUI\MuseumList.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\API\ArtworkController.cs" Line="212" Column="22" />
-      <File FileName="Assets\Scripts\API\APIConnection.cs" Line="178" Column="1" />
+      <File FileName="Assets\Scripts\API\ArtworkController.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\API\APIConnection.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\Gui\QRView.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MuseumLoader.cs" Line="24" Column="42" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

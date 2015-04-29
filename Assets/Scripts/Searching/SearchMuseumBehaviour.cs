@@ -55,6 +55,10 @@ public class SearchMuseumBehaviour : MonoBehaviour {
         });
     }
 
+	public void BackToMain() {
+		Application.LoadLevel ("MainMenuScene");
+	}
+
     void RemoveButtons() {
         foreach (var b in content.GetComponentsInChildren<Button>()) {
             Destroy(b.gameObject);
@@ -117,5 +121,4 @@ public class SearchMuseumBehaviour : MonoBehaviour {
                 Application.LoadLevel("WalkingController");
             });
     }
-
 }

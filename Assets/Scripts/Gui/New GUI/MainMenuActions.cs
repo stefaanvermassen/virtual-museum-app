@@ -46,6 +46,14 @@ public class MainMenuActions : MonoBehaviour {
 		currentMuseumID = -1;
 	}
 
+	public void SwitchAccount() {
+		Application.LoadLevel ("Login");
+	}
+
+	public void ExploreMuseums() {
+		Application.LoadLevel ("SearchMuseums");
+	}
+
 	/// <summary>
 	/// Visit the museum with the designated museum ID
 	/// </summary>

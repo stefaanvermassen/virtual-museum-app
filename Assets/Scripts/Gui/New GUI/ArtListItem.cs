@@ -56,6 +56,11 @@ public class ArtListItem : MonoBehaviour {
 			}
 		}
 
+		if (!owner) {
+			ImageHighlightButton butt = GetComponentInChildren<ImageHighlightButton>();
+			butt.gameObject.SetActive(false);
+		}
+
 		if (artWork.image!= null) {
 			SetThumbnail(artWork.image);
 		} else if (artWork.imageFile != null) {
@@ -152,5 +157,10 @@ public class ArtListItem : MonoBehaviour {
 		foreach (RectTransform rt in rts) {
 			rt.sizeDelta = new Vector2(leWidth, leHeight);
 		}
+	}
+
+	public void ShowQR() {
+		// TODO: Send id
+		list.popUpQR.FlipCloseOpen ();
 	}
 }

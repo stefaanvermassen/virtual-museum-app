@@ -17,6 +17,8 @@ public class ArtList : MonoBehaviour {
 	
 	// When you're the owner
 	public ArtEditPanel popUpOwner;
+	public GUIControl popUpQR;
+	public QRView popUpQRView;
 
 	private bool started = false;
 	GameObject listItem;
