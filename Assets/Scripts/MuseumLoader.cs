@@ -11,16 +11,20 @@ public class MuseumLoader : MonoBehaviour {
 	public static MuseumAction currentAction = MuseumAction.Preview;
 	public Museum museum;
 
+	void OnEnable() {
+		Catalog.Refresh ();
+	}
+
 	// Use this for initialization
 	void Start () {
 		MainMenuActions menu = FindObjectOfType<MainMenuActions> ();
 		if (menu != null) { // This the default museum.
-			/*TextAsset asset = Resources.Load("defaultMuseum_bin") as TextAsset;
+			TextAsset asset = Resources.Load("defaultMuseum_bin") as TextAsset;
 			Stream s = new MemoryStream(asset.bytes);
 			BinaryFormatter deserializer = new BinaryFormatter ();
 			MuseumData data = (MuseumData)deserializer.Deserialize (s);
 			s.Close ();
-			museum.Load (data);*/
+			museum.Load (data);
 			// Temporarily disabled default museum
 		} else {
 			if (currentAction == MuseumAction.Preview) { // Preview mode
