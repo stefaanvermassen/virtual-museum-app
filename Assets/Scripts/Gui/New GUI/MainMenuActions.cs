@@ -38,6 +38,22 @@ public class MainMenuActions : MonoBehaviour {
 		// TODO: Implement this
 	}
 
+	public void ResetArtID() {
+		currentArtID = -1;
+	}
+
+	public void ResetMuseumID() {
+		currentMuseumID = -1;
+	}
+
+	public void SwitchAccount() {
+		Application.LoadLevel ("Login");
+	}
+
+	public void ExploreMuseums() {
+		Application.LoadLevel ("SearchMuseums");
+	}
+
 	/// <summary>
 	/// Visit the museum with the designated museum ID
 	/// </summary>

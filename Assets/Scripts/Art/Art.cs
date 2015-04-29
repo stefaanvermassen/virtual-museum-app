@@ -114,23 +114,26 @@ public class Art : Savable<Art, ArtData>
 		Debug.Log("Start saving Remote");
 		API.ArtworkController cont = API.ArtworkController.Instance;
 		//TODO make sure a user is logged in
-
-		HTTP.Request req = UploadImage(cont);
-		Debug.Log (req.isDone);
-		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+		if (!HasID ()) {
+			HTTP.Request req = UploadImage (cont);
+			Debug.Log (req.isDone);
+			AsyncLoader loader = AsyncLoader.CreateAsyncLoader (
 			() => {
-			Debug.Log("Started");
-		},() => {
-			//either wait for image to be uploaded or there was nu upload necessary
-			return req==null | req.callbackCompleted;
-		},
+				Debug.Log ("Started");
+			}, () => {
+				//either wait for image to be uploaded or there was nu upload necessary
+				return req == null | req.callbackCompleted;
+			},
 		() => {
-		},
+			},
 		() => {
-			Debug.Log("Loaded");
-			UploadMetaData(cont);
+				Debug.Log ("Loaded");
+				UploadMetaData (cont);
 
-		});
+			});
+		} else {
+			UploadMetaData (cont);
+		}
 		
 	}
 	public void LoadRemote(string identifier) {

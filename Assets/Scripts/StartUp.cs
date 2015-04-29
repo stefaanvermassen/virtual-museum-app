@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System;
+using API;
 
 
 #if UNITY_STANDALONE_WIN
@@ -19,6 +20,7 @@ public class StartUp : MonoBehaviour {
 	
 	void Start () {
 		statusText.fontSize = Screen.width / 40;
+		CheckLogin ();
 		CheckProtocol ();
 		HandleURI ();
 	}
@@ -145,6 +147,13 @@ public class StartUp : MonoBehaviour {
 			Application.Quit();
 		} else if(!loading) {
 			Application.LoadLevel ("MainMenuScene");
+		}
+	}
+
+	void CheckLogin() {
+		if (!SessionManager.Instance.LoggedIn ()) {
+			loading = true;
+			Application.LoadLevel ("Login");
 		}
 	}
 }
