@@ -42,7 +42,13 @@ public class DrawController : MonoBehaviour {
     private LayerMask groundLayerMask;
     private LayerMask wallLayerMask;
 
+    public enum SelectionMode {
+        Dragging,
+        Rotating
+    }
+
     private MuseumObject selectedObject;
+    private SelectionMode currentSelectionMode = SelectionMode.Dragging;
 
 	void Start () {
         groundLayerMask = (1 << LayerMask.NameToLayer("Ground"));
@@ -171,7 +177,7 @@ public class DrawController : MonoBehaviour {
                     PlaceArt(dragPointWorld, anchorPointWorld, anchorNormalWorld, dragPointScreen, anchorPointScreen);
                     break;
                 case Tools.Selecting:
-                    Select(dragPointWorld, anchorPointWorld);
+                    Select(dragPointWorld, anchorPointWorld, click);
                     break;
             }
             lastDragPointScreen = dragPointScreen;
@@ -237,9 +243,13 @@ public class DrawController : MonoBehaviour {
     }
 
     void PlaceObject(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
-        var diff = (dragPointWorld - anchorPointWorld).normalized;
-        var angle = -(Mathf.Atan2(diff.z, diff.x) - Mathf.PI / 2) / Mathf.PI * 180;
-        currentMuseum.AddObject(currentObject, (int)Mathf.Floor(anchorPointWorld.x + 0.5f), 0, (int)Mathf.Floor(anchorPointWorld.z + 0.5f), angle);
+        int x =  (int)Mathf.Floor(anchorPointWorld.x + 0.5f);
+        int y = 0;
+        int z = (int)Mathf.Floor(anchorPointWorld.z + 0.5f);
+        currentMuseum.AddObject(currentObject,x, y, z, 0);
+        tool = Tools.Selecting;
+        currentSelectionMode = SelectionMode.Dragging;
+        selectedObject = currentMuseum.GetObject(x, y, z);
     }
 
     void PlaceArt(Vector3 dragPointWorld, Vector3 anchorPointWorld, Vector3 anchorNormalWorld, Vector3 dragPointScreen, Vector3 anchorPointScreen) {
@@ -251,16 +261,35 @@ public class DrawController : MonoBehaviour {
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale,currentFrame);
     }
 
-    void Select(Vector3 dragPointWorld, Vector3 anchorPointWorld) {
+    void Select(Vector3 dragPointWorld, Vector3 anchorPointWorld, bool click) {
         var x = (int)Mathf.Floor(dragPointWorld.x + 0.5f);
         var y = 0;
         var z = (int)Mathf.Floor(dragPointWorld.z + 0.5f);
-        if (Vector3.Distance(dragPointWorld, anchorPointWorld) < 0.1f) {
-            selectedObject = currentMuseum.GetObject(x, y, z);
+        if (click) {
+            if (selectedObject != null) {
+                var distance = Vector3.Distance(selectedObject.GetPosition(), dragPointWorld);
+                if (distance > 0.5f && distance < 1.5f) {
+                    currentSelectionMode = SelectionMode.Rotating;
+                } else {
+                    currentSelectionMode = SelectionMode.Dragging;
+                }
+            } else {
+                currentSelectionMode = SelectionMode.Dragging;
+            }
         }
-        if (selectedObject != null) {
-            currentMuseum.MoveObject(selectedObject, x, y, z);
+        if (currentSelectionMode == SelectionMode.Dragging) {
+            if (Vector3.Distance(dragPointWorld, anchorPointWorld) < 0.1f) {
+                selectedObject = currentMuseum.GetObject(x, y, z);
+            }
+            if (selectedObject != null) {
+                currentMuseum.MoveObject(selectedObject, x, y, z);
+            }
+            currentMuseum.SetSelected(selectedObject);
+        } else if(currentSelectionMode == SelectionMode.Rotating) {
+            var diff = (dragPointWorld - selectedObject.GetPosition()).normalized;
+            var angle = -(Mathf.Atan2(diff.z, diff.x) - Mathf.PI / 2) / Mathf.PI * 180;
+            selectedObject.angle = angle;
+            selectedObject.SetRotation(angle);
         }
-        currentMuseum.SetSelected(selectedObject);
     }
 }
