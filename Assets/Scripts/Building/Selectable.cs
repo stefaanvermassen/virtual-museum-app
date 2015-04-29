@@ -19,7 +19,6 @@ public class Selectable : MonoBehaviour {
 		}
 	}
 	bool pulseUp = true;
-	int counter = 0;
 
 	public enum SelectionMode{ None, Selected, Preview };
 	SelectionMode selected = SelectionMode.None;
@@ -32,7 +31,7 @@ public class Selectable : MonoBehaviour {
 	}
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		if(mesh == null) mesh = GetComponent<MeshRenderer>();
 		if(mesh == null) mesh = transform.GetComponentInChildren<MeshRenderer>();
 		originalMaterials = mesh.materials;
@@ -40,26 +39,6 @@ public class Selectable : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (counter == 60) {
-			Selected = SelectionMode.Preview;
-			counter++;
-		} else if (counter == 200) {
-			Selected = SelectionMode.Selected;
-			counter++;
-		} else if (counter == 400) {
-			Selected = SelectionMode.None;
-			counter = -60;
-			Color orange = new Color(255/255.0F,146/255.0F,8/255.0F);
-			if (OutlineColor.Equals (orange)) {
-				OutlineColor = Color.red;
-			} else if (OutlineColor.Equals (Color.red)) {
-				OutlineColor = Color.green;
-			} else {
-				OutlineColor = orange;
-			}
-		} else {
-			counter++;
-		}
 		if (pulse && selected != SelectionMode.None && localSelectionMaterial != null) {
 			float outlineWidth = localSelectionMaterial.GetFloat ("_Outline");
 			if(outlineWidth >= 0.07) {
@@ -72,7 +51,9 @@ public class Selectable : MonoBehaviour {
 	}
 
 	void UpdateSelectionMode(SelectionMode mode) {
-		if(mode == selected) return;
+        if (mode == selected) {
+            return;
+        }
 		if (mode == SelectionMode.None) {
 			mesh.materials = originalMaterials;
 		} else if (mode == SelectionMode.Selected) {

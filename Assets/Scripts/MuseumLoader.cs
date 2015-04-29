@@ -25,7 +25,6 @@ public class MuseumLoader : MonoBehaviour {
 			MuseumData data = (MuseumData)deserializer.Deserialize (s);
 			s.Close ();
 			museum.Load (data);
-			// Temporarily disabled default museum
 		} else {
 			if (currentAction == MuseumAction.Preview) { // Preview mode
 				if (File.Exists (Application.persistentDataPath + "/test.bin")) {
@@ -35,8 +34,8 @@ public class MuseumLoader : MonoBehaviour {
 					TestFileStream.Close ();
 					museum.Load (data);
 				}
-			} else if (currentAction == MuseumAction.Visit) { // Visit mode
-				if (museumID != -1)
+			} else if (currentAction == MuseumAction.Visit || currentAction == MuseumAction.Edit) { // Visit mode
+				if (museumID > 0)
 					Storage.Instance.LoadRemote (museum, museumID.ToString ());
 			}
 		}
