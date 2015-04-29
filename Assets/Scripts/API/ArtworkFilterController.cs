@@ -63,18 +63,10 @@ namespace API
 		/// <param name="success">Success. A closure which will be executed when creating the artworkfilter is a succes, gives you a
 		///     artworkfilter object with the needed id.</param>
 		/// <param name="error">Error. Handle errors</param>
-		public Request CreateArtWorkFilter(ArtWorkFilter filter, Action<ArtWorkFilter> success = null, Action<API_Error> error = null)
+		public Request CreateArtWorkFilter(ArtWorkFilter filter, Action<Response> success = null, Action<API_Error> error = null)
 		{
 			var form = filter.ToHash();
-			
-			return Post(BASE_URL + ARTWORKFILTER, form, (response =>
-			                                      {
-				if (success != null)
-				{
-					var m = ArtWorkFilter.Create(response.Object);
-					success(m);
-				}
-			}), error, true);
+			return PostJsonRequest(BASE_URL + ARTWORKFILTER, form, success, error);
 		}
     }
 
@@ -84,9 +76,10 @@ namespace API
     public class ArtWorkFilter
     {
         public int ArtWorkFilterID;
+
+		public ArrayList Values;
  
-        public string Name = "";
-		public string Value = "";
+		public int ArtistID;
     
 
         public Hashtable ToHash()
@@ -94,8 +87,8 @@ namespace API
             var dict = new Hashtable
             {
 				{"Id", ArtWorkFilterID.ToString()},
-                {"Name", Name},
-                {"Value", Value}
+                {"Pairs", Values},
+                {"ArtistID", ArtistID}
             };
 
             return dict;
@@ -106,14 +99,11 @@ namespace API
             var awf = new ArtWorkFilter
             {
 				ArtWorkFilterID = ((int) dict["Id"]),
-                Name = (string) dict["Name"],
-				Value = (string) dict["Filter"]
+                Values = (ArrayList) dict["Pairs"],
+				ArtistID = ((int) dict["ArtistID"])
             };
 
             return awf;
         }
-
-	
     }
-
 }
