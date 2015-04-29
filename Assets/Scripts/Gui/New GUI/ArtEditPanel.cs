@@ -24,8 +24,9 @@ public class ArtEditPanel : FileBrowserListener {
 
 
 	void OnEnable() {
+		deleteButton.gameObject.SetActive (false);
 		if (artListItem == null) {
-			deleteButton.gameObject.SetActive(false);
+			//deleteButton.gameObject.SetActive(false);
 			saveButton.gameObject.SetActive(false);
 			title.text = "";
 			description.text = "";
@@ -34,7 +35,7 @@ public class ArtEditPanel : FileBrowserListener {
 			art = new Art();
 			imageChanged = false;
 		} else {
-			deleteButton.gameObject.SetActive(true);
+			//deleteButton.gameObject.SetActive(true);
 			saveButton.gameObject.SetActive(true);
 			title.text = artListItem.artTitle;
 			description.text = artListItem.artDescription;
@@ -89,12 +90,12 @@ public class ArtEditPanel : FileBrowserListener {
 		//saving could lead to an upload, thus it shouldn be done if not necessary
 		if (changed) {
 			art.Save();
-			art.SaveRemote();
+			art.SaveRemote(artList.OnArtSaved);
 		}
 		if (artListItem != null) {
 			artListItem = null;
-			artList.InitList ();
 		}
+		//artList.InitList ();
 		artPopUp.FlipCloseOpen ();
 	}
 
