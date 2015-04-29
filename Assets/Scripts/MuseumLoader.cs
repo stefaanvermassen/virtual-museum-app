@@ -21,8 +21,10 @@ public class MuseumLoader : MonoBehaviour {
 				TestFileStream.Close();
 				museum.Load(data);
 			}
-		} else if(currentAction == MuseumAction.Visit) { // Visit mode
-			if(museumID != -1) Storage.Instance.LoadRemote(museum, museumID.ToString());
+		} else if(currentAction == MuseumAction.Visit || currentAction == MuseumAction.Edit) { // Visit mode
+            if (museumID > 0) {
+                Storage.Instance.LoadRemote(museum, museumID.ToString());
+            }
 		}
 	}
 	

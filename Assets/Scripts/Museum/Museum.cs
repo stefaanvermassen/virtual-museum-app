@@ -39,8 +39,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private MuseumObject selected;
 
     public void Start() {
-        museumID = 0;
-        SetTile(0, 0, 0, 0, 0, 0);
+        if (!ContainsTile(0, 0, 0)) {
+            museumID = 0;
+            SetTile(0, 0, 0, 0, 0, 0);
+        }
     }
 
     public void SetSelected(MuseumObject o) {
