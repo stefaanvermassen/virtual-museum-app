@@ -48,4 +48,12 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
     public GameObject GetGameObject() {
         return ob;
     }
+
+    public Vector3 GetPosition() {
+        return new Vector3(x, y, z);
+    }
+
+    public void SetRotation(float angle) {
+        ob.transform.rotation = Quaternion.Euler(new Vector3(0, angle, 0));
+    }
 }
