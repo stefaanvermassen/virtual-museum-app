@@ -105,5 +105,17 @@ namespace API
 
             return awf;
         }
+
+		public static Hashtable CreateMetaData(string key, string value) {
+			var dict = new Hashtable
+			{
+				{"Name", key},
+				{"Value", value}
+			};
+			
+			return dict;
+		}
+		
+
     }
 }
