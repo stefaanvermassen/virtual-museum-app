@@ -63,6 +63,31 @@ public class QRCam : MonoBehaviour {
 	  CamTexture.requestedHeight = Screen.height; // 480;
 	  CamTexture.requestedWidth = Screen.width; //640;
 		
+		//TEST CODE HERE
+
+		API.ArtworkFilterController c = API.ArtworkFilterController.Instance;
+		API.ArtWorkFilter f = new API.ArtWorkFilter ();
+		f.ArtistID = 1;
+
+		Hashtable t = new Hashtable ();
+		t.Add ("tag", "collection1");
+		ArrayList l = new ArrayList ();
+		l.Add (t);
+		f.Values = l;
+
+		HTTP.Request r = c.CreateArtWorkFilter (f);
+
+		c.CreateArtWorkFilter (f, 
+		                    (art)=> {
+			Debug.Log ("Filter added");
+		}, 
+		(error) => {
+			Debug.Log ("Failed to add filter.");
+		}
+		);
+
+		//END TEST CODE HERE
+
 
 	  OnEnable();
 
