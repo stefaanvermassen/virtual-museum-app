@@ -192,6 +192,16 @@ namespace API
             return dict;
         }
 
+		public static Hashtable CreateMetaData(string key, string value) {
+			var dict = new Hashtable
+			{
+				{"Name", key},
+				{"Value", value}
+			};
+			
+			return dict;
+		}
+
         public static ArtWork Create(Hashtable dict)
         {
             var aw = new ArtWork
@@ -213,7 +223,8 @@ namespace API
 			};
 			var list = new ArrayList ();
 			if(art.description != null) {
-				//list.Add (new KeyValuePair<string, string>("description",art.description));
+				list.Add (ArtWork.CreateMetaData("Description", art.description));
+				list.Add (ArtWork.CreateMetaData("Genre", "nsfw"));
 			}
 			return new ArtWork ()
 			{
@@ -231,6 +242,17 @@ namespace API
 			art.owner.ID = artwork.Artist.ID;
 			art.owner.name = artwork.Artist.Name;
 			art.name = artwork.Name;
+			foreach (Hashtable dict in artwork.Metadata) {
+				if(dict.ContainsKey("Name") && dict.ContainsKey("Value")) {
+					string key = (string) dict["Name"];
+					string value = (string) dict["Value"];
+					if(key.ToLower().Equals("description")) {
+						art.description = value;
+					} else if(key.ToLower().Equals("genre")) {
+						art.genres.Add (value);
+					}
+				}
+			}
 			return art;
 		}
     }
