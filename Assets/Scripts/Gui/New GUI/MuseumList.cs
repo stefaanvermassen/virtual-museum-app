@@ -55,6 +55,7 @@ public class MuseumList : MonoBehaviour {
 					separator.transform.SetParent(transform, false);
 				}
 				item.transform.SetParent (transform, false);
+				item.museumID = m.MuseumID;
 				item.museumName = m.Name;
 				item.museumDescription = m.Description;
 				item.list = this;

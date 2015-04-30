@@ -195,14 +195,26 @@ public class Art : Savable<Art, ArtData>
 	{
 		EventHandler handler = ArtLoaded;
 		if (handler != null) {
-			handler (this, e);
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				ArtLoaded = null;
+			}
 		}
 	}
 
 	protected void OnArtSaved(EventArgs e) {
 		EventHandler handler = ArtSaved;
 		if (handler != null) {
-			handler (this, e);
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				ArtSaved = null;
+			}
 		}
 	}
 
