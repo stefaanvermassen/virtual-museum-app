@@ -148,7 +148,7 @@ public class StartUp : MonoBehaviour {
 			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum\\shell\\open]");
 			batFile.WriteLine ("");
 			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum\\shell\\open\\command]");
-			batFile.WriteLine ("@=\"\\\"" + exePath + "\\\" -museum \\\"%1\\\"\"");
+			batFile.WriteLine ("@=\"\\\"" + exePath + "\\\" -url \\\"%1\\\"\"");
 			batFile.Close();
 			
 			// Launch self-contained reg-bat file. This will ask for permission if UAC is enabled!
