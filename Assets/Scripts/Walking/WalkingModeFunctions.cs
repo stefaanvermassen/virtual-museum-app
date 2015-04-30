@@ -22,7 +22,11 @@ public class WalkingModeFunctions : MonoBehaviour {
 	}
 
 	public void TempBack() {
-		Application.LoadLevel("BuildMuseum");
+		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
+			Application.LoadLevel ("MainMenuScene");
+		} else {
+			Application.LoadLevel ("BuildMuseum");
+		}
 	}
 
     void Update() {

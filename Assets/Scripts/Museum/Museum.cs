@@ -4,7 +4,6 @@ using System.Linq;
 using System;
 using System.Threading;
 using API;
-using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
@@ -78,15 +77,15 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                     Debug.Log("Loaded");
 					ArtworkController.Instance.GetArtworkData(
 						"" + id,
-						success: (artworkData) => {
+						(artworkData) => {
 						art.image = new Texture2D(1, 1);
 						art.image.LoadImage(artworkData);
 						Debug.Log("Loaded2");
 						artDictionary.Add(id, art);
 						artIDsDownloading.Remove(id);
 					},
-					error: (error) => {
-					});
+					(error) => {
+					}, API.ArtworkSizes.MOBILE_LARGE);
                 },
                 error: (error) => {
                 });
