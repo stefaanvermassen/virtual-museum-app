@@ -76,10 +76,21 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                     art.description = artwork.Name;
                     art.ID = artwork.ArtWorkID;
                     Debug.Log("Loaded");
+					ArtworkController.Instance.GetArtworkData(
+						"" + id,
+						success: (artworkData) => {
+						art.image = new Texture2D(1, 1);
+						art.image.LoadImage(artworkData);
+						Debug.Log("Loaded2");
+						artDictionary.Add(id, art);
+						artIDsDownloading.Remove(id);
+					},
+					error: (error) => {
+					});
                 },
                 error: (error) => {
                 });
-            ArtworkController.Instance.GetArtworkData(
+            /*ArtworkController.Instance.GetArtworkData(
                 "" + id,
                 success: (artwork) => {
                     art.image = new Texture2D(1, 1);
@@ -89,7 +100,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                     artIDsDownloading.Remove(id);
                 },
                 error: (error) => {
-                });
+                });*/
             return null;
         }
         return artDictionary[id];
