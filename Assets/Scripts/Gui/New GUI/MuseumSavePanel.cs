@@ -1,0 +1,47 @@
+﻿using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+using System;
+
+public class MuseumSavePanel : MonoBehaviour {
+
+	public InputField title;
+	public InputField description;
+	public GUIControl savePopUp;
+	public ImageHighlightButton saveButton;
+	public Museum museum;
+	public bool exitOnSaved;
+	public BuildMuseumActions actions;
+
+	void OnEnable() {
+		title.text = (museum.museumName == null ? "" : museum.museumName);
+		description.text = (museum.description == null ? "" : museum.description);
+		bool active = (title.text.Length > 0 && description.text.Length > 0);
+		saveButton.gameObject.SetActive (active);
+	}
+
+	void Update () {
+		bool active = (title.text.Length > 0 && description.text.Length > 0);
+		saveButton.gameObject.SetActive (active);
+	}
+
+	public void Save() {
+		museum.museumName = title.text;
+		museum.description = description.text;
+		//Storage.Instance.SaveRemote(museum);
+		museum.SaveRemote (OnSaved);
+		savePopUp.Close ();
+	}
+
+	public void OnSaved(object sender, EventArgs e) {
+		if (exitOnSaved) {
+			actions.BackToMain ();
+		} else {
+			//Toast.print ("Museum was successfully saved");
+		}
+	}
+
+	public void SetExitOnSaved(bool exit) {
+		exitOnSaved = exit;
+	}
+}
