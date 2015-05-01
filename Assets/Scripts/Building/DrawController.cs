@@ -23,6 +23,7 @@ public class DrawController : MonoBehaviour {
     public Museum currentMuseum;
     public float cameraSpeed = 10;
     public Tools tool = Tools.Drawing;
+	public BuildMuseumActions actions;
 
     public int currentArt = 1;
     public int currentObject = 0;
@@ -63,6 +64,9 @@ public class DrawController : MonoBehaviour {
     /// <param name="tool">The int representation of a Tools enum value.</param>
     public void SetTool(int tool) {
         this.tool = (Tools)tool;
+		if (this.tool != Tools.Selecting) {
+			currentMuseum.SetSelected(null);
+		}
     }
 
     /// <summary>
@@ -144,59 +148,67 @@ public class DrawController : MonoBehaviour {
             click = true;
         }
         if (Input.GetMouseButtonUp(mouseButton)) {
+			// This code destroys selected object if released above trash
+			if(tool == Tools.Selecting && actions.toolButtons[(int)Tools.Erasing].IsHighlighted()) {
+				currentMuseum.RemoveObject(selectedObject);
+				selectedObject = null;
+			}
+
             dragging[mouseButton] = false;
         }
-        if (dragging[mouseButton]) {
-            var dragPointScreen = Vector3.zero;
-            var dragPointWorld = Vector3.zero;
-            dragPointScreen = mouse2D;
-            dragPointWorld = raycast(mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask).point;
-            var dragOffsetScreen = anchorPointScreen - dragPointScreen;
-            var dragOffsetWorld = anchorPointWorld - dragPointWorld;
-            var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
-            switch (tool) {
-                case Tools.Drawing:
-                    Draw(dragPointWorld);
-                    break;
-                case Tools.Moving:
-                    Move(dragOffsetWorld);
-                    break;
-                case Tools.Rotating:
-                    Rotate(centerPointWorld, new Vector3(-frameOffsetScreen.y / Screen.height * 180, frameOffsetScreen.x / Screen.width * 180, 0));
-                    break;
-                case Tools.Erasing:
-                    Erase(dragPointWorld, anchorPointWorld, anchorNormalWorld, click);
-                    break;
-                case Tools.Scaling:
-                    Scale(Mathf.Pow(2, -frameOffsetScreen.y / Screen.height));
-                    break;
-                case Tools.PlacingObject:
-                    PlaceObject(dragPointWorld, anchorPointWorld);
-                    break;
-                case Tools.PlacingArt:
-                    PlaceArt(dragPointWorld, anchorPointWorld, anchorNormalWorld, dragPointScreen, anchorPointScreen);
-                    break;
-                case Tools.Selecting:
-                    Select(dragPointWorld, anchorPointWorld, click);
-                    break;
-            }
-            lastDragPointScreen = dragPointScreen;
-        }
+        if (dragging [mouseButton]) {
+			var dragPointScreen = Vector3.zero;
+			var dragPointWorld = Vector3.zero;
+			dragPointScreen = mouse2D;
+			dragPointWorld = raycast (mouse3D, Camera.main.transform.forward, Mathf.Infinity, groundLayerMask).point;
+			var dragOffsetScreen = anchorPointScreen - dragPointScreen;
+			var dragOffsetWorld = anchorPointWorld - dragPointWorld;
+			var frameOffsetScreen = dragPointScreen - lastDragPointScreen;
+			switch (tool) {
+			case Tools.Drawing:
+				Draw (dragPointWorld);
+				break;
+			case Tools.Moving:
+				Move (dragOffsetWorld);
+				break;
+			case Tools.Rotating:
+				Rotate (centerPointWorld, new Vector3 (-frameOffsetScreen.y / Screen.height * 180, frameOffsetScreen.x / Screen.width * 180, 0));
+				break;
+			case Tools.Erasing:
+				Erase (dragPointWorld, anchorPointWorld, anchorNormalWorld, click);
+				break;
+			case Tools.Scaling:
+				Scale (Mathf.Pow (2, -frameOffsetScreen.y / Screen.height));
+				break;
+			case Tools.PlacingObject:
+				PlaceObject (dragPointWorld, anchorPointWorld);
+				break;
+			case Tools.PlacingArt:
+				PlaceArt (dragPointWorld, anchorPointWorld, anchorNormalWorld, dragPointScreen, anchorPointScreen);
+				break;
+			case Tools.Selecting:
+				Select (dragPointWorld, anchorPointWorld, click);
+				break;
+			}
+			lastDragPointScreen = dragPointScreen;
+		}
     }
 
     void MouseUpdate() {
-        var scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll < 0) {
-            Scale(1.1f);
-        } else if (scroll > 0) {
-            Scale(0.9f);
-        }
+		if (actions.canScroll) {
+			var scroll = Input.GetAxis ("Mouse ScrollWheel");
+			if (scroll < 0) {
+				Scale (1.1f);
+			} else if (scroll > 0) {
+				Scale (0.9f);
+			}
+		}
         ToolUpdate(1, Tools.Rotating);
         ToolUpdate(2, Tools.Moving);
     }
 
     void GestureUpdate() {
-        if (Input.touchCount == 2) {
+        if (Input.touchCount == 2 && actions.canScroll) {
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
             Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;

@@ -55,6 +55,11 @@ public class ArtList : MonoBehaviour {
 		Catalog.RefreshArtWork (handler);		
 	}
 
+	public void OnArtSaved(object sender, EventArgs e) {
+		InitList ();
+	}
+
+
 	public void OnArtLoaded(object sender, EventArgs e) {
 		Art art = (Art)sender;
 		ArtListItem item = ((GameObject) GameObject.Instantiate(listItem)).GetComponent<ArtListItem>();
@@ -81,6 +86,18 @@ public class ArtList : MonoBehaviour {
 		item.popUpTitle = popUpTitle;
 		item.artWork = art;
 
+		if (Application.loadedLevelName.Equals ("BuildMuseum")) {
+			BuildMuseumActions actions = FindObjectOfType<BuildMuseumActions> ();
+			if (actions != null && (actions.GetArt() == item.artID)) {
+				Button butt = item.GetComponent<Button>();
+				ColorBlock colors = butt.colors;
+				colors.normalColor = new Color(Color.green.r, Color.green.g, Color.green.b, 75f/255f);
+				colors.highlightedColor = new Color(Color.green.r, Color.green.g, Color.green.b, 150f/255f);
+				colors.pressedColor = new Color(Color.green.r, Color.green.g, Color.green.b, 200f/255f);
+				butt.colors = colors;
+			}
+		}
+
 		item.UpdateLabels();
 	}
 
@@ -89,8 +106,10 @@ public class ArtList : MonoBehaviour {
 		control.GetConnectedArtists ((success) => {
 			ArtListItem[] items = GetComponentsInChildren<ArtListItem>();
 			foreach(API.Artist a in success) {
+				if(userID == -1) {
 				userID = a.ID;
 				userName = a.Name;
+				}
 			}
 			foreach(ArtListItem item in items) {
 				item.owner = (userID == item.artID);

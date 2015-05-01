@@ -4,7 +4,6 @@ using System.Linq;
 using System;
 using System.Threading;
 using API;
-using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
@@ -37,6 +36,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private bool loaded = false;
 
     private MuseumObject selected;
+
+	public event EventHandler MuseumSaved;
 
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
@@ -76,10 +77,21 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                     art.description = artwork.Name;
                     art.ID = artwork.ArtWorkID;
                     Debug.Log("Loaded");
+					ArtworkController.Instance.GetArtworkData(
+						"" + id,
+						(artworkData) => {
+						art.image = new Texture2D(1, 1);
+						art.image.LoadImage(artworkData);
+						Debug.Log("Loaded2");
+						artDictionary.Add(id, art);
+						artIDsDownloading.Remove(id);
+					},
+					(error) => {
+					}, API.ArtworkSizes.MOBILE_LARGE);
                 },
                 error: (error) => {
                 });
-            ArtworkController.Instance.GetArtworkData(
+            /*ArtworkController.Instance.GetArtworkData(
                 "" + id,
                 success: (artwork) => {
                     art.image = new Texture2D(1, 1);
@@ -89,7 +101,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                     artIDsDownloading.Remove(id);
                 },
                 error: (error) => {
-                });
+                });*/
             return null;
         }
         return artDictionary[id];
@@ -309,12 +321,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 toRemove = o;
             }
         }
-        if (toRemove != null) {
-            objects.Remove(toRemove);
-            toRemove.Remove();
-			Util.Destroy(toRemove.gameObject);
-        }
+		RemoveObject (toRemove);
     }
+
+	/// <summary>
+	/// Removes the specified museum object
+	/// </summary>
+	/// <param name="toRemove">MuseumObject to remove.</param>
+	public void RemoveObject(MuseumObject toRemove) {
+		if (toRemove != null) {
+			objects.Remove(toRemove);
+			toRemove.Remove();
+			Util.Destroy(toRemove.gameObject);
+		}
+	}
 
     /// <summary></summary>
     /// <param name="x"></param>
@@ -348,7 +368,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void MoveObject(MuseumObject o, int newX, int newY, int newZ) {
         if (o != null) {
-            o.GetGameObject().transform.Translate(new Vector3(newX - o.x, newY - o.y, newZ - o.z), Space.World);
+            if(o.GetGameObject() != null) {
+				o.GetGameObject().transform.Translate(new Vector3(newX - o.x, newY - o.y, newZ - o.z), Space.World);
+			}
             o.x = newX;
             o.y = newY;
             o.z = newZ;
@@ -526,6 +548,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         return "mus";
     }
 
+	public void SaveRemote(EventHandler handler)
+	{
+		if (handler != null) MuseumSaved += handler;
+		SaveRemote ();
+	}
+
     public void SaveRemote()
     {
         cont = API.MuseumController.Instance;
@@ -548,7 +576,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 toast.Notify("Saving Museum...");
             },
             () => {
-                toast.Notify("Museum saved!");
+				toast.Notify("Museum saved!");
+				OnMuseumSaved(new EventArgs());
             });
         if (museumID == 0) {
             req = cont.CreateMuseum(museum, (mus) => {
@@ -609,5 +638,19 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public bool IsLoaded() {
         return loaded;
     }
+
+	protected void OnMuseumSaved(EventArgs e) {
+		EventHandler handler = MuseumSaved;
+		if (handler != null) {
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log (ex.ToString());
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				MuseumSaved = null;
+			}
+		}
+	}
 
 }

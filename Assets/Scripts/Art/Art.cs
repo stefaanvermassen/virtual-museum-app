@@ -22,7 +22,8 @@ public class Art : Savable<Art, ArtData>
 
 	//checks if the artworks image is loading or not
 	public bool loadingImage;
-	public event EventHandler ArtLoaded;
+	public event EventHandler ArtLoaded = null;
+	public event EventHandler ArtSaved = null;
 
     public Art() {
         owner = new User();
@@ -103,6 +104,7 @@ public class Art : Savable<Art, ArtData>
 		cont.UpdateArtWork (apiArt, 
 		(art)=> {
 			Debug.Log ("Update Artwork info successfull");
+			OnArtSaved(new EventArgs());
 		}, 
 		(error) => {
 			throw new UploadFailedException ("Failed to update artwork info.");
@@ -110,7 +112,12 @@ public class Art : Savable<Art, ArtData>
 		);
 	}
 
-    public void SaveRemote() {
+	public void SaveRemote(EventHandler eventHandler) {
+		ArtSaved += eventHandler;
+		SaveRemote ();
+	}
+
+	public void SaveRemote() {
 		Debug.Log("Start saving Remote");
 		API.ArtworkController cont = API.ArtworkController.Instance;
 		//TODO make sure a user is logged in
@@ -188,7 +195,26 @@ public class Art : Savable<Art, ArtData>
 	{
 		EventHandler handler = ArtLoaded;
 		if (handler != null) {
-			handler (this, e);
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				ArtLoaded = null;
+			}
+		}
+	}
+
+	protected void OnArtSaved(EventArgs e) {
+		EventHandler handler = ArtSaved;
+		if (handler != null) {
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				ArtSaved = null;
+			}
 		}
 	}
 

@@ -1,20 +1,19 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MuseumLoader.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Gui\New GUI\ScrollbarWheelListener.cs">
     <Files>
-      <File FileName="Assets\Scripts\Gui\New GUI\MainMenuActions.cs" Line="12" Column="17" />
-      <File FileName="Assets\Scripts\Searching\SearchMuseumBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Gui\FileBrowser\FileBrowser.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtListItem.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtList.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Gui\New GUI\ArtEditPanel.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Art\Art.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ScrollbarWheelListener.cs" Line="18" Column="136" />
+      <File FileName="Assets\Scripts\Building\DrawController.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\MainMenuActions.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\API\MuseumController.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Gui\New GUI\MuseumList.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\API\ArtworkController.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\API\APIConnection.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Gui\QRView.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\MuseumLoader.cs" Line="24" Column="42" />
+      <File FileName="Assets\Scripts\Building\ObjectCatalogController.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Building\ObjectCatalogItemController.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ArtList.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ImageHighlightButton.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\ArtListItem.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\BuildMuseumActions.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Gui\New GUI\StyleSelector.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Museum\Museum.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

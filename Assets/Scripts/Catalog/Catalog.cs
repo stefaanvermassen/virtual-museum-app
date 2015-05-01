@@ -129,35 +129,6 @@ public static class Catalog
 		//TODO make sure a user is logged in
 		API.ArtworkController ac = API.ArtworkController.Instance;
 		//load all artworks
-		/*ac.GetAllArtworks (success: (response) => {
-			foreach (API.ArtWork child in response) {
-				//we save the child, because else it is overwritten in the local scope of the closure
-				var artwork = child;
-				//check if catalog has it
-				if (!hasArt (artwork.ArtWorkID)) {
-					Art newArt = new Art ();
-					if(eventHandler != null) {
-						newArt.ArtLoaded += eventHandler;
-					}
-					
-					Storage.Instance.Load (newArt, artwork.ArtWorkID + "");
-					//we use the id from the artwork instance because there's no guarantee for the newart instance to be loaded already
-					artworksDictionary.Add (artwork.ArtWorkID, newArt);
-				} else {
-					if(eventHandler != null) {
-						Art art = getArt (artwork.ArtWorkID);
-						if(getArt (artwork.ArtWorkID).loadingImage) {
-							art.ArtLoaded += eventHandler;
-						} else {
-							eventHandler(art, new EventArgs());
-						}
-					}
-				}
-			}
-		},
-		error: (error) => {
-			Debug.Log ("An error occured while loading all artworks");
-		});*/
 		AsyncLoader loader = AsyncLoader.CreateAsyncLoader (
 			() => {
 			Debug.Log ("Started");
