@@ -37,6 +37,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     private MuseumObject selected;
 
+	public event EventHandler MuseumSaved;
+
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
             museumID = 0;
@@ -536,6 +538,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         return "mus";
     }
 
+	public void SaveRemote(EventHandler handler)
+	{
+		if (handler != null) MuseumSaved += handler;
+		SaveRemote ();
+	}
+
     public void SaveRemote()
     {
         cont = API.MuseumController.Instance;
@@ -558,7 +566,8 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 toast.Notify("Saving Museum...");
             },
             () => {
-                toast.Notify("Museum saved!");
+				toast.Notify("Museum saved!");
+				OnMuseumSaved(new EventArgs());
             });
         if (museumID == 0) {
             req = cont.CreateMuseum(museum, (mus) => {
@@ -619,5 +628,19 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public bool IsLoaded() {
         return loaded;
     }
+
+	protected void OnMuseumSaved(EventArgs e) {
+		EventHandler handler = MuseumSaved;
+		if (handler != null) {
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log (ex.ToString());
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				MuseumSaved = null;
+			}
+		}
+	}
 
 }

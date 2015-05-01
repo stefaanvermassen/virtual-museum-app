@@ -12,7 +12,8 @@ public class MainMenuActions : MonoBehaviour {
 	void Start () {}
 
 	public void NewMuseum() {
-		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Preview;
+		MuseumLoader.museumID = -1;
+		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Edit;
 		Application.LoadLevel("BuildMuseum");
 	}
 
