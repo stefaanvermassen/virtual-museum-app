@@ -6,73 +6,76 @@ using UnityEngine.UI;
 
 public class QRCam : MonoBehaviour {
 
-    public Texture2D encoded;
-    public WebCamTexture camTexture;
-    public Image image;
-    private Rect paneRect;
-    private QRScanner scanner = new QRScanner();
-    private Thread scanThread;
+    public Texture2D Encoded;
+    public WebCamTexture CamTexture;
+    private Rect PaneRect;
+    private QRScanner Scanner = new QRScanner();
+    private Thread ScanThread;
+	public QRView view;
 
 
     void OnGUI()
     {
-        GUI.DrawTexture(paneRect, camTexture, ScaleMode.ScaleAndCrop);
+        GUI.DrawTexture(PaneRect, CamTexture, ScaleMode.ScaleAndCrop);
     }
 
 	// Use this for initialization
     void OnEnable()
     {
-        if (camTexture != null)
+        if (CamTexture != null)
         {
-            camTexture.Play();
-            scanner.Width = camTexture.width;
-            scanner.Height = camTexture.height;
+            CamTexture.Play();
+            Scanner.Width = CamTexture.width;
+            Scanner.Height = CamTexture.height;
+			Scanner.Color = CamTexture.GetPixels32();
         }
         
 	}
 
     void OnDisable()
     {
-        if (camTexture != null)
+        if (CamTexture != null)
         {
-            camTexture.Pause();
+            CamTexture.Pause();
         }
     }
 
     void OnDestroy()
     {
-        scanThread.Abort();
-        camTexture.Stop();
+        ScanThread.Abort();
+        CamTexture.Stop();
     }
 
     // It's better to stop the thread by itself rather than abort it.
     void OnApplicationQuit()
     {
-        scanner.IsQuit = true;
+        Scanner.IsQuit = true;
     }
     
     void Start()
    {
 
-      encoded = new Texture2D(256, 256);
+	  Encoded = new Texture2D(256, 256);
 
-      paneRect = new Rect(0, 0, Screen.width, Screen.height); //is this the panel or the entire screen?
+	  PaneRect = new Rect(0, 0, Screen.width, Screen.height); //is this the panel or the entire screen?
 
-      camTexture = new WebCamTexture();
-      camTexture.requestedHeight = Screen.height; // 480;
-      camTexture.requestedWidth = Screen.width; //640;
+	  CamTexture = new WebCamTexture();
+	  CamTexture.requestedHeight = Screen.height; // 480;
+	  CamTexture.requestedWidth = Screen.width; //640;
+		
 
-      OnEnable();
+	  OnEnable();
 
-      scanThread = new Thread(scanner.Scan);
-      scanThread.Start();
+
+	  ScanThread = new Thread(Scanner.Scan);
+	  ScanThread.Start();
    }
 
     void Update()
     {
-        if (scanner.Color == null) //scanner.Color is set to null when no QR code could be found and decoded
+        if (Scanner.Color == null) //scanner.Color is set to null when no QR code could be found and decoded
         {
-            scanner.Color = camTexture.GetPixels32();
+            Scanner.Color = CamTexture.GetPixels32();
         }
     }
 }
