@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class ObjectCatalogController : GUIControl
 {
@@ -8,17 +9,26 @@ public class ObjectCatalogController : GUIControl
 
 
 	public GUIControl catalogContent;
+	public string catalogType;
 	// Objects are loaded on initialisation, a collection is dynamic, on the change of a collecition the loadObjects should be called again
 	// or load objects every time the catalog is shown
 
 	public void Open (string catalogType)
 	{
+		this.catalogType = catalogType;
 		Open ();
-		OnTop ();
-		//change header text
-		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
+		//OnTop ();
 		
 	}
+
+	public override void Open() {
+		base.Open ();
+		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
+	}
+
+	/*void OnEnable() {
+		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
+	}*/
 
 
 	//use objects id'd as strings in catalog to build the gui
@@ -29,10 +39,29 @@ public class ObjectCatalogController : GUIControl
 		catalogContent.RemoveAllChildren ();
 		//fill with objects from collection
 		int[] ids = Catalog.getResourceIDs (type);
-		Debug.Log (ids.Length);
+		//Debug.Log (ids.Length);
 		for (int i = 0; i < ids.Length; i++) {
 			GUIControl item = catalogContent.AddDynamicChild ();
 			ObjectCatalogItemController controller = item.GetComponent<ObjectCatalogItemController> ();
+			if (Application.loadedLevelName.Equals ("BuildMuseum")) {
+				BuildMuseumActions actions = FindObjectOfType<BuildMuseumActions> ();
+				if (actions != null) {
+					bool selected = false;
+					selected = selected || (type == Catalog.CatalogType.OBJECT && (actions.GetObject() == ids[i]));
+					selected = selected || (type == Catalog.CatalogType.WALL && (actions.GetWall() == ids[i]));
+					selected = selected || (type == Catalog.CatalogType.FLOOR && (actions.GetFloor() == ids[i]));
+					selected = selected || (type == Catalog.CatalogType.CEILING && (actions.GetCeiling() == ids[i]));
+					selected = selected || (type == Catalog.CatalogType.FRAME && (actions.GetFrame() == ids[i]));
+					if(selected) {
+						Button butt = item.GetComponent<Button>();
+						ColorBlock colors = butt.colors;
+						colors.normalColor = new Color(Color.green.r, Color.green.g, Color.green.b, 75f/255f);
+						colors.highlightedColor = new Color(Color.green.r, Color.green.g, Color.green.b, 150f/255f);
+						colors.pressedColor = new Color(Color.green.r, Color.green.g, Color.green.b, 200f/255f);
+						butt.colors = colors;
+					}
+				}
+			}
 			controller.init (ids[i], type);
 		}
 		//position content on topcatalogContent.AddDynamicChild ();

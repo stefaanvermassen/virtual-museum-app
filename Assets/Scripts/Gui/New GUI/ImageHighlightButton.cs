@@ -49,4 +49,12 @@ public class ImageHighlightButton : Button {
 			DoStateTransition (SelectionState.Highlighted, false);
 		}
 	}
+
+	public string GetSelectionState() {
+		return currentSelectionState.ToString();
+	}
+
+	public bool IsHighlighted() {
+		return (currentSelectionState == SelectionState.Highlighted || currentSelectionState == SelectionState.Pressed);
+	}
 }

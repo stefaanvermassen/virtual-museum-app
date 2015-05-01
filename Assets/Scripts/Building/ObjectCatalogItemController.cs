@@ -7,7 +7,7 @@ public class ObjectCatalogItemController : GUIControl
 {
 	private int index;
 	public Button button;
-	public DrawController drawController;
+	public BuildMuseumActions actions;
 	public ObjectCatalogController catalog;
 
 	public void init (int i, Catalog.CatalogType type)
@@ -30,8 +30,8 @@ public class ObjectCatalogItemController : GUIControl
 			scale = objectScale;
 			position = objectPosition;
 			button.onClick.AddListener (() => {
-				drawController.SetCurrentObject (index);
-				catalog.Close ();
+				actions.SetObject(index);
+				//catalog.Close ();
 			});
 			break;
 		case Catalog.CatalogType.FRAME:
@@ -39,8 +39,8 @@ public class ObjectCatalogItemController : GUIControl
 			scale = frameScale;
 			position = framePosition;
 			button.onClick.AddListener (() => {
-				drawController.SetCurrentFrame (index);
-				catalog.Close ();
+				actions.SetFrame (index);
+				//catalog.Close ();
 			});
 			break;
 		case Catalog.CatalogType.WALL:
@@ -48,8 +48,8 @@ public class ObjectCatalogItemController : GUIControl
 			scale = wallScale;
 			position = wallPosition;
 			button.onClick.AddListener (() => {
-				drawController.SetCurrentWall (index);
-				catalog.Close ();
+				actions.SetWall (index);
+				//catalog.Close ();
 			});
 
 			break;
@@ -58,8 +58,8 @@ public class ObjectCatalogItemController : GUIControl
 			scale = floorScale;
 			position = floorPosition;
 			button.onClick.AddListener (() => {
-				drawController.SetCurrentFloor (index);
-				catalog.Close ();
+				actions.SetFloor (index);
+				//catalog.Close ();
 			});
 
 			break;
@@ -68,13 +68,13 @@ public class ObjectCatalogItemController : GUIControl
 			scale = ceilingScale;
 			position = ceilingPosition;
 			button.onClick.AddListener (() => {
-				drawController.SetCurrentCeiling (index);
-				catalog.Close ();
+				actions.SetCeiling (index);
+				//catalog.Close ();
 			});
 			break;
 		case Catalog.CatalogType.ART:
 			button.onClick.AddListener (() => {
-				drawController.SetCurrentArt (index);
+				actions.SetArt (index);
 				catalog.Close ();
 			});
 			break;
@@ -86,6 +86,13 @@ public class ObjectCatalogItemController : GUIControl
 			model.transform.SetParent (button.transform, false);
 			model.transform.localPosition = new Vector3 (position [0], position [1], position [2]);
 			model.transform.localRotation = Quaternion.Euler (new Vector3 (rotation [0], rotation [1], rotation [2]));
+			ObjectDisplayProperties properties = model.GetComponent<ObjectDisplayProperties>();
+			if(properties != null) {
+				Vector3 rot = model.transform.localRotation.eulerAngles;
+				Vector3 pos = model.transform.localPosition;
+				model.transform.localPosition = pos + (properties.addPosition * scale);
+				model.transform.localRotation = Quaternion.Euler (rot + properties.addRotation);
+			}
 			model.transform.localScale = new Vector3 (scale, scale, scale);
 			ChangeLayersRecursively (model.transform, LayerMask.NameToLayer ("UI"));
 			//after transformation to show 3D object normalise back, it's rotated after adding
@@ -112,13 +119,13 @@ public class ObjectCatalogItemController : GUIControl
 	private int[] floorRotation = {90,180,0};
 	private int[] ceilingRotation = {90,0,0};
 	private int[] wallRotation = {0,180,0};
-	private int[] objectPosition = {50,0,-30} ;
+	private int[] objectPosition = {52,10,-30} ;
 	private int[] framePosition = {50,50,-30} ;
 	private int[] ceilingPosition = {10,90,-150} ;
 	private int[] wallPosition = {83,5,-5} ;
 	private int[] floorPosition = {90,90,-5} ;
 	private float objectScale = 100;
-	private float frameScale = 80;
+	private float frameScale = 70;
 	private float floorScale = 80;
 	private float ceilingScale = 80;
 	private float wallScale = 60;
@@ -148,5 +155,9 @@ public class ObjectCatalogItemController : GUIControl
 		foreach (Transform child in trans) {
 			ChangeLayersRecursively (child, layer);
 		}
+	}
+
+	public int getID() {
+		return index;
 	}
 }

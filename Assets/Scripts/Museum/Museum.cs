@@ -321,12 +321,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 toRemove = o;
             }
         }
-        if (toRemove != null) {
-            objects.Remove(toRemove);
-            toRemove.Remove();
-			Util.Destroy(toRemove.gameObject);
-        }
+		RemoveObject (toRemove);
     }
+
+	/// <summary>
+	/// Removes the specified museum object
+	/// </summary>
+	/// <param name="toRemove">MuseumObject to remove.</param>
+	public void RemoveObject(MuseumObject toRemove) {
+		if (toRemove != null) {
+			objects.Remove(toRemove);
+			toRemove.Remove();
+			Util.Destroy(toRemove.gameObject);
+		}
+	}
 
     /// <summary></summary>
     /// <param name="x"></param>
@@ -360,7 +368,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void MoveObject(MuseumObject o, int newX, int newY, int newZ) {
         if (o != null) {
-            o.GetGameObject().transform.Translate(new Vector3(newX - o.x, newY - o.y, newZ - o.z), Space.World);
+            if(o.GetGameObject() != null) {
+				o.GetGameObject().transform.Translate(new Vector3(newX - o.x, newY - o.y, newZ - o.z), Space.World);
+			}
             o.x = newX;
             o.y = newY;
             o.z = newZ;
