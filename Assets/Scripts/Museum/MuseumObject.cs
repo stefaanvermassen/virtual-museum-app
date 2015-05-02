@@ -25,10 +25,17 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
         Start();
     }
 
-    void Start() {
+    public void Start() {
         Remove();
         var master = Catalog.GetObject(objectID);
-        ob = (GameObject) Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
+        ob = (GameObject)Instantiate(master, new Vector3(x, y, z), Quaternion.Euler(new Vector3(0, angle, 0)));
+    }
+
+    public Selectable Select(Selectable.SelectionMode mode, Color color) {
+        var selectable = ob.GetComponent<Selectable>();
+        selectable.Selected = mode;
+        selectable.OutlineColor = color;
+        return selectable;
     }
 
     /// <summary>
@@ -36,5 +43,17 @@ public class MuseumObject : MonoBehaviour, Storable<MuseumObject, MuseumObjectDa
     /// </summary>
     public void Remove() {
         if(ob != null) Destroy(ob);
+    }
+
+    public GameObject GetGameObject() {
+        return ob;
+    }
+
+    public Vector3 GetPosition() {
+        return new Vector3(x, y, z);
+    }
+
+    public void SetRotation(float angle) {
+        ob.transform.rotation = Quaternion.Euler(new Vector3(0, angle, 0));
     }
 }

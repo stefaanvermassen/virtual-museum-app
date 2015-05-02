@@ -47,7 +47,8 @@ public class FileBrowser: GUIControl
 
 	public void Open(FileBrowserListener listener){
 		this.listener = listener;
-		placeHolder.Replace (this);
+		base.Open ();
+		//placeHolder.Replace (this);
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         GetAndroidPath();
@@ -57,7 +58,8 @@ public class FileBrowser: GUIControl
 	}
 
 	public override void Close(){
-		placeHolder.Replace (this);
+		base.Close ();
+		//placeHolder.Replace (this);
 		listener.FileIsSelected ();
 	}
 

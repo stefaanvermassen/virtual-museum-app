@@ -6,7 +6,9 @@ public class Selectable : MonoBehaviour {
 	public MeshRenderer mesh = null;
 	Material[] originalMaterials;
 	public Material selectionMaterial;
+    public Material lineMaterial;
 	Material localSelectionMaterial = null;
+    public bool rotationVector = true;
 	public bool pulse = true;
 	private Color color = new Color(255/255.0F,146/255.0F,8/255.0F);
 	public Color OutlineColor {
@@ -19,7 +21,7 @@ public class Selectable : MonoBehaviour {
 		}
 	}
 	bool pulseUp = true;
-	int counter = 0;
+    LineRenderer line;
 
 	public enum SelectionMode{ None, Selected, Preview };
 	SelectionMode selected = SelectionMode.None;
@@ -32,34 +34,24 @@ public class Selectable : MonoBehaviour {
 	}
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		if(mesh == null) mesh = GetComponent<MeshRenderer>();
 		if(mesh == null) mesh = transform.GetComponentInChildren<MeshRenderer>();
 		originalMaterials = mesh.materials;
+        line = gameObject.AddComponent<LineRenderer>();
+        line.SetVertexCount(2);
+        line.useWorldSpace = true;
+        line.SetWidth(0.2f,0);
+        line.material = lineMaterial;
+        line.material.color = OutlineColor;
+        line.enabled = false;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if (counter == 60) {
-			Selected = SelectionMode.Preview;
-			counter++;
-		} else if (counter == 200) {
-			Selected = SelectionMode.Selected;
-			counter++;
-		} else if (counter == 400) {
-			Selected = SelectionMode.None;
-			counter = -60;
-			Color orange = new Color(255/255.0F,146/255.0F,8/255.0F);
-			if (OutlineColor.Equals (orange)) {
-				OutlineColor = Color.red;
-			} else if (OutlineColor.Equals (Color.red)) {
-				OutlineColor = Color.green;
-			} else {
-				OutlineColor = orange;
-			}
-		} else {
-			counter++;
-		}
+    void Update() {
+        line.material.color = OutlineColor;
+        line.SetPosition(0, transform.position+new Vector3(0,0.5f,0));
+        line.SetPosition(1, transform.position + new Vector3(0, 0.5f, 0) + transform.forward * 1);
 		if (pulse && selected != SelectionMode.None && localSelectionMaterial != null) {
 			float outlineWidth = localSelectionMaterial.GetFloat ("_Outline");
 			if(outlineWidth >= 0.07) {
@@ -72,10 +64,16 @@ public class Selectable : MonoBehaviour {
 	}
 
 	void UpdateSelectionMode(SelectionMode mode) {
-		if(mode == selected) return;
+        if (mode == selected) {
+            return;
+        }
 		if (mode == SelectionMode.None) {
+            line.enabled = false;
 			mesh.materials = originalMaterials;
 		} else if (mode == SelectionMode.Selected) {
+            if (rotationVector) {
+                line.enabled = true;
+            }
 			Material[] newMaterials = new Material[originalMaterials.Length+1];
 			for(int i = 0; i < originalMaterials.Length; i++) {
 				newMaterials[i] = originalMaterials[i];
@@ -84,6 +82,9 @@ public class Selectable : MonoBehaviour {
 			newMaterials[originalMaterials.Length] = localSelectionMaterial;
 			mesh.materials = newMaterials;
 		} else if(mode == SelectionMode.Preview){
+            if (rotationVector) {
+                line.enabled = true;
+            }
 			InitMaterial ();
 			mesh.material = localSelectionMaterial;
 		}

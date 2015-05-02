@@ -16,16 +16,16 @@ public class ArtList : MonoBehaviour {
 	public Text popUpDescription;
 	
 	// When you're the owner
-	public GUIControl popUpOwner;
-	public InputField popUpTitleInput;
-	public InputField popUpArtistInput;
-	public InputField popUpDescriptionInput;
+	public ArtEditPanel popUpOwner;
+	public GUIControl popUpQR;
+	public QRView popUpQRView;
 
 	private bool started = false;
 	GameObject listItem;
 	GameObject separatorLine;
 	int elementCount;
-	int userID = -1;
+	public int userID = -1;
+	public string userName = "";
 	
 	void Start () {
 		listItem = (GameObject)Resources.Load("gui/ArtListItem");
@@ -41,16 +41,6 @@ public class ArtList : MonoBehaviour {
 	}
 	
 	void ClearList() {
-		/*ArtListItem[] listItems = GetComponentsInChildren<ArtListItem> ();
-		foreach (var o in listItems) {
-			Destroy(o.gameObject);
-		}
-		Image[] separators = GetComponentsInChildren<Image> ();
-		Image currentImage = GetComponent<Image> ();
-		foreach (var o in separators) {
-			if(!o.Equals (currentImage)) Destroy(o.gameObject);
-		}*/
-
 		for (int i = transform.childCount - 1; i >= 0; --i) {
 			GameObject.Destroy(transform.GetChild(i).gameObject);
 		}
@@ -59,13 +49,16 @@ public class ArtList : MonoBehaviour {
 		elementCount = 0;
 	}
 	
-	private Dictionary<int, Art>.ValueCollection allArt;
-	
 	public void InitList() {
 		EventHandler handler = new EventHandler (OnArtLoaded);
 		ClearList ();
 		Catalog.RefreshArtWork (handler);		
 	}
+
+	public void OnArtSaved(object sender, EventArgs e) {
+		InitList ();
+	}
+
 
 	public void OnArtLoaded(object sender, EventArgs e) {
 		Art art = (Art)sender;
@@ -76,10 +69,9 @@ public class ArtList : MonoBehaviour {
 		}
 		elementCount++;
 		item.transform.SetParent (transform, false);
+		item.list = this;
 		item.artID = (art.ID == null ? -1 : art.ID);
 		item.artArtist = (art.owner.name == null ? "" : art.owner.name);
-		//item.artArtist = "Feliciaan";
-		//item.artArtist = "Yolo"; //art.owner.name;
 		item.artDescription = (art.description == null ? "" : art.description);
 		item.artTitle = (art.name == null ? "" : art.name);
 
@@ -88,13 +80,10 @@ public class ArtList : MonoBehaviour {
 		item.artPopUp = artPopUp;
 		item.popUpImage = popUpImage;
 		item.popUpArtist = popUpArtist;
-		item.popUpArtistInput = popUpArtistInput;
 		item.popUpDescription = popUpDescription;
-		item.popUpDescriptionInput = popUpDescriptionInput;
 		item.popUpNormal = popUpNormal;
 		item.popUpOwner = popUpOwner;
 		item.popUpTitle = popUpTitle;
-		item.popUpTitleInput = popUpTitleInput;
 		item.artWork = art;
 
 		item.UpdateLabels();
@@ -105,12 +94,26 @@ public class ArtList : MonoBehaviour {
 		control.GetConnectedArtists ((success) => {
 			ArtListItem[] items = GetComponentsInChildren<ArtListItem>();
 			foreach(API.Artist a in success) {
+				if(userID == -1) {
 				userID = a.ID;
+				userName = a.Name;
+				}
 			}
 			foreach(ArtListItem item in items) {
 				item.owner = (userID == item.artID);
 				item.UpdateLabels();
 			}
 		});
+	}
+
+	public void NewArt() {
+		MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
+		if (actions != null) {
+			actions.ResetArtID();
+		}
+		popUpOwner.artListItem = null;
+		popUpOwner.gameObject.SetActive(true);
+		popUpNormal.gameObject.SetActive(false);
+		artPopUp.FlipCloseOpen ();
 	}
 }
