@@ -573,10 +573,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         museum.OwnerName = "";
         AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
             () => {
-                toast.Notify("Saving Museum...");
+                if(toast != null) toast.Notify("Saving Museum...");
             },
             () => {
-				toast.Notify("Museum saved!");
+			if(toast != null) toast.Notify("Museum saved!");
 				OnMuseumSaved(new EventArgs());
             });
         if (museumID == 0) {
