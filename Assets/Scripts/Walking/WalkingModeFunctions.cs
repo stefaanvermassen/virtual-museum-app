@@ -6,6 +6,7 @@ public class WalkingModeFunctions : MonoBehaviour {
 
 	public FirstPersonController player;
     public Museum museum;
+    private bool init = false;
 
 	public void TempSwitchVR() {
         if (player.ActiveVR == FirstPersonController.VR.None) {
@@ -50,10 +51,29 @@ public class WalkingModeFunctions : MonoBehaviour {
             }
         }*/
 
+        if (!init)
+        {
+            FB.Init(FBCallback);
+        }
+        else
+        {
+            FBShare();
+        }
+    }
+
+    private void FBShare()
+    {
         FB.Feed(
             linkCaption: "I just visited " + museum.museumName,
             linkName: "Join me in Virtual Museum!",
-            link: "http://apps.facebook.com/" + FB.AppId + "/?virtualmuseum=" + FB.UserId
-            );                   
+            link: "http://apps.facebook.com/" + FB.AppId + "/?share=" + FB.UserId
+            );  
+    }
+
+    private void FBCallback()
+    {
+        Debug.Log("Facebook initialized!");
+        init = true;
+        FBShare();
     }
 }
