@@ -42,7 +42,8 @@ public class LoginView : MonoBehaviour
             panel.SetActive(false);
         }, (error) =>
         {
-            toast.Notify("Login failed. Please try again...");
+			Debug.Log(password);
+			toast.Notify("Login failed. Please try again...");
         });
     }
 
