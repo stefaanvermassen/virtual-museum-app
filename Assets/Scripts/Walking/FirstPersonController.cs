@@ -308,4 +308,8 @@ public class FirstPersonController : MonoBehaviour {
 	public bool HasStarted() {
 		return started;
 	}
+
+	void OnDestroy() {
+		Screen.lockCursor = false;
+	}
 }
