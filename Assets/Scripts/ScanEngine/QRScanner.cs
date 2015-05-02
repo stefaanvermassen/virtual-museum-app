@@ -65,16 +65,13 @@ namespace Scanning
 
             while (true)
             {
-				Debug.Log("Loop");
                 if (IsQuit)
                     break;
-
 
                 // decode the current frame
 				Result result = null;
 				if (Color != null){
 					 result = barcodeReader.Decode(Color, Width, Height);
-                     Debug.Log("scanning");
 				}
                 if (result != null)
                 {
