@@ -12,12 +12,14 @@ public class MainMenuActions : MonoBehaviour {
 	void Start () {}
 
 	public void NewMuseum() {
+		MuseumLoader.DeleteTempMuseum ();
 		MuseumLoader.museumID = -1;
 		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Edit;
 		Application.LoadLevel("BuildMuseum");
 	}
 
 	public void EditMuseum(int museumID) {
+		MuseumLoader.DeleteTempMuseum ();
 		MuseumLoader.museumID = museumID;
 		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Edit;
 		Application.LoadLevel ("BuildMuseum");
@@ -62,8 +64,9 @@ public class MainMenuActions : MonoBehaviour {
 	/// <param name="owner">Whether or not the current user is the owner of this museum</param>
 	public void VisitMuseum(int museumID, bool owner) {
 		MuseumLoader.museumID = museumID;
+		MuseumLoader.DeleteTempMuseum ();
 		if (owner) {
-			MuseumLoader.currentAction = MuseumLoader.MuseumAction.Edit;
+			MuseumLoader.currentAction = MuseumLoader.MuseumAction.Preview;
 		} else {
 			MuseumLoader.currentAction = MuseumLoader.MuseumAction.Visit;
 		}
