@@ -116,12 +116,7 @@ public class BuildMuseumActions : MonoBehaviour {
 	}
 
 	public void Preview() {
-		var data = museum.Save();
-		Stream TestFileStream = File.Create(Application.persistentDataPath + "/test.bin");
-		BinaryFormatter serializer = new BinaryFormatter();
-		serializer.Serialize(TestFileStream, data);
-		TestFileStream.Close();
-		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Preview;
+		MuseumLoader.CreateTempMuseum (museum);
 		Application.LoadLevel("WalkingController");
 	}
 }

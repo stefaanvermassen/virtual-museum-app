@@ -24,9 +24,9 @@ public class DropDownMenu : MonoBehaviour {
 		var scale = Screen.height / 600f;
 		var x1 = Screen.width + ((rect.localPosition.x - rect.sizeDelta.x) * scale);
 		var x2 = Screen.width + ((rect.localPosition.x) * scale);
-		//print (rect.sizeDelta.y);
+		//print ("Sizedelta Y: " + rect.sizeDelta.y);
 		var y1 = ((-rect.localPosition.y) * scale);
-		var y2 = ((-rect.localPosition.y) * scale) - rect.sizeDelta.y;
+		var y2 = ((-rect.localPosition.y) * scale) + ((600f+rect.sizeDelta.y) * scale);
 		var x = Input.mousePosition.x;
 		var y = Screen.height - Input.mousePosition.y;
 		//print ("X: " + x1 + " - " + x2 + ": " + x);
