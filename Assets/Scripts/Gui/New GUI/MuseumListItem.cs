@@ -7,6 +7,7 @@ public class MuseumListItem : MonoBehaviour {
 	public string museumDescription;
 	public int museumID;
 
+	public MuseumList list;
 	public GUIControl museumPopUp;
 	public Text popUpName;
 	public Text popUpDescription;
@@ -21,7 +22,7 @@ public class MuseumListItem : MonoBehaviour {
 					label.text = museumName.Substring(0,14) + "...";
 				}
 			} else if(label.name.Contains ("Description")) {
-				if(museumName.Length < 55) {
+				if(museumDescription.Length < 55) {
 					label.text = museumDescription;
 				} else {
 					label.text = museumDescription.Substring(0,52) + "...";
@@ -31,10 +32,11 @@ public class MuseumListItem : MonoBehaviour {
 	}
 
 	public void OnClick() {
-		MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
+		list.actions.currentMuseumID = museumID;
+		/*MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
 		if (actions != null) {
 			actions.currentMuseumID = museumID;
-		}
+		}*/
 		museumPopUp.FlipCloseOpen ();
 		popUpName.text = museumName;
 		popUpDescription.text = museumDescription;

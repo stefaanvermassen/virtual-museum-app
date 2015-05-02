@@ -10,18 +10,30 @@ public class MuseumList : MonoBehaviour {
 	public Text popUpName;
 	public Text popUpDescription;
 
+	public MainMenuActions actions;
+
 	void Start () {
 		InitList();
 	}
 
 	void ClearList() {
-		MuseumListItem[] listItems = GetComponentsInChildren<MuseumListItem> ();
+		for (int i = transform.childCount - 1; i >= 0; --i) {
+			GameObject.Destroy(transform.GetChild(i).gameObject);
+		}
+		transform.DetachChildren();
+
+		/*MuseumListItem[] listItems = GetComponentsInChildren<MuseumListItem> ();
 		foreach (var o in listItems) {
 			Destroy(o.gameObject);
 		}
+		Image[] separators = GetComponentsInChildren<Image> ();
+		Image currentImage = GetComponent<Image> ();
+		foreach (var o in separators) {
+			if(!o.Equals (currentImage)) Destroy(o.gameObject);
+		}*/
 	}
 
-	void InitList() {
+	public void InitList() {
 		ClearList ();
 		var listItem = Resources.Load("gui/MuseumListItem");
 		var separatorLine = Resources.Load ("gui/ListItemSeparator");
@@ -43,8 +55,10 @@ public class MuseumList : MonoBehaviour {
 					separator.transform.SetParent(transform, false);
 				}
 				item.transform.SetParent (transform, false);
+				item.museumID = m.MuseumID;
 				item.museumName = m.Name;
 				item.museumDescription = m.Description;
+				item.list = this;
 				item.museumPopUp = museumPopUp;
 				item.popUpName = popUpName;
 				item.popUpDescription = popUpDescription;

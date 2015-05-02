@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using System;
 
 public static class Catalog
 {
@@ -122,7 +123,7 @@ public static class Catalog
 	/// A filter can be applied to refine the scope of the collection.
 	/// </summary>
 	/// <returns>A collection Art.</returns>
-	public static void RefreshArtWork ()
+	public static void RefreshArtWork (EventHandler eventHandler = null)
 	{
 		Debug.Log ("start");
 		//TODO make sure a user is logged in
@@ -133,15 +134,28 @@ public static class Catalog
 			Debug.Log ("Started");
 			ac.GetAllArtworks (success: (response) => {
 				foreach (API.ArtWork child in response) {
-					//we save the child, because else it is overwwritten in the loval scope of the closure
+					//we save the child, because else it is overwritten in the local scope of the closure
 					var artwork = child;
 					//check if catalog has it
 					if (!hasArt (artwork.ArtWorkID)) {
-						Art newArt = new Art ();
+						Art newArt = API.ArtWork.ToArt(artwork);
+						//Art newArt = new Art ();
+						if(eventHandler != null) {
+							newArt.ArtLoaded += eventHandler;
+						}
 						
 						Storage.Instance.Load (newArt, artwork.ArtWorkID + "");
 						//we use the id from the artwork instance because there's no guarantee for the newart instance to be loaded already
 						artworksDictionary.Add (artwork.ArtWorkID, newArt);
+					} else {
+						if(eventHandler != null) {
+							Art art = getArt (artwork.ArtWorkID);
+							if(getArt (artwork.ArtWorkID).loadingImage) {
+								art.ArtLoaded += eventHandler;
+							} else {
+								eventHandler(art, new EventArgs());
+							}
+						}
 					}
 				}
 			},

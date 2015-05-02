@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class MainMenuActions : MonoBehaviour {
 
 	public int currentMuseumID = -1;
+	public int currentArtID = -1;
 
 	void Start () {}
 
@@ -35,6 +36,22 @@ public class MainMenuActions : MonoBehaviour {
 
 	public void DeleteMuseum (int museumID) {
 		// TODO: Implement this
+	}
+
+	public void ResetArtID() {
+		currentArtID = -1;
+	}
+
+	public void ResetMuseumID() {
+		currentMuseumID = -1;
+	}
+
+	public void SwitchAccount() {
+		Application.LoadLevel ("Login");
+	}
+
+	public void ExploreMuseums() {
+		Application.LoadLevel ("SearchMuseums");
 	}
 
 	/// <summary>

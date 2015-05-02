@@ -49,10 +49,15 @@ public class RegisterView : MonoBehaviour
         {
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Successfully registered!");
+			Application.LoadLevel("MainMenuScene");
             panel.SetActive(false);
         }, (error) =>
         {
             toast.Notify("Login failed. Please try again...");
         });
     }
+
+	public void Login() {
+		Application.LoadLevel ("Login");
+	}
 }
