@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UnityStandardAssets.CrossPlatformInput
 {
@@ -19,6 +20,10 @@ namespace UnityStandardAssets.CrossPlatformInput
 		public string horizontalAxisName = "Horizontal"; // The name given to the horizontal axis for the cross platform input
 		public string verticalAxisName = "Vertical"; // The name given to the vertical axis for the cross platform input
 
+		public Sprite normalSprite;
+		public Sprite holdingSprite;
+		public Image joystickImage;
+
 		Vector2 holdingPos;
 		Vector3 m_StartPos;
 		Vector3 m_ParentOffset;
@@ -31,16 +36,23 @@ namespace UnityStandardAssets.CrossPlatformInput
 			//float scale = (float)(Screen.height * Screen.dpi) / (720 * 120);
 			float scale = (float)(Screen.height) / (720);
 			MovementRange = (int)(MovementRange*scale);
-			m_StartPos = transform.localPosition;
+			m_StartPos = transform.position;
 			holdingPos.x = 0;
 			holdingPos.y = 0;
 			m_ParentOffset = GetComponentInParent<Canvas> ().transform.position;
 			CreateVirtualAxes();
+			if (joystickImage == null) {
+				joystickImage = GetComponent<Image> ();
+				if(joystickImage != null && normalSprite == null) {
+					normalSprite = joystickImage.sprite;
+				}
+			}
 		}
 
 		void UpdateVirtualAxes(Vector3 value)
 		{
 			var delta = m_StartPos - value;
+			//print (delta);
 			delta.y = -delta.y;
 			delta /= MovementRange;
 			if (m_UseX)
@@ -96,23 +108,29 @@ namespace UnityStandardAssets.CrossPlatformInput
 				//delta = Mathf.Clamp(delta, -MovementRange, MovementRange);
 				newPos.y = delta;
 			}
-			transform.localPosition = m_StartPos + Vector3.ClampMagnitude(newPos, MovementRange);
-			UpdateVirtualAxes(transform.localPosition);
+			transform.position = m_StartPos + Vector3.ClampMagnitude(newPos, MovementRange);
+			UpdateVirtualAxes(transform.position);
 		}
 
 
 		public void OnPointerUp(PointerEventData data)
 		{
-			transform.localPosition = m_StartPos;
+			transform.position = m_StartPos;
 			holdingPos.x = 0;
 			holdingPos.y = 0;
 			UpdateVirtualAxes(m_StartPos);
+			if (joystickImage != null && holdingSprite != null && normalSprite != null) {
+				joystickImage.sprite = normalSprite;
+			}
 		}
 
 
 		public void OnPointerDown(PointerEventData data) {
 			holdingPos.x = data.position.x - m_StartPos.x - m_ParentOffset.x;
 			holdingPos.y = data.position.y - m_StartPos.y - m_ParentOffset.y;
+			if (joystickImage != null && holdingSprite != null && normalSprite != null) {
+				joystickImage.sprite = holdingSprite;
+			}
 		}
 
 		void OnDisable()

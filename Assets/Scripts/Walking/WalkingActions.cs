@@ -26,9 +26,16 @@ public class WalkingActions : MonoBehaviour {
 		} else {
 			VRActive = true;
 		}
-#if MOBILE_CONTROL
+#if MOBILE_INPUT
 		UIMobile.Open();
 		UIDesktop.Close();
+		if(MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
+			pauseMenuVisit.Open ();
+			pauseMenuEdit.Close ();
+		} else {
+			pauseMenuVisit.Close ();
+			pauseMenuEdit.Open ();
+		}
 #else
 		UIMobile.Close ();
 		UIDesktop.Open ();
@@ -68,6 +75,8 @@ public class WalkingActions : MonoBehaviour {
 				text.text = "Use virtual reality";
 			}
 		}
+		CloseSettingsDropdown ();
+		SetPaused (false);
 	}
 
 	public void BackToMain() {
@@ -115,6 +124,9 @@ public class WalkingActions : MonoBehaviour {
 	}
 
 	public void SetPaused(bool paused) {
+#if MOBILE_INPUT
+		//player.paused = paused;
+#else
 		if(!paused) {
 			if((!player.testMode) && ((!CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch))
 			                          || VRActive)) Screen.lockCursor = true;
@@ -127,9 +139,24 @@ public class WalkingActions : MonoBehaviour {
 			pauseKeyHint.Close();
 			player.paused = true;
 		}
+#endif
 	}
 
 	public void Save() {
+		CloseSettingsDropdown ();
 		savePopUp.Open ();
+	}
+
+	public void OpenSettingsDropdown() {
+		if(MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
+			mobileSettingsVisit.FlipCloseOpen ();
+		} else {
+			mobileSettingsEdit.FlipCloseOpen ();
+		}
+	}
+
+	void CloseSettingsDropdown() {
+		mobileSettingsEdit.Close ();
+		mobileSettingsVisit.Close ();
 	}
 }
