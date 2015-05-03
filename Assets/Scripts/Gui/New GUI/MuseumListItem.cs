@@ -32,7 +32,6 @@ public class MuseumListItem : MonoBehaviour {
 	}
 
 	public void OnClick() {
-		Debug.Log (list);
 		list.actions.currentMuseumID = museumID;
 		/*MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
 		if (actions != null) {
