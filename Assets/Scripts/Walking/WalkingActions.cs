@@ -168,19 +168,18 @@ public class WalkingActions : MonoBehaviour {
 
     public void FBShare()
     {
-
+#if UNITY_ANDROID
         if (!FB.IsInitialized)
         {
-#if UNITY_ANDROID
             FB.Init(OnInit);
-#else
-            Share();
-#endif
         }
         else
         {
             Share();
         }
+#else
+        Share();
+#endif
     }
 
     private void Share()
