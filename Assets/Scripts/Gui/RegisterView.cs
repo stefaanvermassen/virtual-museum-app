@@ -12,10 +12,10 @@ using API;
 public class RegisterView : MonoBehaviour
 {
 
-    public InputField usernameField;
-    public InputField emailField;
-    public InputField passwordField;
-    public InputField confirmPasswordField;
+    public CustomInputField usernameField;
+    public CustomInputField emailField;
+    public CustomInputField passwordField;
+    public CustomInputField confirmPasswordField;
     public Toast toast;
     public GameObject panel;
 
