@@ -43,7 +43,7 @@ public class LoginView : MonoBehaviour
         }, (error) =>
         {
 			Debug.Log(password);
-			toast.Notify("Login failed. Please try again...");
+			toast.Notify("Register failed. Please try again...");
         });
     }
 
