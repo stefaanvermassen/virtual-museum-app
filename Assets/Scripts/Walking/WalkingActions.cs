@@ -20,7 +20,12 @@ public class WalkingActions : MonoBehaviour {
 	public Text[] useVRLabels;
 	public GUIControl savePopUp;
 
+    private const string FBLINK = "https://www.facebook.com/dialog/share?app_id=";
+    private string museumLink;
+
 	void Start() {
+        museumLink = "http://museum.awesomepeople.tv/museum/" + museum.museumID;
+       
 		if (player.ActiveVR == FirstPersonController.VR.None) {
 			VRActive = false;
 		} else {
@@ -91,7 +96,7 @@ public class WalkingActions : MonoBehaviour {
 
 	public void Back() {
 		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
-			// TODO: FB share popup first
+            FBShare();
 			BackToMain ();
 		} else {
 			Edit ();
@@ -159,4 +164,53 @@ public class WalkingActions : MonoBehaviour {
 		mobileSettingsEdit.Close ();
 		mobileSettingsVisit.Close ();
 	}
+
+
+    public void FBShare()
+    {
+#if UNITY_ANDROID
+        if (!FB.IsInitialized)
+        {
+            FB.Init(OnInit);
+        }
+        else
+        {
+            Share();
+        }
+#else
+        Share();
+#endif
+    }
+
+    private void Share()
+    {
+#if UNITY_ANDROID
+        FB.Feed(
+            linkCaption: "I just visited " + museum.museumName,
+            linkName: "Join me in Virtual Museum!",
+            link: museumLink
+            );
+#else
+        Application.OpenURL(FBLINK + FBSettings.AppId
+            + "&display=popup&href=http://museum.awesomepeople.tv/"
+            + "&redirect_uri=" + museumLink);
+#endif
+    }
+
+    private void OnInit()
+    {
+        if (!FB.IsLoggedIn)
+        {
+            FB.Login("publish_actions", OnLoggedIn);
+        }
+        else
+        {
+            Share();
+        }
+    }
+
+    private void OnLoggedIn(FBResult result)
+    {
+        Share();
+    }
 }
