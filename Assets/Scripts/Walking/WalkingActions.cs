@@ -19,6 +19,7 @@ public class WalkingActions : MonoBehaviour {
 	public GUIControl pauseKeyHint;
 	public Text[] useVRLabels;
 	public GUIControl savePopUp;
+	public GUIControl[] facebookShareButtons;
 
     private const string FBLINK = "https://www.facebook.com/dialog/share?app_id=";
     private string museumLink;
@@ -30,6 +31,11 @@ public class WalkingActions : MonoBehaviour {
 			VRActive = false;
 		} else {
 			VRActive = true;
+		}
+		if(MuseumLoader.museumID == -1) {
+			foreach(GUIControl cont in facebookShareButtons) {
+				cont.Close();
+			}
 		}
 #if MOBILE_INPUT
 		UIMobile.Open();
@@ -44,7 +50,7 @@ public class WalkingActions : MonoBehaviour {
 #else
 		UIMobile.Close ();
 		UIDesktop.Open ();
-		print (MuseumLoader.currentAction);
+		//print (MuseumLoader.currentAction);
 		if(MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
 			pauseMenuVisit.Open ();
 			pauseMenuEdit.Close ();
@@ -96,7 +102,7 @@ public class WalkingActions : MonoBehaviour {
 
 	public void Back() {
 		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
-            FBShare();
+            //FBShare();
 			BackToMain ();
 		} else {
 			Edit ();
