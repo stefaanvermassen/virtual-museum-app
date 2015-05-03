@@ -9,6 +9,7 @@ public class MainMenuActions : MonoBehaviour
 
 	public int currentMuseumID = -1;
 	public int currentArtID = -1;
+	public Toast toast;
 
 	void Start ()
 	{
@@ -46,6 +47,7 @@ public class MainMenuActions : MonoBehaviour
 	public void DeleteMuseum (int museumID)
 	{
 		// TODO: Implement this
+		toast.Notify ("Not yet implemented");
 	}
 
 	public void ResetArtID ()
