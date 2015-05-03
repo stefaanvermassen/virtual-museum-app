@@ -177,6 +177,7 @@ namespace API
                 {
                     Debug.Log("Response status: " + response.status);
                     Debug.Log("Response text: " + response.Text);
+
                     var apiError = API_Error.REQUEST_FAILED;
                     switch (response.status)
                     {

@@ -38,10 +38,15 @@ public class LoginView : MonoBehaviour
         {
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Login successful!");
+			Application.LoadLevel("MainMenuScene");
             panel.SetActive(false);
         }, (error) =>
         {
-            toast.Notify("Login failed. Please try again...");
+			toast.Notify("Login failed. Please try again...");
         });
     }
+
+	public void Register() {
+		Application.LoadLevel ("Register");
+	}
 }

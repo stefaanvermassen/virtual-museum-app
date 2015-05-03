@@ -49,11 +49,12 @@ namespace Scanning
             Debug.Log("Generate QR");
             id.Image = writer.Write(scannable.GetUniqueString());
             //Color32[] image = writer.Write("pleasegivemeQR");
-            foreach (Color32 c in id.Image)
+			// All of these debug messages kind of freeze Unity...
+            /*foreach (Color32 c in id.Image)
             {
                 if (c.r != 255 || c.g != 255 || c.b != 255)
                     Debug.Log("non white pixel: " + c);
-            }
+            }*/
 
             return id;
         }

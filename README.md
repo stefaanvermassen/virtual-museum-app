@@ -1,5 +1,4 @@
 Virtual Museum Unity Application
 ================================
-Members
-=======
+Current version: 1.0-alfa1 
 

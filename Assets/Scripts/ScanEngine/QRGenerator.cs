@@ -21,15 +21,21 @@ public class QRGenerator : MonoBehaviour {
 
     void Start()
     {
-        QRScanner scanner = new QRScanner();
-        QRCode qrCode = (QRCode)scanner.MakeScannable(null, RequestedArtFilter);
-        Color32[] QRCodeImage = qrCode.Image;
-        Texture2D qrTexture = new Texture2D(256, 256);
-        qrTexture.SetPixels32(QRCodeImage);
-        Color32[] pixels = qrTexture.GetPixels32();
-        view.image = qrTexture;
-        qrTexture.Apply();
+		GenerateQR ();
     }
+
+	public void GenerateQR() {
+		view.image = null;
+		view.set = false;
+		QRScanner scanner = new QRScanner();
+		QRCode qrCode = (QRCode)scanner.MakeScannable(null, RequestedArtFilter);
+		Color32[] QRCodeImage = qrCode.Image;
+		Texture2D qrTexture = new Texture2D(256, 256);
+		qrTexture.SetPixels32(QRCodeImage);
+		Color32[] pixels = qrTexture.GetPixels32();
+		view.image = qrTexture;
+		qrTexture.Apply();
+	}
 
 
 }

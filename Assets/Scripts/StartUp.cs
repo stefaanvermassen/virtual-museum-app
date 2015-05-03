@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System;
+using API;
 
 
 #if UNITY_STANDALONE_WIN
@@ -20,6 +21,7 @@ public class StartUp : MonoBehaviour {
 	
 	void Start () {
 		statusText.fontSize = Screen.width / 40;
+		CheckLogin ();
 		CheckProtocol ();
 		HandleURI ();
 	}
@@ -80,7 +82,12 @@ public class StartUp : MonoBehaviour {
 	
 	void CheckProtocol() {
 #if UNITY_STANDALONE_WIN
-		try {
+		if (File.Exists("protocol.bat")) {
+			// Don't add anything to registry, it's probably already done.
+			return;
+		}
+		RegisterProtocol();
+		/*try {
 			string iconString = Environment.GetCommandLineArgs()[0].Replace ("/","\\") + ",0";
 			RegistryKey testKey = Registry.ClassesRoot.OpenSubKey("VirtualMuseum");
 			if(testKey != null) {
@@ -99,13 +106,13 @@ public class StartUp : MonoBehaviour {
 			RegisterProtocol ();
 		} catch (Exception e){
 			print(e);        
-		}
+		}*/
 #endif
 	}
 	
 #if UNITY_STANDALONE_WIN
 	void RegisterProtocol() {
-		try {
+		/*try {
 			string exePath = Environment.GetCommandLineArgs()[0].Replace ("/","\\");
 			statusText.text = "Requesting permision to link virtualmuseum:// links\nto this application";
 			Process process = new Process();
@@ -116,6 +123,50 @@ public class StartUp : MonoBehaviour {
 			process.Start ();
 			process.WaitForExit();
 			statusText.text = "";
+		} catch (Exception e){
+			print(e);        
+		}*/
+		try {
+			string exePath = Environment.GetCommandLineArgs()[0].Replace ("\\","\\\\").Replace ("/","\\\\");
+			// Start writing self-contained reg-bat file (magic!)
+			var batFile = File.CreateText("protocol.bat");
+			batFile.WriteLine ("REGEDIT4");
+			batFile.WriteLine ("");
+			batFile.WriteLine ("; @ECHO OFF");
+			batFile.WriteLine ("; CLS");
+			batFile.WriteLine ("; REGEDIT.EXE /S \"%~f0\"");
+			batFile.WriteLine ("; EXIT");
+			batFile.WriteLine ("");
+			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum]");
+			batFile.WriteLine ("@=\"URL:VirtualMuseum Protocol\"");
+			batFile.WriteLine ("\"URL Protocol\"=\"\"");
+			batFile.WriteLine ("");
+			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum\\DefaultIcon]");
+			batFile.WriteLine ("@=\"\\\"" + exePath + "\\\"\"");
+			batFile.WriteLine ("");
+			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum\\shell]");
+			batFile.WriteLine ("");
+			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum\\shell\\open]");
+			batFile.WriteLine ("");
+			batFile.WriteLine ("[HKEY_CLASSES_ROOT\\VirtualMuseum\\shell\\open\\command]");
+			batFile.WriteLine ("@=\"\\\"" + exePath + "\\\" -url \\\"%1\\\"\"");
+			batFile.Close();
+			
+			// Launch self-contained reg-bat file. This will ask for permission if UAC is enabled!
+			Process myProcess = new Process();
+			myProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+			myProcess.StartInfo.CreateNoWindow = true;
+			myProcess.StartInfo.UseShellExecute = true;
+			myProcess.StartInfo.Verb = "runas";
+			myProcess.StartInfo.FileName = "cmd.exe";
+			string path = exePath.Substring(0,exePath.LastIndexOf("\\\\")).Replace("\\\\","\\")+"\\protocol.bat";
+			print (path);
+			myProcess.StartInfo.Arguments = "/c " + path;
+			myProcess.EnableRaisingEvents = true;
+			myProcess.Start();
+			myProcess.WaitForExit();
+			int ExitCode = myProcess.ExitCode;
+			print(ExitCode);
 		} catch (Exception e){
 			print(e);        
 		}
@@ -161,6 +212,13 @@ public class StartUp : MonoBehaviour {
 			Application.Quit();
 		} else if(!loading) {
 			Application.LoadLevel ("MainMenuScene");
+		}
+	}
+
+	void CheckLogin() {
+		if (!SessionManager.Instance.LoggedIn ()) {
+			loading = true;
+			Application.LoadLevel ("Login");
 		}
 	}
 }
