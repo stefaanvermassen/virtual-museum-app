@@ -25,7 +25,7 @@ public class WalkingActions : MonoBehaviour {
     private string museumLink;
 
 	void Start() {
-        museumLink = "http://museum.awesomepeople.tv/museum/" + museum.museumID;
+        museumLink = "http://museum.awesomepeople.tv/museum/";
        
 		if (player.ActiveVR == FirstPersonController.VR.None) {
 			VRActive = false;
@@ -194,12 +194,12 @@ public class WalkingActions : MonoBehaviour {
         FB.Feed(
             linkCaption: "I just visited " + museum.museumName,
             linkName: "Join me in Virtual Museum!",
-            link: museumLink
+            link: museumLink + museum.museumID
             );
 #else
         Application.OpenURL(FBLINK + FBSettings.AppId
             + "&display=popup&href=http://museum.awesomepeople.tv/"
-            + "&redirect_uri=" + museumLink);
+            + "&redirect_uri=" + museumLink + museum.museumID);
 #endif
     }
 
