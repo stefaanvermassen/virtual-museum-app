@@ -21,7 +21,6 @@ public class WalkingActions : MonoBehaviour {
 	public GUIControl savePopUp;
 
     private const string FBLINK = "https://www.facebook.com/dialog/share?app_id=";
-    private bool init = false;
     private string museumLink;
 
 	void Start() {
@@ -170,7 +169,7 @@ public class WalkingActions : MonoBehaviour {
     public void FBShare()
     {
 
-        if (!init)
+        if (!FB.IsInitialized)
         {
 #if UNITY_ANDROID
             FB.Init(OnInit);
@@ -201,7 +200,6 @@ public class WalkingActions : MonoBehaviour {
 
     private void OnInit()
     {
-        init = true;
         if (!FB.IsLoggedIn)
         {
             FB.Login("publish_actions", OnLoggedIn);
