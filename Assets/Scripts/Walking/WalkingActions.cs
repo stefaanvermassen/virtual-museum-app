@@ -19,9 +19,14 @@ public class WalkingActions : MonoBehaviour {
 	public GUIControl pauseKeyHint;
 	public Text[] useVRLabels;
 	public GUIControl savePopUp;
+
+    private const string FBLINK = "https://www.facebook.com/dialog/share?app_id=";
     private bool init = false;
+    private string museumLink;
 
 	void Start() {
+        museumLink = "http://museum.awesomepeople.tv/museum/" + museum.museumID;
+       
 		if (player.ActiveVR == FirstPersonController.VR.None) {
 			VRActive = false;
 		} else {
@@ -92,7 +97,7 @@ public class WalkingActions : MonoBehaviour {
 
 	public void Back() {
 		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
-			// TODO: FB share popup first
+            FBShare();
 			BackToMain ();
 		} else {
 			Edit ();
@@ -164,18 +169,14 @@ public class WalkingActions : MonoBehaviour {
 
     public void FBShare()
     {
-        /*if (!FB.IsLoggedIn)
-        {
-            GUI.Label((new Rect(179, 11, 287, 160)), "Login to Facebook", MenuSkin.GetStyle("text_only"));
-            if (GUI.Button(LoginButtonRect, "", MenuSkin.GetStyle("button_login")))
-            {
-                FB.Login("email,publish_actions");
-            }
-        }*/
 
         if (!init)
         {
-            FB.Init(FBCallback);
+#if UNITY_ANDROID
+            FB.Init(OnInit);
+#else
+            Share();
+#endif
         }
         else
         {
@@ -185,17 +186,30 @@ public class WalkingActions : MonoBehaviour {
 
     private void Share()
     {
+#if UNITY_ANDROID
         FB.Feed(
             linkCaption: "I just visited " + museum.museumName,
             linkName: "Join me in Virtual Museum!",
-            link: "http://apps.facebook.com/" + FB.AppId + "/?share=" + FB.UserId
+            link: museumLink
             );
+#else
+        Application.OpenURL(FBLINK + FBSettings.AppId
+            + "&display=popup&href=http://museum.awesomepeople.tv/"
+            + "&redirect_uri=" + museumLink);
+#endif
     }
 
-    private void FBCallback()
+    private void OnInit()
     {
-        Debug.Log("Facebook initialized!");
         init = true;
+        if (!FB.IsLoggedIn)
+        {
+            FB.Login("publish_actions", OnLoggedIn);
+        }
+    }
+
+    private void OnLoggedIn(FBResult result)
+    {
         Share();
     }
 }
