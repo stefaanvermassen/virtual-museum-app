@@ -22,8 +22,8 @@ public class Art : Savable<Art, ArtData>
 
 	//checks if the artworks image is loading or not
 	public bool loadingImage;
-	public event EventHandler ArtLoaded;
-	public event EventHandler ArtSaved;
+	public event EventHandler ArtLoaded = null;
+	public event EventHandler ArtSaved = null;
 
     public Art() {
         owner = new User();

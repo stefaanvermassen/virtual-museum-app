@@ -56,7 +56,7 @@ public class ArtListItem : MonoBehaviour {
 			}
 		}
 
-		if (!owner) {
+		if (!owner || Application.loadedLevelName.Equals("BuildMuseum")) {
 			ImageHighlightButton butt = GetComponentInChildren<ImageHighlightButton>();
 			butt.gameObject.SetActive(false);
 		}
@@ -80,23 +80,31 @@ public class ArtListItem : MonoBehaviour {
 	}
 	
 	public void OnClick() {
-		MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
-		if (actions != null) {
-			actions.currentArtID = artID;
-		}
-		if (owner) {
-			popUpOwner.gameObject.SetActive(true);
-			popUpNormal.gameObject.SetActive(false);
-			popUpOwner.artListItem = this;
-			artPopUp.FlipCloseOpen ();
+		if (!Application.loadedLevelName.Equals ("BuildMuseum")) {
+			MainMenuActions actions = FindObjectOfType<MainMenuActions> ();
+			if (actions != null) {
+				actions.currentArtID = artID;
+			}
+			if (owner) {
+				popUpOwner.gameObject.SetActive (true);
+				popUpNormal.gameObject.SetActive (false);
+				popUpOwner.artListItem = this;
+				artPopUp.FlipCloseOpen ();
+			} else {
+				popUpOwner.gameObject.SetActive (false);
+				popUpNormal.gameObject.SetActive (true);
+				artPopUp.FlipCloseOpen ();
+				popUpTitle.text = artTitle;
+				popUpArtist.text = "by " + artArtist;
+				popUpDescription.text = artDescription;
+				LoadBigImage (popUpImage, 540, 330);
+			}
 		} else {
-			popUpOwner.gameObject.SetActive(false);
-			popUpNormal.gameObject.SetActive(true);
-			artPopUp.FlipCloseOpen ();
-			popUpTitle.text = artTitle;
-			popUpArtist.text = "by " + artArtist;
-			popUpDescription.text = artDescription;
-			LoadBigImage(popUpImage, 540, 330);
+			BuildMuseumActions actions = FindObjectOfType<BuildMuseumActions> ();
+			if (actions != null) {
+				actions.SetArt (artID);
+				actions.artCollectionPopUp.Close ();
+			}
 		}
 	}
 

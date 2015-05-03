@@ -86,6 +86,18 @@ public class ArtList : MonoBehaviour {
 		item.popUpTitle = popUpTitle;
 		item.artWork = art;
 
+		if (Application.loadedLevelName.Equals ("BuildMuseum")) {
+			BuildMuseumActions actions = FindObjectOfType<BuildMuseumActions> ();
+			if (actions != null && (actions.GetArt() == item.artID)) {
+				Button butt = item.GetComponent<Button>();
+				ColorBlock colors = butt.colors;
+				colors.normalColor = new Color(Color.green.r, Color.green.g, Color.green.b, 75f/255f);
+				colors.highlightedColor = new Color(Color.green.r, Color.green.g, Color.green.b, 150f/255f);
+				colors.pressedColor = new Color(Color.green.r, Color.green.g, Color.green.b, 200f/255f);
+				butt.colors = colors;
+			}
+		}
+
 		item.UpdateLabels();
 	}
 
