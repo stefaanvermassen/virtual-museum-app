@@ -197,6 +197,11 @@ namespace API
                 }
             }), error);
         }
+        
+        public Request DeleteMuseum(int museumID, Action<Response> success = null, Action<API_Error> error = null)
+        {
+            return Delete(BASE_URL + MUSEUM + "/" + museumID, success, error);
+        }
     }
 
     /// <summary>
