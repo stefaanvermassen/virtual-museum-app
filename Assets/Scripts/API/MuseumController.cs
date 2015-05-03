@@ -200,7 +200,7 @@ namespace API
         
         public Request DeleteMuseum(int museumID, Action<Response> success = null, Action<API_Error> error = null)
         {
-            return Get(BASE_URL + MUSEUM + "/" + museumID, success, error);
+            return Delete(BASE_URL + MUSEUM + "/" + museumID, success, error);
         }
     }
 

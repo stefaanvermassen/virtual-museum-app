@@ -46,10 +46,12 @@ public class MainMenuActions : MonoBehaviour
 	public void DeleteMuseum (int museumID)
 	{
 		var mc = API.MuseumController.Instance;
-		mc.DeleteMuseum((succes)=>{
-			PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "The museum was deleted successfully.");
+		mc.DeleteMuseum(museumID, (succes) => {
+			Debug.Log("Deleting musuem " + museumID + " succesfull");
+			// TODO: replace with toast: PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "The museum was deleted successfully.");
 		}, (error) => {
-            PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "The museum was deleted successfully.");
+			Debug.Log("Deleting musuem " + museumID + " errored");
+            // TODO: replace with toast: PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "The museum was deleted successfully.");
 		});
 	}
 
