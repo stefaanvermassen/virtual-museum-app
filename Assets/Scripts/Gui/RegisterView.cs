@@ -53,7 +53,7 @@ public class RegisterView : MonoBehaviour
             panel.SetActive(false);
         }, (error) =>
         {
-            toast.Notify("Login failed. Please try again...");
+            toast.Notify("Register failed. Please try again...");
         });
     }
 
