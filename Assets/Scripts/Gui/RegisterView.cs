@@ -53,8 +53,6 @@ public class RegisterView : MonoBehaviour
             panel.SetActive(false);
         }, (error) =>
         {
-			Debug.Log(password);
-
             toast.Notify("Register failed. Please try again...");
         });
     }
