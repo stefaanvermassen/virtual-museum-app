@@ -206,6 +206,10 @@ public class WalkingActions : MonoBehaviour {
         {
             FB.Login("publish_actions", OnLoggedIn);
         }
+        else
+        {
+            Share();
+        }
     }
 
     private void OnLoggedIn(FBResult result)
