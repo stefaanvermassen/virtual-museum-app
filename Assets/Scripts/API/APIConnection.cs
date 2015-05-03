@@ -40,6 +40,20 @@ namespace API
         {
             return SendRequest(new Request("get", url), success, error, authToken);
         }
+        
+        /// <summary>
+        ///     Do a DELETE request to the server for a given URL
+        /// </summary>
+        /// <param name="url">URL. the location of the request</param>
+        /// <param name="success">Success. Closure that gets run if deleting the file is succesfull</param>
+        /// <param name="error">Error. Closure that gets run if deleting the file is unsuccesfull</param>
+        /// <param name="authToken">If set to <c>true</c> auth token is added to the request.</param>
+
+        protected Request Delete(string url, Action<Response> success = null, Action<API_Error> error = null,
+            bool authToken = true)
+        {
+            return SendRequest(new Request("delete", url), success, error, authToken);
+        }
 
         /// <summary>
         ///     Simple post, without closures

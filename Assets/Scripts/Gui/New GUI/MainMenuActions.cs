@@ -45,7 +45,12 @@ public class MainMenuActions : MonoBehaviour
 
 	public void DeleteMuseum (int museumID)
 	{
-		// TODO: Implement this
+		var mc = API.MuseumController.Instance;
+		mc.DeleteMuseum((succes)=>{
+			PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "The museum was deleted successfully.");
+		}, (error) => {
+            PopUpWindow.ShowMessage (PopUpWindow.MessageType.INFO, "The museum was deleted successfully.");
+		});
 	}
 
 	public void ResetArtID ()
@@ -96,8 +101,6 @@ public class MainMenuActions : MonoBehaviour
 				VisitMuseum ( false);
 			}
 		});
-
-
 	}
 
 	public void ShowtestMessage ()
