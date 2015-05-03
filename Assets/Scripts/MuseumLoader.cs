@@ -26,18 +26,41 @@ public class MuseumLoader : MonoBehaviour {
 			s.Close ();
 			museum.Load (data);
 		} else {
-			if (currentAction == MuseumAction.Preview) { // Preview mode
+			if (currentAction == MuseumAction.Preview || currentAction == MuseumAction.Edit) { // Preview mode
 				if (File.Exists (Application.persistentDataPath + "/test.bin")) {
-					Stream TestFileStream = File.OpenRead (Application.persistentDataPath + "/test.bin");
-					BinaryFormatter deserializer = new BinaryFormatter ();
-					MuseumData data = (MuseumData)deserializer.Deserialize (TestFileStream);
-					TestFileStream.Close ();
-					museum.Load (data);
-				}
-			} else if (currentAction == MuseumAction.Visit || currentAction == MuseumAction.Edit) { // Visit mode
-				if (museumID > 0)
+					LoadFromFile(Application.persistentDataPath + "/test.bin");
+				} else if (museumID > 0) {
 					Storage.Instance.LoadRemote (museum, museumID.ToString ());
+				}
+			} else if (currentAction == MuseumAction.Visit) { // Visit mode
+				if (museumID > 0) {
+					Storage.Instance.LoadRemote (museum, museumID.ToString ());
+				}
 			}
+		}
+	}
+
+	public static void CreateTempMuseum(Museum museum) {
+		var data = museum.Save();
+		Stream TestFileStream = File.Create(Application.persistentDataPath + "/test.bin");
+		BinaryFormatter serializer = new BinaryFormatter();
+		serializer.Serialize(TestFileStream, data);
+		TestFileStream.Close();
+	}
+
+	public static void DeleteTempMuseum() {
+		if (File.Exists (Application.persistentDataPath + "/test.bin")) {
+			File.Delete(Application.persistentDataPath + "/test.bin");
+		}
+	}
+
+	void LoadFromFile(string path) {
+		if (File.Exists (path)) {
+			Stream TestFileStream = File.OpenRead (path);
+			BinaryFormatter deserializer = new BinaryFormatter ();
+			MuseumData data = (MuseumData)deserializer.Deserialize (TestFileStream);
+			TestFileStream.Close ();
+			museum.Load (data);
 		}
 	}
 	

@@ -150,7 +150,7 @@ public class WalkingTests {
 		Assert.AreEqual(cameras.Length, 1, "There should only be one camera active after switching stereoscopic mode off.");
 	}
 
-	[Test]
+	/*[Test]
 	public void MobileControlRig_MoveStick_AxesChanged() {
 		// Activate mobile input
 		CrossPlatformInputManager.ActiveInputMethod originalInput = CrossPlatformInputManager.GetActiveInputMethod ();
@@ -313,5 +313,5 @@ public class WalkingTests {
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Mouse Y");
 		CrossPlatformInputManager.UnRegisterVirtualAxis ("Mouse X");
 		CrossPlatformInputManager.SwitchActiveInputMethod (CrossPlatformInputManager.ActiveInputMethod.Hardware);
-	}
+	}*/
 }

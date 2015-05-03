@@ -105,7 +105,7 @@ public class SearchMuseumBehaviour : MonoBehaviour {
     }
 
     void StartMuseum(string id) {
-        Catalog.Refresh();
+        /*Catalog.Refresh();
         var museum = new GameObject().AddComponent<Museum>();
         museum.LoadRemote(id);
         AsyncLoader.CreateAsyncLoader(
@@ -119,6 +119,10 @@ public class SearchMuseumBehaviour : MonoBehaviour {
                 serializer.Serialize(TestFileStream, data);
                 TestFileStream.Close();
                 Application.LoadLevel("WalkingController");
-            });
+            });*/
+		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Visit;
+		MuseumLoader.DeleteTempMuseum ();
+		MuseumLoader.museumID = int.Parse (id);
+		Application.LoadLevel ("WalkingController");
     }
 }
