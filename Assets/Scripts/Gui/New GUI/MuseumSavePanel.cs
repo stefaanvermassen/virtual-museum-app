@@ -35,6 +35,9 @@ public class MuseumSavePanel : MonoBehaviour {
 	}
 
 	public void OnSaved(object sender, EventArgs e) {
+		if(Application.loadedLevelName.Equals("WalkingController")) {
+			walkingActions.OnSaved();
+		}
 		if (exitOnSaved) {
 			if(Application.loadedLevelName.Equals("BuildMuseum")) {
 				actions.BackToMain ();
