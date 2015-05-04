@@ -158,6 +158,12 @@ public class WalkingActions : MonoBehaviour {
 		savePopUp.Open ();
 	}
 
+	public void OnSaved() {
+		foreach(GUIControl cont in facebookShareButtons) {
+			cont.Open();
+		}
+	}
+
 	public void OpenSettingsDropdown() {
 		if(MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
 			mobileSettingsVisit.FlipCloseOpen ();

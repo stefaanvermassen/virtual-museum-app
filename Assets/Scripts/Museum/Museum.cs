@@ -19,7 +19,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
-    public int museumID = 0;
+    public int museumID = -1;
     public string description;
     public API.Level privacy;
 
@@ -579,7 +579,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 			if(toast != null) toast.Notify("Museum saved!");
 				OnMuseumSaved(new EventArgs());
             });
-        if (museumID == 0) {
+        if (museumID == -1) {
             req = cont.CreateMuseum(museum, (mus) => {
                 museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
