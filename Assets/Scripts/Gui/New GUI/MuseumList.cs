@@ -65,6 +65,8 @@ public class MuseumList : MonoBehaviour {
 				item.UpdateLabels();
 				i++;
 			}
+		}, (error) => {
+			selectText.text = "No museums found.";
 		});
 
 	}

@@ -19,7 +19,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
-    public int museumID = 0;
+    public int museumID = -1;
     public string description;
     public API.Level privacy;
 
@@ -41,7 +41,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
-            museumID = 0;
+            museumID = -1;
             SetTile(0, 0, 0, 0, 0, 0);
         }
     }
@@ -579,9 +579,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 			if(toast != null) toast.Notify("Museum saved!");
 				OnMuseumSaved(new EventArgs());
             });
-        if (museumID == 0) {
+        if (museumID == -1) {
             req = cont.CreateMuseum(museum, (mus) => {
                 museumID = mus.MuseumID;
+				MuseumLoader.museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             },
@@ -618,7 +619,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             });
     }
 
-    public void DebugRegister() {
+    /*public void DebugRegister() {
         var controller = API.UserController.Instance;
         controller.CreateUser("RianTest", "riangoossens@mailinator.com", "Password123/",
             (success) => {
@@ -633,7 +634,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 SessionManager.Instance.LoginUser(success);
                 toast.Notify("Successfully logged in!");
             });
-    }
+    }*/
 
     public bool IsLoaded() {
         return loaded;
