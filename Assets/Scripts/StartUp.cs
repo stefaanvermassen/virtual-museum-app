@@ -5,11 +5,6 @@ using System.IO;
 using System;
 using API;
 
-
-#if UNITY_STANDALONE_WIN
-using Microsoft.Win32;
-#endif
-
 using UnityEngine.UI;
 
 public class StartUp : MonoBehaviour {
@@ -19,10 +14,16 @@ public class StartUp : MonoBehaviour {
 	bool loading = false;
 	
 	void Start () {
-		statusText.fontSize = Screen.width / 40;
-		CheckLogin ();
-		CheckProtocol ();
-		HandleURI ();
+		loading = true;
+		try {
+			statusText.fontSize = Screen.width / 40;
+			CheckLogin ();
+			CheckProtocol ();
+			HandleURI ();
+		} catch(Exception ex) {
+		} finally {
+			loading = false;
+		}
 	}
 	
 	void HandleURI() {
@@ -152,7 +153,7 @@ public class StartUp : MonoBehaviour {
 			batFile.Close();
 			
 			// Launch self-contained reg-bat file. This will ask for permission if UAC is enabled!
-			Process myProcess = new Process();
+			/*Process myProcess = new Process();
 			myProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 			myProcess.StartInfo.CreateNoWindow = true;
 			myProcess.StartInfo.UseShellExecute = true;
@@ -165,7 +166,7 @@ public class StartUp : MonoBehaviour {
 			myProcess.Start();
 			myProcess.WaitForExit();
 			int ExitCode = myProcess.ExitCode;
-			print(ExitCode);
+			print(ExitCode);*/
 		} catch (Exception e){
 			print(e);        
 		}

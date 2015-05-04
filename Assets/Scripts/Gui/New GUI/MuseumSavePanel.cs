@@ -12,6 +12,7 @@ public class MuseumSavePanel : MonoBehaviour {
 	public Museum museum;
 	public bool exitOnSaved;
 	public BuildMuseumActions actions;
+	public WalkingActions walkingActions;
 
 	void OnEnable() {
 		title.text = (museum.museumName == null ? "" : museum.museumName);
@@ -34,8 +35,15 @@ public class MuseumSavePanel : MonoBehaviour {
 	}
 
 	public void OnSaved(object sender, EventArgs e) {
+		if(Application.loadedLevelName.Equals("WalkingController")) {
+			walkingActions.OnSaved();
+		}
 		if (exitOnSaved) {
-			actions.BackToMain ();
+			if(Application.loadedLevelName.Equals("BuildMuseum")) {
+				actions.BackToMain ();
+			} else {
+				walkingActions.BackToMain();
+			}
 		} else {
 			//Toast.print ("Museum was successfully saved");
 		}

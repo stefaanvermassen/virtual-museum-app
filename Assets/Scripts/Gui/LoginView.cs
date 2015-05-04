@@ -1,10 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
+﻿using API;
 using HTTP;
-using API;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
 
 /// <summary>
 /// This class controls the UI to login
@@ -12,8 +13,8 @@ using API;
 public class LoginView : MonoBehaviour
 {
 
-    public InputField usernameField;
-    public InputField passwordField;
+    public CustomInputField usernameField;
+    public CustomInputField passwordField;
     public GameObject panel;
     public Toast toast;
 
@@ -42,7 +43,7 @@ public class LoginView : MonoBehaviour
             panel.SetActive(false);
         }, (error) =>
         {
-            toast.Notify("Login failed. Please try again...");
+			toast.Notify("Login failed. Please try again...");
         });
     }
 
