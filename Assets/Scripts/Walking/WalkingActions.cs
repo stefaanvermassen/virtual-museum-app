@@ -21,11 +21,10 @@ public class WalkingActions : MonoBehaviour {
 	public GUIControl savePopUp;
 	public GUIControl[] facebookShareButtons;
 
-    private const string FBLINK = "https://www.facebook.com/dialog/share?app_id=";
-    private string museumLink;
+    private const string FB_LINK = "https://www.facebook.com/dialog/share?app_id=";
+    private const string MUSEUM_LINK = "http://museum.awesomepeople.tv/museum/";
 
 	void Start() {
-        museumLink = "http://museum.awesomepeople.tv/museum/";
        
 		if (player.ActiveVR == FirstPersonController.VR.None) {
 			VRActive = false;
@@ -194,14 +193,13 @@ public class WalkingActions : MonoBehaviour {
         FB.Feed(
             linkCaption: "I just visited " + museum.museumName,
             linkName: "Join me in Virtual Museum!",
-            link: museumLink + museum.museumID
+            link: MUSEUM_LINK + museum.museumID
             );
 #else
-        Application.OpenURL(FBLINK + FBSettings.AppId
+        Application.OpenURL(FB_LINK + FBSettings.AppId
             + "&p[title]=Join me in Virtual Museum!"
             + "&p[descriptions]=I just visited " + museum.museumName
-            + "&display=popup&href=" + museumLink + museum.museumID
-            + "&redirect_uri=" + museumLink + museum.museumID);
+            + "&display=popup&href=" + MUSEUM_LINK + museum.museumID);
 #endif
     }
 
