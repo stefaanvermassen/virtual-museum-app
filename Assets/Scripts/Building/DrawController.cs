@@ -25,12 +25,12 @@ public class DrawController : MonoBehaviour {
     public Tools tool = Tools.Drawing;
 	public BuildMuseumActions actions;
 
-    public int currentArt = 1;
-    public int currentObject = 0;
-    public int currentFloor = 0;
-    public int currentWall = 0;
-    public int currentCeiling = 0;
-	public int currentFrame = 0;
+    public static int currentArt = -1;
+	public static int currentObject = -1;
+	public static int currentFloor = 0;
+	public static int currentWall = 0;
+	public static int currentCeiling = 0;
+	public static int currentFrame = 1;
 
     private bool[] dragging = {false, false, false, false, false};
     private Vector3 centerPointWorld = Vector3.zero;
@@ -74,22 +74,22 @@ public class DrawController : MonoBehaviour {
     /// </summary>
     /// <param name="objectID"></param>
     public void SetCurrentObject(int objectID) {
-        this.currentObject = objectID;
+        DrawController.currentObject = objectID;
     }
 	public void SetCurrentFrame(int frameID){
-		this.currentFrame = frameID;
+		DrawController.currentFrame = frameID;
 	}
 	public void SetCurrentCeiling(int ceilingID){
-		this.currentCeiling = ceilingID;
+		DrawController.currentCeiling = ceilingID;
 	}
 	public void SetCurrentFloor(int floorID){
-		this.currentFloor = floorID;
+		DrawController.currentFloor = floorID;
 	}
 	public void SetCurrentWall(int wallID){
-		this.currentWall = wallID;
+		DrawController.currentWall = wallID;
 	}
 	public void SetCurrentArt(int artID){
-		this.currentArt = artID;
+		DrawController.currentArt = artID;
 	}
     bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
@@ -269,7 +269,7 @@ public class DrawController : MonoBehaviour {
             return;
         }
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
-        var scale = 0.5f + 4*diff / Screen.width;
+        var scale = 0.5f + 2*diff / Screen.width;
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale,currentFrame);
     }
 
