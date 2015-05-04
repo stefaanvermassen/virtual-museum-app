@@ -269,7 +269,7 @@ public class DrawController : MonoBehaviour {
             return;
         }
         var diff = Vector3.Distance(anchorPointScreen, dragPointScreen);
-        var scale = 0.5f + 4*diff / Screen.width;
+        var scale = 0.5f + 2*diff / Screen.width;
         currentMuseum.AddArt(currentArt, anchorPointWorld, Quaternion.LookRotation(anchorNormalWorld).eulerAngles,scale,currentFrame);
     }
 

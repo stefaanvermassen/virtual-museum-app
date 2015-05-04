@@ -39,6 +39,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
 	public event EventHandler MuseumSaved;
 
+	public static float HEIGHT = 3;
+	public static float METER_PER_UNIT = 2;
+	public static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
+
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
             museumID = -1;
@@ -91,17 +95,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 },
                 error: (error) => {
                 });
-            /*ArtworkController.Instance.GetArtworkData(
-                "" + id,
-                success: (artwork) => {
-                    art.image = new Texture2D(1, 1);
-                    art.image.LoadImage(artwork);
-                    Debug.Log("Loaded2");
-                    artDictionary.Add(id, art);
-                    artIDsDownloading.Remove(id);
-                },
-                error: (error) => {
-                });*/
             return null;
         }
         return artDictionary[id];
