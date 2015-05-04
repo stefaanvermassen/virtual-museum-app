@@ -200,7 +200,7 @@ public class WalkingActions : MonoBehaviour {
         Application.OpenURL(FBLINK + FBSettings.AppId
             + "&p[title]=Join me in Virtual Museum!"
             + "&p[descriptions]=I just visited " + museum.museumName
-            + "&display=popup&href=http://awesomepeople.tv/"
+            + "&display=popup&href=" + museumLink + museum.museumID
             + "&redirect_uri=" + museumLink + museum.museumID);
 #endif
     }
