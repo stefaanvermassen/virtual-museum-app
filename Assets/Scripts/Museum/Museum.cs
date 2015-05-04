@@ -41,7 +41,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
-            museumID = 0;
+            museumID = -1;
             SetTile(0, 0, 0, 0, 0, 0);
         }
     }
@@ -618,7 +618,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             });
     }
 
-    public void DebugRegister() {
+    /*public void DebugRegister() {
         var controller = API.UserController.Instance;
         controller.CreateUser("RianTest", "riangoossens@mailinator.com", "Password123/",
             (success) => {
@@ -633,7 +633,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 SessionManager.Instance.LoginUser(success);
                 toast.Notify("Successfully logged in!");
             });
-    }
+    }*/
 
     public bool IsLoaded() {
         return loaded;
