@@ -582,6 +582,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         if (museumID == -1) {
             req = cont.CreateMuseum(museum, (mus) => {
                 museumID = mus.MuseumID;
+				MuseumLoader.museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             },
