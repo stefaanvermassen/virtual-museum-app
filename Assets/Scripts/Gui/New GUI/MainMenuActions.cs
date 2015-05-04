@@ -9,6 +9,7 @@ public class MainMenuActions : MonoBehaviour
 
 	public int currentMuseumID = -1;
 	public int currentArtID = -1;
+	public Toast toast;
 
 	void Start ()
 	{
@@ -45,7 +46,18 @@ public class MainMenuActions : MonoBehaviour
 
 	public void DeleteMuseum (int museumID)
 	{
-		// TODO: Implement this
+		MuseumList list = FindObjectOfType<MuseumList> ();
+		//toast.Notify ("Not yet implemented");
+		var mc = API.MuseumController.Instance;
+		mc.DeleteMuseum(museumID, (succes) => {
+			//Debug.Log("Deleting musuem " + museumID + " succesfull");
+			list.InitList();
+			list.museumPopUp.Close ();
+			toast.Notify ("This museum was deleted successfully.");
+		}, (error) => {
+			toast.Notify ("There was an error deleting this museum.");
+			//Debug.Log("Deleting musuem " + museumID + " errored");
+		});
 	}
 
 	public void ResetArtID ()
@@ -96,8 +108,6 @@ public class MainMenuActions : MonoBehaviour
 				VisitMuseum ( false);
 			}
 		});
-
-
 	}
 
 	public void ShowtestMessage ()

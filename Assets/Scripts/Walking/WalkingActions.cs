@@ -19,12 +19,22 @@ public class WalkingActions : MonoBehaviour {
 	public GUIControl pauseKeyHint;
 	public Text[] useVRLabels;
 	public GUIControl savePopUp;
+	public GUIControl[] facebookShareButtons;
+
+    private const string FB_LINK = "https://www.facebook.com/dialog/share?app_id=";
+    private const string MUSEUM_LINK = "http://museum.awesomepeople.tv/museum/";
 
 	void Start() {
+       
 		if (player.ActiveVR == FirstPersonController.VR.None) {
 			VRActive = false;
 		} else {
 			VRActive = true;
+		}
+		if(MuseumLoader.museumID == -1) {
+			foreach(GUIControl cont in facebookShareButtons) {
+				cont.Close();
+			}
 		}
 #if MOBILE_INPUT
 		UIMobile.Open();
@@ -39,7 +49,7 @@ public class WalkingActions : MonoBehaviour {
 #else
 		UIMobile.Close ();
 		UIDesktop.Open ();
-		print (MuseumLoader.currentAction);
+		//print (MuseumLoader.currentAction);
 		if(MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
 			pauseMenuVisit.Open ();
 			pauseMenuEdit.Close ();
@@ -91,7 +101,7 @@ public class WalkingActions : MonoBehaviour {
 
 	public void Back() {
 		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
-			// TODO: FB share popup first
+            //FBShare();
 			BackToMain ();
 		} else {
 			Edit ();
@@ -159,4 +169,54 @@ public class WalkingActions : MonoBehaviour {
 		mobileSettingsEdit.Close ();
 		mobileSettingsVisit.Close ();
 	}
+
+
+    public void FBShare()
+    {
+#if UNITY_ANDROID
+        if (!FB.IsInitialized)
+        {
+            FB.Init(OnInit);
+        }
+        else
+        {
+            Share();
+        }
+#else
+        Share();
+#endif
+    }
+
+    private void Share()
+    {
+#if UNITY_ANDROID
+        FB.Feed(
+            linkCaption: "I just visited " + museum.museumName,
+            linkName: "Join me in Virtual Museum!",
+            link: MUSEUM_LINK + museum.museumID
+            );
+#else
+        Application.OpenURL(FB_LINK + FBSettings.AppId
+            + "&p[title]=Join me in Virtual Museum!"
+            + "&p[descriptions]=I just visited " + museum.museumName
+            + "&display=popup&href=" + MUSEUM_LINK + museum.museumID);
+#endif
+    }
+
+    private void OnInit()
+    {
+        if (!FB.IsLoggedIn)
+        {
+            FB.Login("publish_actions", OnLoggedIn);
+        }
+        else
+        {
+            Share();
+        }
+    }
+
+    private void OnLoggedIn(FBResult result)
+    {
+        Share();
+    }
 }
