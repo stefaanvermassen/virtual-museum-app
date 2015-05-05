@@ -11,7 +11,7 @@ public class QRCam : MonoBehaviour {
     private Rect PaneRect;
     private QRScanner Scanner = new QRScanner();
     private Thread ScanThread;
-	public QRView view;
+	public Image view;
 
 
     void OnGUI()
@@ -58,12 +58,12 @@ public class QRCam : MonoBehaviour {
 	  Encoded = new Texture2D(256, 256);
 
 	  PaneRect = new Rect(0, 0, Screen.width, Screen.height); //is this the panel or the entire screen?
-
-	  CamTexture = new WebCamTexture();
+	  
+      CamTexture = new WebCamTexture();
 	  CamTexture.requestedHeight = Screen.height; // 480;
 	  CamTexture.requestedWidth = Screen.width; //640;
 		
-		//TEST CODE HERE
+        //TEST CODE HERE
 
 		API.ArtworkFilterController c = API.ArtworkFilterController.Instance;
 		API.ArtWorkFilter f = new API.ArtWorkFilter ();
