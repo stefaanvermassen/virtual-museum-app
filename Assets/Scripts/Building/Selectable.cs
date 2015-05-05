@@ -33,6 +33,12 @@ public class Selectable : MonoBehaviour {
 		}
 	}
 
+	public enum LineMode{
+		Rotate,
+		Scale
+	}
+	public LineMode lineMode = LineMode.Rotate;
+
 	// Use this for initialization
 	void Awake () {
 		if(mesh == null) mesh = GetComponent<MeshRenderer>();
@@ -49,9 +55,15 @@ public class Selectable : MonoBehaviour {
 	
 	// Update is called once per frame
     void Update() {
+		var forward = transform.forward;
+		var center = transform.position + new Vector3 (0, 0.5f, 0);
+		if (lineMode == LineMode.Scale) {
+			forward = -transform.up;
+			center = transform.position;
+		}
         line.material.color = OutlineColor;
-        line.SetPosition(0, transform.position+new Vector3(0,0.5f,0));
-        line.SetPosition(1, transform.position + new Vector3(0, 0.5f, 0) + transform.forward * 1);
+        line.SetPosition(0, center);
+        line.SetPosition(1, center + forward * 1.5f);
 		if (pulse && selected != SelectionMode.None && localSelectionMaterial != null) {
 			float outlineWidth = localSelectionMaterial.GetFloat ("_Outline");
 			if(outlineWidth >= 0.07) {
