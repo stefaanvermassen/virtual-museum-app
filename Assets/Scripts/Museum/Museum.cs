@@ -44,6 +44,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 	public static float METER_PER_UNIT = 2;
 	public static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
 
+	Color wallColor = Color.white;
+	Color floorColor = Color.white;
+	Color ceilingColor = Color.white;
+
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
             museumID = -1;
@@ -146,6 +150,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public void Load(MuseumData data) {
         Clear();
         foreach (var tileData in data.Tiles) {
+			if(tileData.WallColor != null) {
+				SetColors(tileData.WallColor.ToColor(), tileData.FloorColor.ToColor(), tileData.CeilingColor.ToColor());
+			}
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         }
         foreach (var artData in data.Art) {
@@ -417,6 +424,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         }
     }
 
+	public void SetColors(Color wallColor, Color floorColor, Color ceilingColor) {
+		this.wallColor = wallColor;
+		this.floorColor = floorColor;
+		this.ceilingColor = ceilingColor;
+	}
+
     /// <summary>
     /// Sets a tile using a wall, floor and ceiling-style at a position.
     /// </summary>
@@ -426,7 +439,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="z"></param>
-    public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
+	public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
         RemoveTile(x, y, z, true);
         GameObject tileObject = new GameObject();
         tileObject.transform.parent = transform.parent;
@@ -439,6 +452,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         tile.wallStyle = wallStyle;
         tile.floorStyle = floorStyle;
         tile.ceilingStyle = ceilingStyle;
+		tile.wallColor = wallColor;
+		tile.floorColor = floorColor;
+		tile.ceilingColor = ceilingColor;
         tile.frontMaterial = frontMaterial;
         tile.backMaterial = backMaterial;
         var leftTile = GetTile(x - 1, y, z);
