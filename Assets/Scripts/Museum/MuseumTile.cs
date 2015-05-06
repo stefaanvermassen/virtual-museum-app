@@ -45,9 +45,11 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         ceilingStyle = data.CeilingStyle;
         wallStyle = data.WallStyle;
         floorStyle = data.FloorStyle;
-		ceilingColor = data.CeilingColor.ToColor();
-		wallColor = data.WallColor.ToColor();
-		floorColor = data.FloorColor.ToColor();
+		if (data.CeilingColor != null) {
+			ceilingColor = data.CeilingColor.ToColor ();
+			wallColor = data.WallColor.ToColor ();
+			floorColor = data.FloorColor.ToColor ();
+		}
     }
 
     GameObject ReversedQuad() {

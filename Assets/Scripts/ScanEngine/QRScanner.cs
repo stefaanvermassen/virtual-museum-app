@@ -22,6 +22,11 @@ namespace Scanning
         public string LastResult { get; set; }
 
         public ArtFilter Filter { get; set; }
+
+		public bool done = false;
+		public bool success = false;
+		public string code;
+
         //empty constructor
         public QRScanner()
         {
@@ -61,9 +66,10 @@ namespace Scanning
 
         public void Scan()
         {
+			done = false;
             // create a reader with a custom luminance source
             var barcodeReader = new BarcodeReader { AutoRotate = false, TryHarder = false };
-
+			Color = null;
             while (true)
             {
                 if (IsQuit)
@@ -78,13 +84,13 @@ namespace Scanning
                 {
                     Filter = new ArtFilter();
 					Debug.Log("QR found: " + result.Text);
-                    //TODO make new ArtFilter and push to the server !!!
-
-					// !!!!!!!!!!!
-					//
-					//TODO: pop up toast that art is collected !!
-					//
-					//
+					code = result.Text;
+					if(result.Text.StartsWith("museum.awesomepeople.tv/filter/")){
+						success = true;
+					}else{
+						success = false;
+					}
+					done = true;
                     return;
                 }
                 Debug.Log("Decoding failed: set Color to null");
