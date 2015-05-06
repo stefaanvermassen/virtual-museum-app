@@ -65,33 +65,6 @@ public class QRCam : MonoBehaviour {
       CamTexture = new WebCamTexture();
 	  CamTexture.requestedHeight = Screen.height; // 480;
 	  CamTexture.requestedWidth = Screen.width; //640;
-		
-        /*//TEST CODE HERE
-
-		API.ArtworkFilterController c = API.ArtworkFilterController.Instance;
-		API.ArtWorkFilter f = new API.ArtWorkFilter ();
-		f.ArtistID = 1;
-
-		Hashtable t = new Hashtable ();
-		t.Add ("tag", "collection1");
-		ArrayList l = new ArrayList ();
-		l.Add (t);
-		f.Values = l;
-
-		HTTP.Request r = c.CreateArtWorkFilter (f);
-
-		c.CreateArtWorkFilter (f, 
-		                    (art)=> {
-			Debug.Log ("Filter added");
-		}, 
-		(error) => {
-			Debug.Log ("Failed to add filter.");
-		}
-		);
-
-		//END TEST CODE HERE*/
-
-
 	  OnEnable();
 
 		StartScanning ();
@@ -107,7 +80,11 @@ public class QRCam : MonoBehaviour {
 		whileLoading: () => {},
 		whenDone: () => {
 			if(Scanner.success){
-				toast.Notify("Virtual Museum Code detected!");
+				toast.Notify("Virtual Museum Code detected! Art has been added to your collection!");
+				var filter = new ArtFilter();
+				filter.Configure(Scanner.code);
+				filter.Collect();
+				StartScanning();
 			}else{
 				toast.Notify("This is not a Virtual Museum Code, please try again!");
 				StartScanning();
@@ -123,4 +100,8 @@ public class QRCam : MonoBehaviour {
             Scanner.Color = CamTexture.GetPixels32();
         }
     }
+
+	public void Back(){
+		Application.LoadLevel ("MainMenuScene");
+	}
 }

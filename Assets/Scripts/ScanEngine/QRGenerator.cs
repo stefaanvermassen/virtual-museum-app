@@ -9,15 +9,10 @@ public class QRGenerator : MonoBehaviour {
     public ArtFilter RequestedArtFilter { get; set; }
     public QRView view;
 
-    void Start()
-    {
-		//GenerateQR ();
-    }
-
 	public void GenerateQR(Art art) {
 		RequestedArtFilter = new ArtFilter();
-		RequestedArtFilter.ArtistName = art.owner.name;
-		RequestedArtFilter.Tags.Add("id"+art.ID);
+		RequestedArtFilter.ArtistID = ""+art.owner.ID;
+		RequestedArtFilter.ArtId = ""+art.ID;
 		//RequestedArtFilter.Genres.Add("testGenre1");
 		//RequestedArtFilter.Genres.Add("testGenre2");
 		view.image = null;

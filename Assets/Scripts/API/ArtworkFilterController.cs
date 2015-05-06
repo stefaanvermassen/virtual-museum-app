@@ -77,6 +77,8 @@ namespace API
     {
         public int ArtWorkFilterID;
 
+		public int ArtWorkID;
+
 		public ArrayList Values;
  
 		public int ArtistID;
@@ -88,7 +90,8 @@ namespace API
             {
 				{"Id", ArtWorkFilterID.ToString()},
                 {"Pairs", Values},
-                {"ArtistID", ArtistID}
+                {"ArtistID", ArtistID},
+				{"ArtWorkID", ArtWorkID}
             };
 
             return dict;
@@ -100,7 +103,8 @@ namespace API
             {
 				ArtWorkFilterID = ((int) dict["Id"]),
                 Values = (ArrayList) dict["Pairs"],
-				ArtistID = ((int) dict["ArtistID"])
+				ArtistID = ((int) dict["ArtistID"]),
+				ArtWorkID = ((int) dict["ArtWorkID"])
             };
 
             return awf;
