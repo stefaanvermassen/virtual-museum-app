@@ -10,9 +10,10 @@ public class QRCam : MonoBehaviour {
     public WebCamTexture CamTexture;
     private Rect PaneRect;
     private QRScanner Scanner = new QRScanner();
-    private Thread ScanThread;
 	public Image view;
 	public MeshRenderer quad;
+	public Thread ScanThread;
+	public Toast toast;
 
 
     void OnGUI()
@@ -65,7 +66,7 @@ public class QRCam : MonoBehaviour {
 	  CamTexture.requestedHeight = Screen.height; // 480;
 	  CamTexture.requestedWidth = Screen.width; //640;
 		
-        //TEST CODE HERE
+        /*//TEST CODE HERE
 
 		API.ArtworkFilterController c = API.ArtworkFilterController.Instance;
 		API.ArtWorkFilter f = new API.ArtWorkFilter ();
@@ -88,15 +89,32 @@ public class QRCam : MonoBehaviour {
 		}
 		);
 
-		//END TEST CODE HERE
+		//END TEST CODE HERE*/
 
 
 	  OnEnable();
 
-
-	  ScanThread = new Thread(Scanner.Scan);
-	  ScanThread.Start();
+		StartScanning ();
    }
+
+	void StartScanning(){
+		Scanner.done = false;
+		ScanThread = new Thread (Scanner.Scan);
+		ScanThread.Start ();
+		AsyncLoader.CreateAsyncLoader (
+		startup: () => {},
+		isDone: () => {return Scanner.done;},
+		whileLoading: () => {},
+		whenDone: () => {
+			if(Scanner.success){
+				toast.Notify("Virtual Museum Code detected!");
+			}else{
+				toast.Notify("This is not a Virtual Museum Code, please try again!");
+				StartScanning();
+			}
+		},
+		interval: 10);
+	}
 
     void Update()
     {
