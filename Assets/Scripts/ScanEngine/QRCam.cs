@@ -12,11 +12,12 @@ public class QRCam : MonoBehaviour {
     private QRScanner Scanner = new QRScanner();
     private Thread ScanThread;
 	public Image view;
+	public MeshRenderer quad;
 
 
     void OnGUI()
     {
-        GUI.DrawTexture(PaneRect, CamTexture, ScaleMode.ScaleAndCrop);
+        //GUI.DrawTexture(PaneRect, CamTexture, ScaleMode.ScaleAndCrop);
     }
 
 	// Use this for initialization
@@ -28,6 +29,7 @@ public class QRCam : MonoBehaviour {
             Scanner.Width = CamTexture.width;
             Scanner.Height = CamTexture.height;
 			Scanner.Color = CamTexture.GetPixels32();
+			quad.material.SetTexture(0,CamTexture);
         }
         
 	}
