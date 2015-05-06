@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -17,9 +18,15 @@ public class MuseumTileData: Data<MuseumTile> {
     public int CeilingStyle { get; set; }
     public int WallStyle { get; set; }
     public int FloorStyle { get; set; }
-	public SerializableColor CeilingColor { get; set; }
-	public SerializableColor WallColor { get; set; }
-	public SerializableColor FloorColor { get; set; }
+
+	[OptionalField]
+	public SerializableColor CeilingColor;
+
+	[OptionalField]
+	public SerializableColor WallColor;
+
+	[OptionalField]
+	public SerializableColor FloorColor;
 
     public MuseumTileData(int x, int y, int z, bool left, bool right, bool front, bool back, int ceilingStyle, int wallStyle, int floorStyle,
 	                      Color wallColor, Color floorColor, Color ceilingColor) {

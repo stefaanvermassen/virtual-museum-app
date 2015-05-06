@@ -150,7 +150,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public void Load(MuseumData data) {
         Clear();
         foreach (var tileData in data.Tiles) {
-			SetColors(tileData.WallColor.ToColor(), tileData.FloorColor.ToColor(), tileData.CeilingColor.ToColor());
+			if(tileData.WallColor != null) {
+				SetColors(tileData.WallColor.ToColor(), tileData.FloorColor.ToColor(), tileData.CeilingColor.ToColor());
+			}
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         }
         foreach (var artData in data.Art) {
