@@ -31,6 +31,9 @@ public class DrawController : MonoBehaviour {
 	public static int currentWall = 0;
 	public static int currentCeiling = 0;
 	public static int currentFrame = 1;
+	public static Color currentFloorColor = Color.white;
+	public static Color currentWallColor = Color.white;
+	public static Color currentCeilingColor = Color.white;
 
     private bool[] dragging = {false, false, false, false, false};
     private Vector3 centerPointWorld = Vector3.zero;
@@ -229,6 +232,7 @@ public class DrawController : MonoBehaviour {
     }
 
     void Draw(Vector3 dragPointWorld) {
+		currentMuseum.SetColors (currentWallColor, currentFloorColor, currentCeilingColor);
         currentMuseum.SetTile(currentWall, currentFloor, currentCeiling, (int)Mathf.Floor(dragPointWorld.x + 0.5f), 0, (int)Mathf.Floor(dragPointWorld.z + 0.5f));
     }
 

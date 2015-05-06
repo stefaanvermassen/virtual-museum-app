@@ -91,6 +91,18 @@ public class BuildMuseumActions : MonoBehaviour {
 		drawController.SetCurrentFloor (floorID);
 	}
 
+	public void SetWallColor(Color color) {
+		DrawController.currentWallColor = color;
+	}
+	
+	public void SetCeilingColor(Color color) {
+		DrawController.currentCeilingColor = color;
+	}
+	
+	public void SetFloorColor(Color color) {
+		DrawController.currentFloorColor = color;
+	}
+
 	public int GetArt() {
 		return DrawController.currentArt;
 	}
@@ -113,6 +125,18 @@ public class BuildMuseumActions : MonoBehaviour {
 
 	public int GetFrame() {
 		return DrawController.currentFrame;
+	}
+
+	public Color GetFloorColor() {
+		return DrawController.currentFloorColor;
+	}
+	
+	public Color GetWallColor() {
+		return DrawController.currentWallColor;
+	}
+	
+	public Color GetCeilingColor() {
+		return DrawController.currentCeilingColor;
 	}
 
 	public void Preview() {

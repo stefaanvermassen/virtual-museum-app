@@ -9,6 +9,14 @@ public class ObjectCatalogItemController : GUIControl
 	public Button button;
 	public BuildMuseumActions actions;
 	public ObjectCatalogController catalog;
+	public ColorPicker colorPicker;
+	public GameObject model;
+
+	public void ShowModel(bool show) {
+		if (model != null) {
+			model.SetActive(show);
+		}
+	}
 
 	public void init (int i, Catalog.CatalogType type)
 	{
@@ -23,7 +31,7 @@ public class ObjectCatalogItemController : GUIControl
 
 	private void ConfigLayout (int index, Catalog.CatalogType type)
 	{
-		var model = GetGameObject (index, type);
+		model = GetGameObject (index, type);
 		switch (type) {
 		case Catalog.CatalogType.OBJECT:
 			rotation = objectRotation;
@@ -47,8 +55,16 @@ public class ObjectCatalogItemController : GUIControl
 			rotation = wallRotation;
 			scale = wallScale;
 			position = wallPosition;
+			if(model.GetComponent<Colorable>() != null) {
+				model.GetComponent<Colorable>().Color = actions.GetWallColor();
+			}
 			button.onClick.AddListener (() => {
 				actions.SetWall (index);
+				if(model.GetComponent<Colorable>() != null) {
+					colorPicker.Open(model.GetComponent<Colorable>());
+					catalog.ShowModels(false);
+					//catalog.Close ();
+				}
 				//catalog.Close ();
 			});
 
@@ -57,8 +73,16 @@ public class ObjectCatalogItemController : GUIControl
 			rotation = floorRotation;
 			scale = floorScale;
 			position = floorPosition;
+			if(model.GetComponent<Colorable>() != null) {
+				model.GetComponent<Colorable>().Color = actions.GetFloorColor();
+			}
 			button.onClick.AddListener (() => {
 				actions.SetFloor (index);
+				if(model.GetComponent<Colorable>() != null) {
+					colorPicker.Open(model.GetComponent<Colorable>());
+					catalog.ShowModels(false);
+					//catalog.Close ();
+				}
 				//catalog.Close ();
 			});
 
@@ -67,8 +91,16 @@ public class ObjectCatalogItemController : GUIControl
 			rotation = ceilingRotation;
 			scale = ceilingScale;
 			position = ceilingPosition;
+			if(model.GetComponent<Colorable>() != null) {
+				model.GetComponent<Colorable>().Color = actions.GetCeilingColor();
+			}
 			button.onClick.AddListener (() => {
 				actions.SetCeiling (index);
+				if(model.GetComponent<Colorable>() != null) {
+					colorPicker.Open(model.GetComponent<Colorable>());
+					catalog.ShowModels(false);
+					//catalog.Close ();
+				}
 				//catalog.Close ();
 			});
 			break;
@@ -88,8 +120,10 @@ public class ObjectCatalogItemController : GUIControl
 			model.transform.localRotation = Quaternion.Euler (new Vector3 (rotation [0], rotation [1], rotation [2]));
 			ObjectDisplayProperties properties = model.GetComponent<ObjectDisplayProperties>();
 			if(properties != null) {
+				//Vector3 scale = model.transform.localScale;
 				Vector3 rot = model.transform.localRotation.eulerAngles;
 				Vector3 pos = model.transform.localPosition;
+				scale *= properties.scaleFactor;
 				model.transform.localPosition = pos + (properties.addPosition * scale);
 				model.transform.localRotation = Quaternion.Euler (rot + properties.addRotation);
 			}
