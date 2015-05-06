@@ -27,6 +27,8 @@ public class ArtList : MonoBehaviour {
 	public int userID = -1;
 	public string userName = "";
 	
+	public QRGenerator generator;
+	
 	void Start () {
 		listItem = (GameObject)Resources.Load("gui/ArtListItem");
 		separatorLine = (GameObject)Resources.Load ("gui/ListItemSeparator");

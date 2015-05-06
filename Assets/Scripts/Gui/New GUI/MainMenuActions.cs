@@ -80,6 +80,10 @@ public class MainMenuActions : MonoBehaviour
 		Application.LoadLevel ("SearchMuseums");
 	}
 
+	public void ScanArt(){
+		Application.LoadLevel ("Scan");
+	}
+
 	/// <summary>
 	/// Visit the museum with the designated museum ID
 	/// </summary>
