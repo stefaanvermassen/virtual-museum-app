@@ -12,10 +12,10 @@ using API;
 public class RegisterView : MonoBehaviour
 {
 
-    public InputField usernameField;
-    public InputField emailField;
-    public InputField passwordField;
-    public InputField confirmPasswordField;
+    public CustomInputField usernameField;
+    public CustomInputField emailField;
+    public CustomInputField passwordField;
+    public CustomInputField confirmPasswordField;
     public Toast toast;
     public GameObject panel;
 
@@ -38,7 +38,7 @@ public class RegisterView : MonoBehaviour
         }
 
         if (password != confirmPasswordField.text) {
-            toast.Notify("Passwords differ");
+            toast.Notify("Passwords are different");
             passwordField.text = "";
             confirmPasswordField.text = "";
             return;
@@ -53,7 +53,7 @@ public class RegisterView : MonoBehaviour
             panel.SetActive(false);
         }, (error) =>
         {
-            toast.Notify("Register failed. Please try again...");
+            toast.Notify("Register failed. You need at least 8 characters of which there is 1 uppercase, 1 lowercase and 1 digit.");
         });
     }
 

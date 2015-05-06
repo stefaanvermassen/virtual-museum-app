@@ -15,13 +15,23 @@ public class Frame : MonoBehaviour {
 
 	public Texture2D texture;
 
+	private Vector3[] oldVertices;
+
 	/// <summary>
 	/// Recalculates frame dimensions based on art dimensions.
 	/// </summary>
 	void Start () {
-		Mesh mesh = GetComponent<MeshFilter> ().mesh;
-		Vector3[] vertices = mesh.vertices;
+		Restart ();
+	}
 
+	public void Restart(){
+		Mesh mesh = GetComponent<MeshFilter> ().mesh;
+		if (oldVertices != null) {
+			mesh.vertices = oldVertices;
+			mesh.RecalculateBounds ();
+		}
+		Vector3[] vertices = mesh.vertices;
+		oldVertices = mesh.vertices;
 		float widthDiff = artWidth - innerWidth;
 		float heightDiff = artHeight - innerHeight;
 		
@@ -46,7 +56,7 @@ public class Frame : MonoBehaviour {
 		
 		mesh.vertices = vertices;
 		mesh.RecalculateBounds();
-
+		
 		if(texture != null) {
 			Material material = GetComponent<MeshRenderer>().materials[0];
 			material.SetTexture ("_DetailAlbedoMap", texture);

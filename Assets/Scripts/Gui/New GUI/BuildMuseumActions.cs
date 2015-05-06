@@ -39,12 +39,12 @@ public class BuildMuseumActions : MonoBehaviour {
 				toolButtons[i].Highlight(false);
 			}
 		}
-		if (drawController.currentArt < 0) {
+		if (DrawController.currentArt < 0) {
 			artBackButton.gameObject.SetActive (false);
 		} else {
 			artBackButton.gameObject.SetActive (true);
 		}
-		if (drawController.currentObject < 0) {
+		if (DrawController.currentObject < 0) {
 			objectBackButton.gameObject.SetActive (false);
 		} else {
 			objectBackButton.gameObject.SetActive (true);
@@ -92,27 +92,27 @@ public class BuildMuseumActions : MonoBehaviour {
 	}
 
 	public int GetArt() {
-		return drawController.currentArt;
+		return DrawController.currentArt;
 	}
 
 	public int GetObject() {
-		return drawController.currentObject;
+		return DrawController.currentObject;
 	}
 
 	public int GetFloor() {
-		return drawController.currentFloor;
+		return DrawController.currentFloor;
 	}
 
 	public int GetWall() {
-		return drawController.currentWall;
+		return DrawController.currentWall;
 	}
 
 	public int GetCeiling() {
-		return drawController.currentCeiling;
+		return DrawController.currentCeiling;
 	}
 
 	public int GetFrame() {
-		return drawController.currentFrame;
+		return DrawController.currentFrame;
 	}
 
 	public void Preview() {

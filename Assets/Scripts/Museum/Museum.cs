@@ -19,7 +19,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public List<MuseumArt> art = new List<MuseumArt>();
     public string ownerID;
     public string museumName;
-    public int museumID = 0;
+    public int museumID = -1;
     public string description;
     public API.Level privacy;
 
@@ -35,25 +35,34 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private HashSet<int> artIDsDownloading = new HashSet<int>();
     private bool loaded = false;
 
-    private MuseumObject selected;
+    private MuseumObject selectedObject;
+	private MuseumArt selectedArt;
 
 	public event EventHandler MuseumSaved;
 
+	public static float HEIGHT = 3;
+	public static float METER_PER_UNIT = 2;
+	public static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
+
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
-            museumID = 0;
+            museumID = -1;
             SetTile(0, 0, 0, 0, 0, 0);
         }
     }
 
     public void SetSelected(MuseumObject o) {
-        if (selected != null) {
-            selected.Select(Selectable.SelectionMode.None, Color.yellow);
-            if (!ContainsTile(selected.x, selected.y, selected.z) && selected != o) {
-                RemoveObject(selected.x, selected.y, selected.z);
+		if (selectedArt != null) {
+			selectedArt.Select(Selectable.SelectionMode.None, Color.yellow);
+		}
+		selectedArt = null;
+        if (selectedObject != null) {
+            selectedObject.Select(Selectable.SelectionMode.None, Color.yellow);
+            if (!ContainsTile(selectedObject.x, selectedObject.y, selectedObject.z) && selectedObject != o) {
+                RemoveObject(selectedObject.x, selectedObject.y, selectedObject.z);
             }
         }
-        selected = o;
+        selectedObject = o;
         if (o != null) {
             if (ContainsTile(o.x, o.y, o.z)) {
                 o.Select(Selectable.SelectionMode.Selected, Color.yellow);
@@ -62,6 +71,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             }
         }
     }
+
+	public void SetSelected(MuseumArt a) {
+		if (selectedObject != null) {
+			selectedObject.Select(Selectable.SelectionMode.None, Color.yellow);
+		}
+		selectedObject = null;
+		if (selectedArt != null) {
+			selectedArt.Select(Selectable.SelectionMode.None, Color.yellow);
+		}
+		selectedArt = a;
+		if (selectedArt != null) {
+			selectedArt.Select(Selectable.SelectionMode.Selected, Color.yellow);
+		}
+	}
 
     Art GetArt(int id, MuseumArt ma = null) {
         if (!artDictionary.ContainsKey(id)) {
@@ -91,17 +114,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 },
                 error: (error) => {
                 });
-            /*ArtworkController.Instance.GetArtworkData(
-                "" + id,
-                success: (artwork) => {
-                    art.image = new Texture2D(1, 1);
-                    art.image.LoadImage(artwork);
-                    Debug.Log("Loaded2");
-                    artDictionary.Add(id, art);
-                    artIDsDownloading.Remove(id);
-                },
-                error: (error) => {
-                });*/
             return null;
         }
         return artDictionary[id];
@@ -253,6 +265,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         return null;
     }
 
+	/// <summary>
+	/// Returns the art at position x,y,z. Returns null when there is none. Uses wallposition and rotation instead of tile coordinates.
+	/// </summary>
+	/// <returns>The art.</returns>
+	/// <param name="position">Position.</param>
+	/// <param name="rotation">Rotation.</param>
+	public MuseumArt GetArt(Vector3 position, Vector3 rotation) {
+		var normal = Quaternion.Euler(rotation) * Vector3.forward;
+		int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+		int y = 0;
+		int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+		return GetArt(x, y, z);
+	}
+
     /// <summary>
     /// Removes the art at the coordinate.
     /// </summary>
@@ -285,6 +311,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
         RemoveArt(x, y, z);
     }
+
+	public void MoveArt(MuseumArt art, Vector3 position, Vector3 rotation){
+		art.position = position;
+		art.rotation = rotation;
+		art.Restart ();
+	}
+
+	public bool ContainsTile(Vector3 position, Vector3 rotation){
+		var normal = Quaternion.Euler(rotation) * Vector3.forward;
+		int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+		int y = 0;
+		int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+		return ContainsTile (x, y, z);
+	}
 
     /// <summary>
     /// Add an object, only works if there is already a tile at the coordinate.
@@ -579,9 +619,10 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 			if(toast != null) toast.Notify("Museum saved!");
 				OnMuseumSaved(new EventArgs());
             });
-        if (museumID == 0) {
+        if (museumID == -1) {
             req = cont.CreateMuseum(museum, (mus) => {
                 museumID = mus.MuseumID;
+				MuseumLoader.museumID = mus.MuseumID;
                 req = cont.UploadMuseumData("" + mus.MuseumID, museumName, data);
                 loader.forceDone = true;
             },
@@ -618,7 +659,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             });
     }
 
-    public void DebugRegister() {
+    /*public void DebugRegister() {
         var controller = API.UserController.Instance;
         controller.CreateUser("RianTest", "riangoossens@mailinator.com", "Password123/",
             (success) => {
@@ -633,7 +674,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 SessionManager.Instance.LoginUser(success);
                 toast.Notify("Successfully logged in!");
             });
-    }
+    }*/
 
     public bool IsLoaded() {
         return loaded;
