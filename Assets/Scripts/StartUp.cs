@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class StartUp : MonoBehaviour {
 
 	public UnityEngine.UI.Text statusText;
+	Toast toast;
 
 	bool loading = false;
 	
@@ -186,10 +187,25 @@ public class StartUp : MonoBehaviour {
 		// TODO: To be implemented
 	}
 
-	public void LoadFilter(string filter) {
+	public void LoadFilter(string s) {
 		statusText.text = "Parsing filter...";
 		loading = true;
-		// TODO: To be implemented
+
+		Scanning.ArtFilter filter = new Scanning.ArtFilter();
+		filter.Configure(s);
+		//toast.notify ("Art has been added to your collection.");
+
+		//TODO: push filter to server @feliciaan, al methode hiervoor?
+		API.ArtWorkFilter apiFilter = new API.ArtWorkFilter ();
+
+		//TODO: set apiFilter fields
+
+		API.ArtworkFilterController c = API.ArtworkFilterController.Instance;
+		c.CreateArtWorkFilter(apiFilter);
+
+		//pop up toast
+
+		loading = false;
 	}
 
 	void Update() {

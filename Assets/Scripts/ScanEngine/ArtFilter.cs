@@ -22,7 +22,7 @@ namespace Scanning
 
         public void Configure(string s)
         {
-            string[] labels = s.Split(':');
+            string[] labels = s.Split('?');
             string[] tags = labels[3].Split(',');
             string[] genres = labels[5].Split(',');
 
@@ -34,13 +34,13 @@ namespace Scanning
         string Scannable.GetUniqueString()
         {
 
-			String s = "museum.awesomepeople.tv/filter/artist:" + ArtistName + ":tags:";
+			String s = "museum.awesomepeople.tv/filter/artist?" + ArtistName + "?tags?";
             foreach (string tag in Tags)
             {
                 s += tag + ",";
             }
             s = s.Substring(0, s.Length - 1);
-            s += ":genres:";
+            s += "?genres?";
             foreach (string genre in Genres)
             {
                 s += genre + ",";

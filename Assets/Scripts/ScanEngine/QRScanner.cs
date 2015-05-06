@@ -66,10 +66,8 @@ namespace Scanning
 
             while (true)
             {
-				Debug.Log("Loop");
                 if (IsQuit)
                     break;
-
 
                 // decode the current frame
 				Result result = null;
@@ -91,8 +89,8 @@ namespace Scanning
                 }
                 Debug.Log("Decoding failed: set Color to null");
                 // Sleep a little bit and set the signal to get the next frame
-                Thread.Sleep(200);
                 Color = null; //if null, Update() of GUI will set Color to a new frame of the webcam
+                Thread.Sleep(200);
   
             }
             throw new TimeoutException("Scanning of QR code was interrupted");

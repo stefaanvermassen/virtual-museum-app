@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="Unity Tests" total="29" errors="3" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2015-03-27" time="02:19:11">
+  <environment nunit-version="2.6.2-Unity" clr-version="2.0.50727.1433" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Users\stefaan\Documents\app" machine-name="WIN2012TEMPLATE" user="stefaan" user-domain="WIN2012TEMPLATE" unity-version="5.0.0f4" unity-platform="Editor" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite name="Unit Tests" type="Assembly" executed="True" result="Failure" success="False" time="0.198">
+    <results>
+      <test-case name="AddInfoTest.Initialize_InitializeInputFields_InitializedFields" executed="True" result="Error" success="False" time="0.039">
+        <failure>
+          <message>
+<![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]>
+          </message>
+          <stack-trace>
+<![CDATA[at AddMuseumInfo.Start () [0x00000] in C:\Users\stefaan\Documents\app\Assets\Scripts\Gui\AddMuseumInfo.cs:22
+at AddInfoTest.initialize (System.String name, System.String description) [0x000a6] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\AddInfoTest.cs:87
+at AddInfoTest.Initialize_InitializeInputFields_InitializedFields () [0x0001e] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\AddInfoTest.cs:25
+]]>
+          </stack-trace>
+        </failure>
+      </test-case>
+      <test-case name="AddInfoTest.Save_SaveInfo_InfoSaved" executed="True" result="Error" success="False" time="0.003">
+        <failure>
+          <message>
+<![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]>
+          </message>
+          <stack-trace>
+<![CDATA[at AddMuseumInfo.Start () [0x00000] in C:\Users\stefaan\Documents\app\Assets\Scripts\Gui\AddMuseumInfo.cs:22
+at AddInfoTest.initialize (System.String name, System.String description) [0x000a6] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\AddInfoTest.cs:87
+at AddInfoTest.Save_SaveInfo_InfoSaved () [0x00007] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\AddInfoTest.cs:52
+]]>
+          </stack-trace>
+        </failure>
+      </test-case>
+      <test-case name="AddInfoTest.Save_SaveInfo_InfoUnchanged" executed="True" result="Error" success="False" time="0.004">
+        <failure>
+          <message>
+<![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]>
+          </message>
+          <stack-trace>
+<![CDATA[at AddMuseumInfo.Start () [0x00000] in C:\Users\stefaan\Documents\app\Assets\Scripts\Gui\AddMuseumInfo.cs:22
+at AddInfoTest.initialize (System.String name, System.String description) [0x000a6] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\AddInfoTest.cs:87
+at AddInfoTest.Save_SaveInfo_InfoUnchanged () [0x0001e] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\AddInfoTest.cs:39
+]]>
+          </stack-trace>
+        </failure>
+      </test-case>
+      <test-case name="ArtTest.LoadArtInformation_LoadingArtData_ArtDataLoaded" executed="True" result="Success" success="True" time="0.011">
+      </test-case>
+      <test-case name="ArtTest.SaveArtInformation_SaveArtData_ArtDataSaved" executed="True" result="Success" success="True" time="0.006">
+      </test-case>
+      <test-case name="ArtworkGUITests.ChangingArtworkInformation_ChangingArtworkdName_NameChanged" executed="True" result="Success" success="True" time="0.003">
+      </test-case>
+      <test-case name="MuseumTests.AddingAndRemovingArt_AddArtOnTile_ArtAdded" executed="True" result="Success" success="True" time="0.012">
+      </test-case>
+      <test-case name="MuseumTests.AddingAndRemovingArt_AddArtWithoutTile_ArtNotAdded" executed="True" result="Success" success="True" time="0.001">
+      </test-case>
+      <test-case name="MuseumTests.AddingAndRemovingArt_RemoveArt_ArtRemoved" executed="True" result="Success" success="True" time="0.001">
+      </test-case>
+      <test-case name="MuseumTests.AddingAndRemovingObjects_AddObjectOnTile_CorrectObjectCreated" executed="True" result="Success" success="True" time="0.003">
+      </test-case>
+      <test-case name="MuseumTests.AddingAndRemovingObjects_AddObjectWithoutTile_ObjectNotCreated" executed="True" result="Success" success="True" time="0.000">
+      </test-case>
+      <test-case name="MuseumTests.AddingAndRemovingObjects_RemoveObject_ObjectRemoved" executed="True" result="Success" success="True" time="0.002">
+      </test-case>
+      <test-case name="MuseumTests.ChangingMuseumInformation_ChangingMuseumDescription_DescriptionChanged" executed="True" result="Success" success="True" time="0.021">
+      </test-case>
+      <test-case name="MuseumTests.ChangingMuseumInformation_ChangingMuseumName_NameChanged" executed="True" result="Success" success="True" time="0.001">
+      </test-case>
+      <test-case name="MuseumTests.PlacingAndRemovingTiles_PlacingSingleTile_AllTileWallsArePresent" executed="True" result="Success" success="True" time="0.002">
+      </test-case>
+      <test-case name="MuseumTests.PlacingAndRemovingTiles_PlacingSingleTile_TilePlaced" executed="True" result="Success" success="True" time="0.002">
+      </test-case>
+      <test-case name="MuseumTests.SerializingMuseum_LoadingSavedMuseum_MuseumIsLoadedWithCorrectInformation" executed="True" result="Success" success="True" time="0.006">
+      </test-case>
+      <test-case name="UserTest.LoadUserInformation_LoadingUserData_UserDataLoaded" executed="True" result="Success" success="True" time="0.000">
+      </test-case>
+      <test-case name="UserTest.SaveUserInformation_SaveNewName_NewNameSaved" executed="True" result="Success" success="True" time="0.001">
+      </test-case>
+      <test-case name="WalkingTests.MobileControlRig_MoveLeftStick_PlayerMoved" executed="True" result="Success" success="True" time="0.031">
+      </test-case>
+      <test-case name="WalkingTests.MobileControlRig_MoveRightStick_PlayerAndCameraRotated" executed="True" result="Success" success="True" time="0.007">
+      </test-case>
+      <test-case name="WalkingTests.MobileControlRig_MoveStick_AxesChanged" executed="True" result="Success" success="True" time="0.003">
+      </test-case>
+      <test-case name="WalkingTests.PlayerCharacter_Move_Moved" executed="True" result="Success" success="True" time="0.003">
+      </test-case>
+      <test-case name="WalkingTests.PlayerCharacter_MoveFall_Falling" executed="True" result="Success" success="True" time="0.003">
+      </test-case>
+      <test-case name="WalkingTests.PlayerCharacter_MoveFallRespawn_Respawned" executed="True" result="Success" success="True" time="0.007">
+      </test-case>
+      <test-case name="WalkingTests.PlayerCharacter_Rotate_Rotated" executed="True" result="Success" success="True" time="0.005">
+      </test-case>
+      <test-case name="WalkingTests.PlayerCharacter_SwitchActiveCamera_CameraSwitched" executed="True" result="Success" success="True" time="0.002">
+      </test-case>
+      <test-case name="WalkingTests.TestEnvironment_LoadObjects_ObjectsLoaded" executed="True" result="Failure" success="False" time="0.006">
+        <failure>
+          <message>
+<![CDATA[  Event system component should be active
+  Expected: not null
+  But was:  null
+]]>
+          </message>
+          <stack-trace>
+<![CDATA[at WalkingTests.TestEnvironment_LoadObjects_ObjectsLoaded () [0x0000f] in C:\Users\stefaan\Documents\app\Assets\Editor\Tests\WalkingTests.cs:58
+]]>
+          </stack-trace>
+        </failure>
+      </test-case>
+      <test-case name="WalkingTests.TestEnvironment_StartPlayerInTestMode_PlayerStarted" executed="True" result="Success" success="True" time="0.013">
+      </test-case>
+    </results>
+  </test-suite>
+</test-results>
