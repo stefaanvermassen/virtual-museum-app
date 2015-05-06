@@ -18,13 +18,15 @@ public static class Catalog
 
 	private static Dictionary<int, Art> artworksDictionary = new Dictionary<int, Art> ();
 	public static string[] objects = new string[] { "texmonkey", "Vase1", "Statue",
-    "Lamp"
+    "Lamp", "Column", "Chair", "PotPlant"
     };
-	public static string[] walls = new string[] {"Wall1", "Wall2", "Wall3"
+	public static string[] walls = new string[] {"Wall1", "Wall2", "Wall3", "Wall4"
     };
-	public static string[] ceilings = new string[] {"Ceiling1", "Ceiling2", "Ceiling3"
+	public static string[] ceilings = new string[] {"Ceiling1", "Ceiling2", "Ceiling3",
+	"Ceiling4"
     };
-	public static string[] floors = new string[] {"Floor1", "Floor2", "Floor3", "Floor4"
+	public static string[] floors = new string[] {"Floor1", "Floor2", "Floor3", "Floor4",
+	"Floor5"
     };
 	public static string[] frames = new string[] {"Frame1", "Frame2"
 	};

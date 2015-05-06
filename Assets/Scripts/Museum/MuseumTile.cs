@@ -11,6 +11,9 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     public int ceilingStyle;
     public int wallStyle;
     public int floorStyle;
+	public Color ceilingColor;
+	public Color wallColor;
+	public Color floorColor;
     public Material frontMaterial;
     public Material backMaterial;
 
@@ -27,8 +30,10 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
     private GameObject upObject, downObject, leftObject, rightObject, frontObject, backObject;
 
     public MuseumTileData Save() {
-        return new MuseumTileData(x, y, z, left, right, front, back, ceilingStyle, wallStyle, floorStyle);
+        return new MuseumTileData(x, y, z, left, right, front, back, ceilingStyle, wallStyle, floorStyle,
+		                          wallColor, floorColor, ceilingColor);
     }
+
     public void Load(MuseumTileData data) {
         x = data.X;
         y = data.Y;
@@ -40,6 +45,9 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         ceilingStyle = data.CeilingStyle;
         wallStyle = data.WallStyle;
         floorStyle = data.FloorStyle;
+		ceilingColor = data.CeilingColor.ToColor();
+		wallColor = data.WallColor.ToColor();
+		floorColor = data.FloorColor.ToColor();
     }
 
     GameObject ReversedQuad() {
@@ -55,16 +63,25 @@ public class MuseumTile : MonoBehaviour, Storable<MuseumTile, MuseumTileData> {
         switch (quadType) {
             case QuadType.Ceiling:
                 frontSide = GameObject.Instantiate(Catalog.GetCeiling(id));
+				if(frontSide.GetComponent<Colorable>() != null) {
+					frontSide.GetComponent<Colorable>().Color = ceilingColor;
+				}
                 frontSide.transform.Rotate(new Vector3(90, 0, 0));
                 frontSide.transform.Translate(new Vector3(-0.5f, -1.5f, -0.5f));
                 break;
             case QuadType.Floor:
                 frontSide = GameObject.Instantiate(Catalog.GetFloor(id));
+				if(frontSide.GetComponent<Colorable>() != null) {
+					frontSide.GetComponent<Colorable>().Color = floorColor;
+				}
                 frontSide.transform.Rotate(new Vector3(-90, 0, 0));
                 frontSide.transform.Translate(new Vector3(-0.5f, 0, -0.5f));
                 break;
             case QuadType.Wall:
                 frontSide = GameObject.Instantiate(Catalog.GetWall(id));
+				if(frontSide.GetComponent<Colorable>() != null) {
+					frontSide.GetComponent<Colorable>().Color = wallColor;
+				}
                 frontSide.transform.localScale = new Vector3(1, 2 / 3f, 1);
                 frontSide.transform.localRotation = Quaternion.Euler(new Vector3(0, 180, 0));
                 frontSide.transform.localPosition = new Vector3(0.5f, -0.5f, 0);

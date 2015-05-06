@@ -30,6 +30,13 @@ public class ObjectCatalogController : GUIControl
 		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
 	}*/
 
+	public void ShowModels(bool show) {
+		ObjectCatalogItemController[] items = catalogContent.GetComponentsInChildren<ObjectCatalogItemController>();
+		foreach(ObjectCatalogItemController item in items) {
+			item.ShowModel(show);
+		}
+	}
+
 
 	//use objects id'd as strings in catalog to build the gui
 	public void loadObjects (Catalog.CatalogType type)
