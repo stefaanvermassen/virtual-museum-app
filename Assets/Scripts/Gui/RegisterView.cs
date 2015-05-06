@@ -45,7 +45,8 @@ public class RegisterView : MonoBehaviour
         }
 
         API.UserController userController = API.UserController.Instance;
-        Request response = userController.CreateUser(username, email, password, (success) =>
+        Request response = null;
+        response = userController.CreateUser(username, email, password, (success) =>
         {
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Successfully registered!");
@@ -53,7 +54,18 @@ public class RegisterView : MonoBehaviour
             panel.SetActive(false);
         }, (error) =>
         {
-            toast.Notify("Register failed. You need at least 8 characters of which there is 1 uppercase, 1 lowercase and 1 digit.");
+            string errorMessage = response.response.Object["Message"] as string;
+            Hashtable modelState = response.response.Object["ModelState"] as Hashtable;
+            
+            foreach (DictionaryEntry e in modelState)
+            {
+                foreach (string value in (ArrayList) e.Value)
+                {
+                    errorMessage += " " + value;
+                }
+            }
+            
+            toast.Notify(errorMessage);
         });
     }
 
