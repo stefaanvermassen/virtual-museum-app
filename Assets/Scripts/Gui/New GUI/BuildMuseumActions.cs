@@ -16,6 +16,7 @@ public class BuildMuseumActions : MonoBehaviour {
 	public GUIControl savePopUp;
 	public GUIControl objectsPopUp;
 	public GUIControl stylesPopUp;
+	public GUIControl colorPopUp;
 	public bool canScroll;
 
 	void Start() {
@@ -34,12 +35,11 @@ public class BuildMuseumActions : MonoBehaviour {
 		for (int i = 0; i < toolButtons.Length; i++) {
 			if(tool == i) {
 				toolButtons[i].Highlight(true);
-				//toolButtons[i].Select();
 			} else {
 				toolButtons[i].Highlight(false);
 			}
 		}
-		if (DrawController.currentArt < 0) {
+		/*if (DrawController.currentArt < 0) {
 			artBackButton.gameObject.SetActive (false);
 		} else {
 			artBackButton.gameObject.SetActive (true);
@@ -48,11 +48,23 @@ public class BuildMuseumActions : MonoBehaviour {
 			objectBackButton.gameObject.SetActive (false);
 		} else {
 			objectBackButton.gameObject.SetActive (true);
+		}*/
+		if (DrawController.currentArt < 0 && tool == (int)DrawController.Tools.PlacingArt && !artCollectionPopUp.IsOpen ()) {
+			SetTool ((int)DrawController.Tools.Moving);
+		} else if (DrawController.currentObject < 0 && tool == (int)DrawController.Tools.PlacingObject && !objectsPopUp.IsOpen ()) {
+			SetTool ((int)DrawController.Tools.Moving);
 		}
 		if (Input.GetKeyDown (KeyCode.Return)) {
-			if(artBackButton.gameObject.activeSelf) {
-				artCollectionPopUp.Close ();
+			artCollectionPopUp.Close ();
+			objectsPopUp.Close();
+			if(colorPopUp.IsOpen ()) {
+				colorPopUp.Close();
+			} else {
+				stylesPopUp.Close ();
 			}
+			/*if(artBackButton.gameObject.activeSelf) {
+				artCollectionPopUp.Close ();
+			}*/
 		}
 		if (artCollectionPopUp.IsOpen () || savePopUp.IsOpen () || objectsPopUp.IsOpen () || stylesPopUp.IsOpen()) {
 			canScroll = false;
