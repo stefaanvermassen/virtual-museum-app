@@ -22,6 +22,11 @@ namespace Scanning
         public string LastResult { get; set; }
 
         public ArtFilter Filter { get; set; }
+
+		public bool done = false;
+		public bool success = false;
+		public string code;
+
         //empty constructor
         public QRScanner()
         {
@@ -61,15 +66,14 @@ namespace Scanning
 
         public void Scan()
         {
+			done = false;
             // create a reader with a custom luminance source
             var barcodeReader = new BarcodeReader { AutoRotate = false, TryHarder = false };
-
+			Color = null;
             while (true)
             {
-				Debug.Log("Loop");
                 if (IsQuit)
                     break;
-
 
                 // decode the current frame
 				Result result = null;
@@ -80,19 +84,19 @@ namespace Scanning
                 {
                     Filter = new ArtFilter();
 					Debug.Log("QR found: " + result.Text);
-                    //TODO make new ArtFilter and push to the server !!!
-
-					// !!!!!!!!!!!
-					//
-					//TODO: pop up toast that art is collected !!
-					//
-					//
+					code = result.Text;
+					if(result.Text.StartsWith("museum.awesomepeople.tv/filter/")){
+						success = true;
+					}else{
+						success = false;
+					}
+					done = true;
                     return;
                 }
                 Debug.Log("Decoding failed: set Color to null");
                 // Sleep a little bit and set the signal to get the next frame
-                Thread.Sleep(200);
                 Color = null; //if null, Update() of GUI will set Color to a new frame of the webcam
+                Thread.Sleep(200);
   
             }
             throw new TimeoutException("Scanning of QR code was interrupted");

@@ -168,7 +168,7 @@ public class ArtListItem : MonoBehaviour {
 	}
 
 	public void ShowQR() {
-		// TODO: Send id
+		list.generator.GenerateQR (artWork);
 		list.popUpQR.FlipCloseOpen ();
 	}
 }

@@ -10,13 +10,15 @@ public class QRCam : MonoBehaviour {
     public WebCamTexture CamTexture;
     private Rect PaneRect;
     private QRScanner Scanner = new QRScanner();
-    private Thread ScanThread;
-	public QRView view;
+	public Image view;
+	public MeshRenderer quad;
+	public Thread ScanThread;
+	public Toast toast;
 
 
     void OnGUI()
     {
-        GUI.DrawTexture(PaneRect, CamTexture, ScaleMode.ScaleAndCrop);
+        //GUI.DrawTexture(PaneRect, CamTexture, ScaleMode.ScaleAndCrop);
     }
 
 	// Use this for initialization
@@ -28,6 +30,7 @@ public class QRCam : MonoBehaviour {
             Scanner.Width = CamTexture.width;
             Scanner.Height = CamTexture.height;
 			Scanner.Color = CamTexture.GetPixels32();
+			quad.material.SetTexture(0,CamTexture);
         }
         
 	}
@@ -58,18 +61,37 @@ public class QRCam : MonoBehaviour {
 	  Encoded = new Texture2D(256, 256);
 
 	  PaneRect = new Rect(0, 0, Screen.width, Screen.height); //is this the panel or the entire screen?
-
-	  CamTexture = new WebCamTexture();
+	  
+      CamTexture = new WebCamTexture();
 	  CamTexture.requestedHeight = Screen.height; // 480;
 	  CamTexture.requestedWidth = Screen.width; //640;
-		
-
 	  OnEnable();
 
-
-	  ScanThread = new Thread(Scanner.Scan);
-	  ScanThread.Start();
+		StartScanning ();
    }
+
+	void StartScanning(){
+		Scanner.done = false;
+		ScanThread = new Thread (Scanner.Scan);
+		ScanThread.Start ();
+		AsyncLoader.CreateAsyncLoader (
+		startup: () => {},
+		isDone: () => {return Scanner.done;},
+		whileLoading: () => {},
+		whenDone: () => {
+			if(Scanner.success){
+				toast.Notify("Virtual Museum Code detected! Art has been added to your collection!");
+				var filter = new ArtFilter();
+				filter.Configure(Scanner.code);
+				filter.Collect();
+				StartScanning();
+			}else{
+				toast.Notify("This is not a Virtual Museum Code, please try again!");
+				StartScanning();
+			}
+		},
+		interval: 10);
+	}
 
     void Update()
     {
@@ -78,4 +100,8 @@ public class QRCam : MonoBehaviour {
             Scanner.Color = CamTexture.GetPixels32();
         }
     }
+
+	public void Back(){
+		Application.LoadLevel ("MainMenuScene");
+	}
 }

@@ -10,19 +10,22 @@ using UnityEngine.UI;
 public class StartUp : MonoBehaviour {
 
 	public UnityEngine.UI.Text statusText;
+	Toast toast;
 
 	bool loading = false;
 	
 	void Start () {
-		loading = true;
 		try {
 			statusText.fontSize = Screen.width / 40;
 			CheckLogin ();
 			CheckProtocol ();
 			HandleURI ();
 		} catch(Exception ex) {
-		} finally {
 			loading = false;
+		} finally {
+			if(!loading) {
+				Application.LoadLevel ("MainMenuScene");
+			}
 		}
 	}
 	
@@ -68,7 +71,8 @@ public class StartUp : MonoBehaviour {
 
 	void HandleURLProtocol(string fullURL) {
 		int id;
-		string url = fullURL.Replace ("virtualmuseum://", "");
+		string[] separators = new string[]{"?","#"};
+		string url = fullURL.Replace ("virtualmuseum://", "").Split (separators,StringSplitOptions.RemoveEmptyEntries)[0];
 		if(url.StartsWith("filter/")) {
 			LoadFilter(url.Substring("filter/".Length));
 		} else if(url.StartsWith("art/")) {
@@ -176,6 +180,7 @@ public class StartUp : MonoBehaviour {
 	public void LoadMuseum(int id) {
 		statusText.text = "Loading museum...";
 		MuseumLoader.museumID = id;
+		MuseumLoader.currentAction = MuseumLoader.MuseumAction.Visit;
 		loading = true;
 		Application.LoadLevel ("WalkingController");
 	}
@@ -186,17 +191,26 @@ public class StartUp : MonoBehaviour {
 		// TODO: To be implemented
 	}
 
-	public void LoadFilter(string filter) {
+	public void LoadFilter(string s) {
 		statusText.text = "Parsing filter...";
 		loading = true;
-		// TODO: To be implemented
+
+		Scanning.ArtFilter filter = new Scanning.ArtFilter();
+		filter.Configure(s);
+		filter.Collect ();
+
+		//toast.notify ("Art has been added to your collection.");
+		//API.ArtWorkFilter apiFilter = new API.ArtWorkFilter ();
+		//API.ArtworkFilterController c = API.ArtworkFilterController.Instance;
+		//c.CreateArtWorkFilter(apiFilter);
+		//pop up toast
+
+		loading = false;
 	}
 
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Application.Quit();
-		} else if(!loading) {
-			Application.LoadLevel ("MainMenuScene");
 		}
 	}
 

@@ -224,7 +224,6 @@ namespace API
 			var list = new ArrayList ();
 			if(art.description != null) {
 				list.Add (ArtWork.CreateMetaData("Description", art.description));
-				list.Add (ArtWork.CreateMetaData("Genre", "nsfw"));
 			}
 			return new ArtWork ()
 			{

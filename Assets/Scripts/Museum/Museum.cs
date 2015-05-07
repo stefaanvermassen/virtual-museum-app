@@ -35,9 +35,18 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     private HashSet<int> artIDsDownloading = new HashSet<int>();
     private bool loaded = false;
 
-    private MuseumObject selected;
+    private MuseumObject selectedObject;
+	private MuseumArt selectedArt;
 
 	public event EventHandler MuseumSaved;
+
+	public static float HEIGHT = 3;
+	public static float METER_PER_UNIT = 2;
+	public static float UNIT_HEIGHT = HEIGHT / METER_PER_UNIT;
+
+	Color wallColor = Color.white;
+	Color floorColor = Color.white;
+	Color ceilingColor = Color.white;
 
     public void Start() {
         if (!ContainsTile(0, 0, 0)) {
@@ -47,13 +56,17 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     }
 
     public void SetSelected(MuseumObject o) {
-        if (selected != null) {
-            selected.Select(Selectable.SelectionMode.None, Color.yellow);
-            if (!ContainsTile(selected.x, selected.y, selected.z) && selected != o) {
-                RemoveObject(selected.x, selected.y, selected.z);
+		if (selectedArt != null) {
+			selectedArt.Select(Selectable.SelectionMode.None, Color.yellow);
+		}
+		selectedArt = null;
+        if (selectedObject != null) {
+            selectedObject.Select(Selectable.SelectionMode.None, Color.yellow);
+            if (!ContainsTile(selectedObject.x, selectedObject.y, selectedObject.z) && selectedObject != o) {
+                RemoveObject(selectedObject.x, selectedObject.y, selectedObject.z);
             }
         }
-        selected = o;
+        selectedObject = o;
         if (o != null) {
             if (ContainsTile(o.x, o.y, o.z)) {
                 o.Select(Selectable.SelectionMode.Selected, Color.yellow);
@@ -62,6 +75,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
             }
         }
     }
+
+	public void SetSelected(MuseumArt a) {
+		if (selectedObject != null) {
+			selectedObject.Select(Selectable.SelectionMode.None, Color.yellow);
+		}
+		selectedObject = null;
+		if (selectedArt != null) {
+			selectedArt.Select(Selectable.SelectionMode.None, Color.yellow);
+		}
+		selectedArt = a;
+		if (selectedArt != null) {
+			selectedArt.Select(Selectable.SelectionMode.Selected, Color.yellow);
+		}
+	}
 
     Art GetArt(int id, MuseumArt ma = null) {
         if (!artDictionary.ContainsKey(id)) {
@@ -91,17 +118,6 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
                 },
                 error: (error) => {
                 });
-            /*ArtworkController.Instance.GetArtworkData(
-                "" + id,
-                success: (artwork) => {
-                    art.image = new Texture2D(1, 1);
-                    art.image.LoadImage(artwork);
-                    Debug.Log("Loaded2");
-                    artDictionary.Add(id, art);
-                    artIDsDownloading.Remove(id);
-                },
-                error: (error) => {
-                });*/
             return null;
         }
         return artDictionary[id];
@@ -134,6 +150,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     public void Load(MuseumData data) {
         Clear();
         foreach (var tileData in data.Tiles) {
+			if(tileData.WallColor != null) {
+				SetColors(tileData.WallColor.ToColor(), tileData.FloorColor.ToColor(), tileData.CeilingColor.ToColor());
+			}
             SetTile(tileData.WallStyle, tileData.FloorStyle, tileData.CeilingStyle, tileData.X, tileData.Y, tileData.Z);
         }
         foreach (var artData in data.Art) {
@@ -253,6 +272,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         return null;
     }
 
+	/// <summary>
+	/// Returns the art at position x,y,z. Returns null when there is none. Uses wallposition and rotation instead of tile coordinates.
+	/// </summary>
+	/// <returns>The art.</returns>
+	/// <param name="position">Position.</param>
+	/// <param name="rotation">Rotation.</param>
+	public MuseumArt GetArt(Vector3 position, Vector3 rotation) {
+		var normal = Quaternion.Euler(rotation) * Vector3.forward;
+		int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+		int y = 0;
+		int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+		return GetArt(x, y, z);
+	}
+
     /// <summary>
     /// Removes the art at the coordinate.
     /// </summary>
@@ -285,6 +318,20 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
         RemoveArt(x, y, z);
     }
+
+	public void MoveArt(MuseumArt art, Vector3 position, Vector3 rotation){
+		art.position = position;
+		art.rotation = rotation;
+		art.Restart ();
+	}
+
+	public bool ContainsTile(Vector3 position, Vector3 rotation){
+		var normal = Quaternion.Euler(rotation) * Vector3.forward;
+		int x = (int)Mathf.Floor(position.x + normal.x / 2 + 0.5f);
+		int y = 0;
+		int z = (int)Mathf.Floor(position.z + normal.z / 2 + 0.5f);
+		return ContainsTile (x, y, z);
+	}
 
     /// <summary>
     /// Add an object, only works if there is already a tile at the coordinate.
@@ -377,6 +424,12 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         }
     }
 
+	public void SetColors(Color wallColor, Color floorColor, Color ceilingColor) {
+		this.wallColor = wallColor;
+		this.floorColor = floorColor;
+		this.ceilingColor = ceilingColor;
+	}
+
     /// <summary>
     /// Sets a tile using a wall, floor and ceiling-style at a position.
     /// </summary>
@@ -386,7 +439,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="z"></param>
-    public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
+	public void SetTile(int wallStyle = 0, int floorStyle = 0, int ceilingStyle = 0, int x = 0, int y = 0, int z = 0) {
         RemoveTile(x, y, z, true);
         GameObject tileObject = new GameObject();
         tileObject.transform.parent = transform.parent;
@@ -399,6 +452,9 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         tile.wallStyle = wallStyle;
         tile.floorStyle = floorStyle;
         tile.ceilingStyle = ceilingStyle;
+		tile.wallColor = wallColor;
+		tile.floorColor = floorColor;
+		tile.ceilingColor = ceilingColor;
         tile.frontMaterial = frontMaterial;
         tile.backMaterial = backMaterial;
         var leftTile = GetTile(x - 1, y, z);
