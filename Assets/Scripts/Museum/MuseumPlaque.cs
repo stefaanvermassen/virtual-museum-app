@@ -12,6 +12,9 @@ public class MuseumPlaque : MonoBehaviour {
     private GameObject textObject;
     private GameObject cubeObject;
 
+	private static float PLAQUE_THICKNESS = 0.04f;
+	private static float FLOATING_MARGIN = 0.0001f;
+
     void Start() {
         plaqueObject = new GameObject();
         plaqueObject.transform.SetParent(this.gameObject.transform, false);
@@ -21,7 +24,7 @@ public class MuseumPlaque : MonoBehaviour {
         var rect = plaqueObject.GetComponent<RectTransform>();
         rect.sizeDelta = detail*size;
         rect.localScale = new Vector3(1, 1, 1) / detail;
-        rect.localPosition = new Vector3(0, 0, 0.0101f);
+        rect.localPosition = new Vector3(0, 0, PLAQUE_THICKNESS + FLOATING_MARGIN);
         rect.localRotation = Quaternion.Euler(new Vector3(0, 180, 0));
         canvas.renderMode = RenderMode.WorldSpace;
 
@@ -40,7 +43,7 @@ public class MuseumPlaque : MonoBehaviour {
         text.color = Color.black;
 
         cubeObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cubeObject.transform.localScale = new Vector3(size.x*1.1f, size.y*1.1f, 0.01f);
+        cubeObject.transform.localScale = new Vector3(size.x*1.1f, size.y*1.1f, PLAQUE_THICKNESS);
         cubeObject.transform.SetParent(gameObject.transform,false);
 	}
 	
