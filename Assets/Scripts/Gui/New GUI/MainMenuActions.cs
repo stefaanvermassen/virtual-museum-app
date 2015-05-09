@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-
 using UnityEngine.UI;
 
 public class MainMenuActions : MonoBehaviour
@@ -10,9 +9,10 @@ public class MainMenuActions : MonoBehaviour
 	public int currentMuseumID = -1;
 	public int currentArtID = -1;
 	public Toast toast;
+	public Text CreditsLabel;
 
-	void Start ()
-	{
+	void Start () {
+		GetCredits (CreditsLabel);
 	}
 
 	public void NewMuseum() {
@@ -111,6 +111,19 @@ public class MainMenuActions : MonoBehaviour
 			if (currentMuseumID != -1) {
 				VisitMuseum ( false);
 			}
+		});
+	}
+
+	public void GetCredits(Text label) {
+		label.text = "Connecting to server...";
+		var cc = API.CreditController.Instance;
+		cc.GetUserCredits ((result) => {
+			label.text = result.Credits.ToString();
+			//toast.Notify("Welcome, " + result.UserName);
+		},
+		(error) => {
+			label.text = "No credits.";
+			toast.Notify("Could not connect to the server. Please check your internet connection.");
 		});
 	}
 
