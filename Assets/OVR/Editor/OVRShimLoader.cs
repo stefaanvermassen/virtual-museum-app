@@ -48,7 +48,7 @@ class OVRShimLoader
 		//Debug.Log("Version is " + OVRUnityVersionChecker.version.ToString() + " (" + Application.unityVersion + ")");
 		//Debug.Log("Use Auto Patcher? " + _useAutoPatcher);
 		//Debug.Log("Use Exclusive mode D3D11? " + OVRUnityVersionChecker.hasD3D11ExclusiveModeSupport);
-
+		/*
 #if (UNITY_5_0)
 		PlayerSettings.d3d11FullscreenMode =
 			(OVRUnityVersionChecker.hasD3D11ExclusiveModeSupport) ? D3D11FullscreenMode.ExclusiveMode : D3D11FullscreenMode.FullscreenWindow;
@@ -58,7 +58,7 @@ class OVRShimLoader
 
 		PlayerSettings.d3d9FullscreenMode =
 			(OVRUnityVersionChecker.hasD3D9ExclusiveModeSupport) ? D3D9FullscreenMode.ExclusiveMode : D3D9FullscreenMode.FullscreenWindow;
-
+*/
 		PlayerSettings.visibleInBackground = true;
 	}
 
