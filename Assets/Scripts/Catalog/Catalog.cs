@@ -135,6 +135,12 @@ public static class Catalog
 
 	}
 
+	/// <summary>
+	/// Loads the resource.
+	/// </summary>
+	/// <param name="folder">Folder.</param>
+	/// <param name="dict">Dict.</param>
+	/// <param name="names">Names.</param>
 	private static void loadResource (string folder, Dictionary<int, GameObject> dict, string[] names)
 	{
 		for (int id=0; id<names.Length; id++) {
@@ -149,11 +155,10 @@ public static class Catalog
 		return artworksDictionary.ContainsKey (artID);
 
 	}
-	//TODO: add filters on collection of requested art
-	//warning this method waits to finish, this should always be called 
 	/// <summary>
 	/// Loads all art from server available to user.
 	/// A filter can be applied to refine the scope of the collection.
+	/// warning this method waits to finish, this should always be called 
 	/// </summary>
 	/// <returns>A collection Art.</returns>
 	public static void RefreshArtWork (EventHandler eventHandler = null)
@@ -204,17 +209,28 @@ public static class Catalog
 		});
 
 	}
-
+	/// <summary>
+	/// Gets the frame.
+	/// </summary>
+	/// <returns>The frame.</returns>
+	/// <param name="objectID">Object I.</param>
 	public static GameObject GetFrame (int objectID)
 	{
 		return GetResource (objectID,  frameDictionary);
 	}
-
+/// <summary>
+/// Gets the art.
+/// </summary>
+/// <returns>The art.</returns>
+/// <param name="artID">Art I.</param>
 	public static Art getArt (int artID)
 	{
 		return artworksDictionary [artID];
 	}
-
+	/// <summary>
+	/// Gets all art.
+	/// </summary>
+	/// <returns>The all art.</returns>
 	public static Dictionary<int, Art> getAllArt ()
 	{
 		return artworksDictionary;

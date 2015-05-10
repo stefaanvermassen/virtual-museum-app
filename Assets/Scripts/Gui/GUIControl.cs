@@ -99,14 +99,20 @@ public class GUIControl : MonoBehaviour
 		return null;
 	}
 
-	//return an instantiatec prefab
-	//Transform.SetParent method with the worldPositionStays parameter set to false
-	//the UI Element is a child of a Layout Group it will be automatically positioned and the positioning step can be skipped
+	/// <summary>
+	/// Init the specified controlType.
+	/// the UI Element is a child of a Layout Group it will be automatically positioned and the positioning step can be skipped
+	/// </summary>
+	/// <param name="controlType">Control type.</param>
 	public static GUIControl Init (types controlType)
 	{
 		return (GUIControl)Instantiate ((GUIControl)Resources.Load ("gui/" + controlType.ToString (), typeof(GUIControl)));
 	}
 
+	/// <summary>
+	/// Init the specified control.
+	/// </summary>
+	/// <param name="control">Control.</param>
 	public static GUIControl Init (GUIControl control)
 	{
 		GUIControl instance = Instantiate (control);
@@ -114,6 +120,10 @@ public class GUIControl : MonoBehaviour
 		return instance;
 	}
 
+	/// <summary>
+	/// Activates all child scripts.
+	/// </summary>
+	/// <param name="instance">Instance.</param>
 	private static void ActivateAllChildScripts (Transform instance)
 	{
 		//activate all scripts
@@ -127,12 +137,19 @@ public class GUIControl : MonoBehaviour
 		}
 	}
 
-	//show guicontrol on top of all siblings
+	/// <summary>
+	/// show guicontrol on top of all siblings
+	/// </summary>
 	public void OnTop ()
 	{
 		this.gameObject.transform.SetSiblingIndex (this.gameObject.transform.parent.childCount - 1);
 	}
 
+	/// <summary>
+	/// Sets the relative position.
+	/// </summary>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="y">The y coordinate.</param>
 	public void SetRelativePosition (float x, float y)
 	{
 		RectTransform rectTransform = GetComponent<RectTransform> ();
@@ -142,6 +159,11 @@ public class GUIControl : MonoBehaviour
 		rectTransform.anchoredPosition = new Vector2 (x, y);
 	}
 
+
+	/// <summary>
+	/// Gets the relative x.
+	/// </summary>
+	/// <returns>The relative x.</returns>
 	public float GetRelativeX ()
 	{
 		RectTransform rectTransform = GetComponent<RectTransform> ();
@@ -151,6 +173,10 @@ public class GUIControl : MonoBehaviour
 		return rectTransform.anchoredPosition.x;
 	}
 
+	/// <summary>
+	/// Gets the relative y.
+	/// </summary>
+	/// <returns>The relative y.</returns>
 	public float GetRelativeY ()
 	{
 		RectTransform rectTransform = GetComponent<RectTransform> ();
@@ -160,7 +186,11 @@ public class GUIControl : MonoBehaviour
 		return rectTransform.anchoredPosition.y;
 	}
 
-	//switch place with GUIControl
+	/// <summary>
+	/// Replace the specified control.
+	/// switch place with GUIControl
+	/// </summary>
+	/// <param name="control">Control.</param>
 	public virtual void Replace (GUIControl control)
 	{
 		float x = control.GetRelativeX ();
@@ -171,6 +201,9 @@ public class GUIControl : MonoBehaviour
 		gameObject.SetActive (false);
 	}
 
+	/// <summary>
+	/// Removes all children.
+	/// </summary>
 	public void RemoveAllChildren ()
 	{
 		//sometimes a GUIControl is not yet opened, thus the dynamic child has to be loaded before clearing children
@@ -181,6 +214,11 @@ public class GUIControl : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Gets the child.
+	/// </summary>
+	/// <returns>The child.</returns>
+	/// <param name="index">Index.</param>
 	public GUIControl GetChild (int index)
 	{
 		if(transform.childCount>index){
@@ -191,12 +229,19 @@ public class GUIControl : MonoBehaviour
 
 	//on initialisation sometimes a gameobject is scaled
 	//or even rotated if working with multiple camera's
+	/// <summary>
+	/// Normalise this instance.
+	/// </summary>
 	public void Normalise ()
 	{
 		transform.localScale = Vector3.one;
 		transform.localRotation = Quaternion.Euler (Vector3.zero);
 	}
 
+	/// <summary>
+	/// Determines whether this instance is open.
+	/// </summary>
+	/// <returns><c>true</c> if this instance is open; otherwise, <c>false</c>.</returns>
 	public bool IsOpen ()
 	{
 		return this.gameObject.activeSelf;
