@@ -108,8 +108,9 @@ public class GUIControlTests
 	public void GUIControlChildren_RemoveAllChildren_ControlHasNoChildIndex0 ()
 	{
 		GUIControl test1 = createBasicGUIControl ();
-		GUIControl test2 = createBasicGUIControl ();
+		GUIControl test2;
 		for (int i = 0; i < TEST_CASES; i++) {
+			test2 = createBasicGUIControl ();
 			test1.Add (test2);
 			test1.RemoveAllChildren ();
 			Assert.IsTrue (test1.GetChild (0)== null, "The first child of the control should be null but it's " + test1.GetChild (0));
@@ -130,20 +131,7 @@ public class GUIControlTests
 		DestroyEverything ();
 	}
 
-	[Test]
-	public void GUIControlInitialisation_InitByEnum_InitialisedControlIsNotNull ()
-	{
 
-		for (int i = 0; i < TEST_CASES; i++) {
-			Array values = Enum.GetValues (typeof(GUIControl.types));
-			GUIControl.types type = (GUIControl.types) values.GetValue (RandomInt (0, values.Length - 1));
-			GUIControl test1 = GUIControl.Init (type);
-		
-			Assert.IsTrue (test1 != null, "Initialised GUIControl should be differen from null");
-		}
-		DestroyEverything ();
-
-	}
 
 	private GUIControl createBasicGUIControl ()
 	{

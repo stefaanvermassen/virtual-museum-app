@@ -8,8 +8,7 @@ using System.Collections;
 public class GUIControl : MonoBehaviour
 {
 	public GUIControl dynamicChild;
-	//Todo
-	//add field for dynamic child, wich will be used to populate a gui control that has a dynamic amount of children eg file browser , catalog,..., 
+
 	public enum types
 	{
 		Button,
@@ -20,12 +19,18 @@ public class GUIControl : MonoBehaviour
 		Catalog,
 		FileBrowser
 	}
-
+	/// <summary>
+	/// Start this instance.
+	/// </summary>
 	void Start ()
 	{
 		SaveDynamicChild ();
 	}
 
+	/// <summary>
+	/// Saves the dynamic child.
+	/// Necessary to keep pointer to dynamicChild after deavtivation of the object
+	/// </summary>
 	public void SaveDynamicChild ()
 	{
 		//dynamic child is edited in Unity editor but not shown
@@ -48,10 +53,14 @@ public class GUIControl : MonoBehaviour
 		gameObject.SetActive (false);
 	}
 
+	/// <summary>
+	/// Open this instance.
+	/// </summary>
 	public virtual void Open ()
 	{
 		gameObject.SetActive (true);
 	}
+
 	/// <summary>
 	/// Flips the close open.
 	/// </summary>
@@ -63,7 +72,11 @@ public class GUIControl : MonoBehaviour
 			Open ();
 		}
 	}
-	//add gui control to children
+
+	/// <summary>
+	/// Add the specified control.
+	/// </summary>
+	/// <param name="control">Control.</param>
 	public void Add (GUIControl control)
 	{
 		control.gameObject.transform.SetParent (this.gameObject.transform, false);
@@ -71,6 +84,10 @@ public class GUIControl : MonoBehaviour
 		control.Normalise ();
 	}
 
+	/// <summary>
+	/// Adds the dynamic child.
+	/// </summary>
+	/// <returns>The dynamic child.</returns>
 	public GUIControl AddDynamicChild ()
 	{
 		if (dynamicChild != null) {
