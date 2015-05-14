@@ -65,8 +65,9 @@ public class FileBrowser: GUIControl
 
 	void Start ()
 	{
-        currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
-        UpdateFileAndFolder();
+		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
+		UpdateFileAndFolder ();
+        screenName = "FileBrowser";
 	}
     
 #if UNITY_ANDROID && !UNITY_EDITOR

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-public class BuildMuseumActions : MonoBehaviour {
+public class BuildMuseumActions : StatisticsBehaviour {
 
 	public int tool;
 	public ImageHighlightButton[] toolButtons;
@@ -21,6 +21,7 @@ public class BuildMuseumActions : MonoBehaviour {
 
 	void Start() {
 		SetTool (1); // Pan tool
+		StartStatistics("Build museum");
 	}
 
 	public void BackToMain() {

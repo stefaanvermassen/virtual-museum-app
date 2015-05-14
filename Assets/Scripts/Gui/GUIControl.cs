@@ -5,7 +5,7 @@ using System.Collections;
 /// notes: watch out when using objects from the editor as parameter in events!!!
 /// Sometimes the argument will always convert to null
 /// </summary>
-public class GUIControl : MonoBehaviour
+public class GUIControl : StatisticsBehaviour
 {
 	public GUIControl dynamicChild;
 
@@ -51,6 +51,7 @@ public class GUIControl : MonoBehaviour
 	public virtual void Close ()
 	{
 		gameObject.SetActive (false);
+        End();
 	}
 
 	/// <summary>
@@ -58,6 +59,7 @@ public class GUIControl : MonoBehaviour
 	/// </summary>
 	public virtual void Open ()
 	{
+        StartStatistics();
 		gameObject.SetActive (true);
 	}
 
@@ -197,8 +199,8 @@ public class GUIControl : MonoBehaviour
 		float y = control.GetRelativeY ();
 		control.SetRelativePosition (GetRelativeX (), GetRelativeY ());
 		SetRelativePosition (x, y);
-		control.gameObject.SetActive (true);
-		gameObject.SetActive (false);
+        control.Open();
+        Close();
 	}
 
 	/// <summary>
@@ -246,5 +248,4 @@ public class GUIControl : MonoBehaviour
 	{
 		return this.gameObject.activeSelf;
 	}
-
 }

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 /// Controller that handles all input and uses it to modify both the scene and the
 /// museum when inside the BuildMuseum scene.
 /// </summary>
-public class DrawController : MonoBehaviour {
+public class DrawController : StatisticsBehaviour {
 
     public enum Tools : int {
         Drawing,
@@ -65,6 +65,7 @@ public class DrawController : MonoBehaviour {
         wallLayerMask = (1 << LayerMask.NameToLayer("Walls"));
 		//load art info & thumbnail
 		Catalog.Refresh();
+        StartStatistics("BuildMuseum");
 	}
 
     /// <summary>
@@ -85,21 +86,27 @@ public class DrawController : MonoBehaviour {
     public void SetCurrentObject(int objectID) {
         DrawController.currentObject = objectID;
     }
+
 	public void SetCurrentFrame(int frameID){
 		DrawController.currentFrame = frameID;
 	}
+
 	public void SetCurrentCeiling(int ceilingID){
 		DrawController.currentCeiling = ceilingID;
 	}
+
 	public void SetCurrentFloor(int floorID){
 		DrawController.currentFloor = floorID;
 	}
+
 	public void SetCurrentWall(int wallID){
 		DrawController.currentWall = wallID;
 	}
+
 	public void SetCurrentArt(int artID){
 		DrawController.currentArt = artID;
 	}
+
     bool IsPointerBusy() {
         foreach (Touch touch in Input.touches) {
             if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {

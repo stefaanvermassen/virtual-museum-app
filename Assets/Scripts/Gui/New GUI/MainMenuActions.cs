@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using UnityEngine.UI;
 
-public class MainMenuActions : MonoBehaviour
+public class MainMenuActions : StatisticsBehaviour
 {
 
 	public int currentMuseumID = -1;
@@ -12,6 +12,7 @@ public class MainMenuActions : MonoBehaviour
 	public Text CreditsLabel;
 
 	void Start () {
+		StartStatistics("MainMenu");
 		GetCredits (CreditsLabel);
 	}
 

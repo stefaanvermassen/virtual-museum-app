@@ -9,7 +9,7 @@ using API;
 /// <summary>
 /// This class controls the UI to login
 /// </summary>
-public class RegisterView : MonoBehaviour
+public class RegisterView : StatisticsBehaviour
 {
 
     public CustomInputField usernameField;
@@ -18,6 +18,11 @@ public class RegisterView : MonoBehaviour
     public CustomInputField confirmPasswordField;
     public Toast toast;
     public GameObject panel;
+
+    public void Start()
+    {
+        StartStatistics("Register");
+    }
 
     /// <summary>
     /// This logs in the user
@@ -52,6 +57,7 @@ public class RegisterView : MonoBehaviour
             toast.Notify("Successfully registered!");
 			Application.LoadLevel("MainMenuScene");
             panel.SetActive(false);
+            ClosingButton("Register");
         }, (error) =>
         {
             string errorMessage = response.response.Object["Message"] as string;

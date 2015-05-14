@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using API;
 using System;
 
-public class ArtCatalog : MonoBehaviour
+public class ArtCatalog : StatisticsBehaviour
 {
 	public GUIControl catalogContent;
 	private bool started = false;
@@ -16,6 +16,7 @@ public class ArtCatalog : MonoBehaviour
 	void Start() {
 		Refresh ();
 		started = true;
+		screenName = "ArtCatalog";
 	}
 
 	/// <summary>

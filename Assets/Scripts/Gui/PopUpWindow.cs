@@ -9,17 +9,21 @@ public class PopUpWindow : GUIControl
 	public Button ok;
 	public GUIControl placeHolder;
 	private static PopUpWindow instance;
+
 	public enum MessageType
 	{
 		INFO=1,
 		WARNING=2,
 		ERROR=3
 	}
+
 	void Start ()
 	{
 		PopUpWindow.instance = this;
 		ok.onClick.AddListener (() => Replace (placeHolder));
+        screenName = "PopUpWindow";
 	}
+
 	/// <summary>
 	/// Instances the show message.
 	/// </summary>
@@ -44,7 +48,9 @@ public class PopUpWindow : GUIControl
 	{
 		if (instance != null) {
 			instance.InstanceShowMessage(type,message);
-		}else{
+		}
+        else
+        {
 			Debug.Log ("No PopUpWindow present in the scene.");
 		}
 	}
