@@ -10,7 +10,6 @@ public class Toast : StatisticsBehaviour {
 	void Start () {
         animator = GetComponent<Animator>();
         text = gameObject.transform.FindChild("Text").gameObject.GetComponent<Text>();
-        StartStatistics("Toast");
 	}
 
     /// <summary>
@@ -21,5 +20,6 @@ public class Toast : StatisticsBehaviour {
         text.text = message;
         animator.SetTrigger("Play");
         ClosingButton(message);
+        StartStatistics("Toast");
     }
 }
