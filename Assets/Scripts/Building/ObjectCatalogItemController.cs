@@ -12,12 +12,20 @@ public class ObjectCatalogItemController : GUIControl
 	public ColorPicker colorPicker;
 	public GameObject model;
 
+	/// <summary>
+	/// Shows the model.
+	/// </summary>
+	/// <param name="show">If set to <c>true</c> show.</param>
 	public void ShowModel(bool show) {
 		if (model != null) {
 			model.SetActive(show);
 		}
 	}
-
+	/// <summary>
+	/// Init the specified i and type.
+	/// </summary>
+	/// <param name="i">The index.</param>
+	/// <param name="type">Type.</param>
 	public void init (int i, Catalog.CatalogType type)
 	{
 		index = i; //important because addlistener would use i by reference instead of by value
@@ -27,8 +35,12 @@ public class ObjectCatalogItemController : GUIControl
 
 
 	}
-	// on click the index of the chosen object is saved and the catalog closed
-
+	/// <summary>
+	/// Configs the layout.
+	/// On click the index of the chosen object is saved and the catalog closed
+	/// </summary>
+	/// <param name="index">Index.</param>
+	/// <param name="type">Type.</param>
 	private void ConfigLayout (int index, Catalog.CatalogType type)
 	{
 		model = GetGameObject (index, type);
@@ -164,7 +176,12 @@ public class ObjectCatalogItemController : GUIControl
 	private float ceilingScale = 80;
 	private float wallScale = 60;
 
-
+	/// <summary>
+	/// Gets the game object.
+	/// </summary>
+	/// <returns>The game object.</returns>
+	/// <param name="index">Index.</param>
+	/// <param name="type">Type.</param>
 	private GameObject GetGameObject (int index, Catalog.CatalogType type)
 	{
 		switch (type) {
@@ -182,7 +199,12 @@ public class ObjectCatalogItemController : GUIControl
 			return null;
 		}
 	}
-
+	/// <summary>
+	/// Changes the layers recursively.
+	/// needed to be able to display 3D gameObject in 2D UI
+	/// </summary>
+	/// <param name="trans">Trans.</param>
+	/// <param name="layer">Layer.</param>
 	void ChangeLayersRecursively (Transform trans, int layer)
 	{
 		trans.gameObject.layer = layer;
@@ -190,7 +212,10 @@ public class ObjectCatalogItemController : GUIControl
 			ChangeLayersRecursively (child, layer);
 		}
 	}
-
+	/// <summary>
+	/// Gets the I.
+	/// </summary>
+	/// <returns>The I.</returns>
 	public int getID() {
 		return index;
 	}
