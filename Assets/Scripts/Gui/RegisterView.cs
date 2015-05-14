@@ -12,10 +12,10 @@ using API;
 public class RegisterView : StatisticsBehaviour
 {
 
-    public InputField usernameField;
-    public InputField emailField;
-    public InputField passwordField;
-    public InputField confirmPasswordField;
+    public CustomInputField usernameField;
+    public CustomInputField emailField;
+    public CustomInputField passwordField;
+    public CustomInputField confirmPasswordField;
     public Toast toast;
     public GameObject panel;
 
@@ -43,22 +43,39 @@ public class RegisterView : StatisticsBehaviour
         }
 
         if (password != confirmPasswordField.text) {
-            toast.Notify("Passwords differ");
+            toast.Notify("Passwords are different");
             passwordField.text = "";
             confirmPasswordField.text = "";
             return;
         }
 
         API.UserController userController = API.UserController.Instance;
-        Request response = userController.CreateUser(username, email, password, (success) =>
+        Request response = null;
+        response = userController.CreateUser(username, email, password, (success) =>
         {
             SessionManager.Instance.LoginUser(success);
             toast.Notify("Successfully registered!");
+			Application.LoadLevel("MainMenuScene");
             panel.SetActive(false);
             ClosingButton("Register");
         }, (error) =>
         {
-            toast.Notify("Login failed. Please try again...");
+            string errorMessage = response.response.Object["Message"] as string;
+            Hashtable modelState = response.response.Object["ModelState"] as Hashtable;
+            
+            foreach (DictionaryEntry e in modelState)
+            {
+                foreach (string value in (ArrayList) e.Value)
+                {
+                    errorMessage += " " + value;
+                }
+            }
+            
+            toast.Notify(errorMessage);
         });
     }
+
+	public void Login() {
+		Application.LoadLevel ("Login");
+	}
 }

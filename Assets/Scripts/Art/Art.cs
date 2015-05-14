@@ -22,6 +22,8 @@ public class Art : Savable<Art, ArtData>
 
 	//checks if the artworks image is loading or not
 	public bool loadingImage;
+	public event EventHandler ArtLoaded = null;
+	public event EventHandler ArtSaved = null;
 
     public Art() {
         owner = new User();
@@ -102,6 +104,7 @@ public class Art : Savable<Art, ArtData>
 		cont.UpdateArtWork (apiArt, 
 		(art)=> {
 			Debug.Log ("Update Artwork info successfull");
+			OnArtSaved(new EventArgs());
 		}, 
 		(error) => {
 			throw new UploadFailedException ("Failed to update artwork info.");
@@ -109,27 +112,35 @@ public class Art : Savable<Art, ArtData>
 		);
 	}
 
-    public void SaveRemote() {
+	public void SaveRemote(EventHandler eventHandler) {
+		ArtSaved += eventHandler;
+		SaveRemote ();
+	}
+
+	public void SaveRemote() {
 		Debug.Log("Start saving Remote");
 		API.ArtworkController cont = API.ArtworkController.Instance;
 		//TODO make sure a user is logged in
-
-		HTTP.Request req = UploadImage(cont);
-		Debug.Log (req.isDone);
-		AsyncLoader loader = AsyncLoader.CreateAsyncLoader(
+		if (!HasID ()) {
+			HTTP.Request req = UploadImage (cont);
+			Debug.Log (req.isDone);
+			AsyncLoader loader = AsyncLoader.CreateAsyncLoader (
 			() => {
-			Debug.Log("Started");
-		},() => {
-			//either wait for image to be uploaded or there was nu upload necessary
-			return req==null | req.callbackCompleted;
-		},
+				Debug.Log ("Started");
+			}, () => {
+				//either wait for image to be uploaded or there was nu upload necessary
+				return req == null | req.callbackCompleted;
+			},
 		() => {
-		},
+			},
 		() => {
-			Debug.Log("Loaded");
-			UploadMetaData(cont);
+				Debug.Log ("Loaded");
+				UploadMetaData (cont);
 
-		});
+			});
+		} else {
+			UploadMetaData (cont);
+		}
 		
 	}
 	public void LoadRemote(string identifier) {
@@ -168,11 +179,43 @@ public class Art : Savable<Art, ArtData>
 		() => {
 			Debug.Log("Loaded");
 			loadingImage=false;
+			OnArtLoaded(new EventArgs());
+			/*if(eventArgs == null) {
+				eventArgs = new EventArgs();
+				OnArtLoaded(eventArgs);
+			}*/
 		});
     }
 
     public DateTime LastModified(string identifier) {
         return DateTime.Now;
     }
+
+	protected void OnArtLoaded(EventArgs e)
+	{
+		EventHandler handler = ArtLoaded;
+		if (handler != null) {
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				ArtLoaded = null;
+			}
+		}
+	}
+
+	protected void OnArtSaved(EventArgs e) {
+		EventHandler handler = ArtSaved;
+		if (handler != null) {
+			try {
+				handler (this, e);
+			} catch(Exception ex) {
+				Debug.Log("Removing listener because of error.");
+			} finally {
+				ArtSaved = null;
+			}
+		}
+	}
 
 }

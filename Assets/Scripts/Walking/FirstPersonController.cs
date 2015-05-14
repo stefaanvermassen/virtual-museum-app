@@ -72,6 +72,8 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	public Museum museum;
 
+	public bool paused = false;
+
 
 	float verticalVelocity = 0;
 	Vector3 startingPosition;
@@ -89,8 +91,6 @@ public class FirstPersonController : MonoBehaviour {
 	/// </summary>
 	/// <remarks>Also locks screen cursor.</remarks>
 	void Start() {
-		if((!testMode) && ((!CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch))
-		   || (activeVR != VR.None))) Screen.lockCursor = true;
 		SwitchVRMode (activeVR);
 		characterController = GetComponent<CharacterController>();
 		startingPosition = transform.position;
@@ -125,6 +125,13 @@ public class FirstPersonController : MonoBehaviour {
 				horizontalAxis = movement.x;
 				verticalAxis = movement.y;
 			}
+		}
+
+		if (paused) {
+			horizontalAxis = 0f;
+			verticalAxis = 0f;
+			mouseXAxis = 0f;
+			mouseYAxis = 0f;
 		}
 
 		// Control cameras

@@ -102,7 +102,7 @@ namespace API
                 {
                     var apiList = (ArrayList) response.Object["ArtWorks"];
                     var list = new ArrayList();
-                    foreach (Hashtable val in apiList)
+					foreach (Hashtable val in apiList)
                     {
                         list.Add(ArtWork.Create(val));
                     }
@@ -163,7 +163,7 @@ namespace API
         public Request UpdateArtWork(ArtWork artwork, Action<Response> success = null, Action<API_Error> error = null)
         {
             var form = artwork.ToHash();
-
+			Debug.Log (BASE_URL + ARTWORK + "/" + artwork.ArtWorkID);
             return PutJsonRequest(BASE_URL + ARTWORK + "/" + artwork.ArtWorkID, form, success, error);
         }
     }
@@ -174,51 +174,84 @@ namespace API
     public class ArtWork
     {
         public int ArtWorkID;
-        public int ArtistID;
+        public Artist Artist;
         //make sure string is not null
         public string Name = "";
         public ArrayList Metadata;
 
         public Hashtable ToHash()
         {
-            var temp = new ArrayList() {"description", "test description"};
             var dict = new Hashtable
             {
                 {"ArtWorkID", ArtWorkID.ToString()},
-                {"ArtistID", ArtistID.ToString()},
+                {"ArtistID", Artist.ID.ToString()},
                 {"Name", Name},
-                {"Metadata", temp}
+                {"Metadata", Metadata}
             };
 
             return dict;
         }
+
+		public static Hashtable CreateMetaData(string key, string value) {
+			var dict = new Hashtable
+			{
+				{"Name", key},
+				{"Value", value}
+			};
+			
+			return dict;
+		}
 
         public static ArtWork Create(Hashtable dict)
         {
             var aw = new ArtWork
             {
                 ArtWorkID = ((int) dict["ArtWorkID"]),
-                ArtistID = ((int) dict["ArtistID"]),
-                Name = (string) dict["Name"]
+                Artist = Artist.Create((Hashtable)dict["Artist"]),
+                Name = (string) dict["Name"],
+				Metadata = (ArrayList) dict["Metadata"]
             };
 
             return aw;
         }
+
 		public static ArtWork FromArt (Art art)
 		{
+			var artist = new Artist (){
+				Name = art.owner.name,
+				ID = art.owner.ID
+			};
+			var list = new ArrayList ();
+			if(art.description != null) {
+				list.Add (ArtWork.CreateMetaData("Description", art.description));
+			}
 			return new ArtWork ()
 			{
 				ArtWorkID = art.ID,
-				ArtistID = art.owner.ID,
-				Name = art.name
+				Artist = artist,
+				Name = art.name,
+				Metadata = list
 			};
 		}
+
 		public static Art ToArt (ArtWork artwork)
 		{
 			Art art = new Art ();
 			art.ID = artwork.ArtWorkID;
-			art.owner.ID = artwork.ArtistID;
+			art.owner.ID = artwork.Artist.ID;
+			art.owner.name = artwork.Artist.Name;
 			art.name = artwork.Name;
+			foreach (Hashtable dict in artwork.Metadata) {
+				if(dict.ContainsKey("Name") && dict.ContainsKey("Value")) {
+					string key = (string) dict["Name"];
+					string value = (string) dict["Value"];
+					if(key.ToLower().Equals("description")) {
+						art.description = value;
+					} else if(key.ToLower().Equals("genre")) {
+						art.genres.Add (value);
+					}
+				}
+			}
 			return art;
 		}
     }

@@ -11,6 +11,7 @@ public class AsyncLoader : MonoBehaviour {
     int timer = 0;
     Action startup, whileLoading, whenDone;
     Func<bool> isDone;
+	bool criticalSection = false;
 
     public static AsyncLoader CreateAsyncLoader(Action startup, Func<bool> isDone, Action whileLoading, Action whenDone, int interval = 1) {
         GameObject ob = new GameObject();
@@ -45,6 +46,10 @@ public class AsyncLoader : MonoBehaviour {
 	}
 	
 	void FixedUpdate () {
+		if (criticalSection) {
+			return;
+		}
+		criticalSection = true;
         timer++;
         if (timer >= randomInterval) {
             if (isDone() || forceDone) {
@@ -57,5 +62,6 @@ public class AsyncLoader : MonoBehaviour {
         } else {
             whileLoading();
         }
+		criticalSection = false;
 	}
 }

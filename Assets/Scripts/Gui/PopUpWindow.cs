@@ -24,6 +24,11 @@ public class PopUpWindow : GUIControl
         screenName = "PopUpWindow";
 	}
 
+	/// <summary>
+	/// Instances the show message.
+	/// </summary>
+	/// <param name="type">Type.</param>
+	/// <param name="message">Message.</param>
 	public void InstanceShowMessage (MessageType type, string message){
 		header.text = type.ToString ();
 		info.text = message;
@@ -34,6 +39,11 @@ public class PopUpWindow : GUIControl
 
 	}
 
+	/// <summary>
+	/// Shows the message.
+	/// </summary>
+	/// <param name="type">Type.</param>
+	/// <param name="message">Message.</param>
 	public static void ShowMessage (MessageType type, string message)
 	{
 		if (instance != null) {
