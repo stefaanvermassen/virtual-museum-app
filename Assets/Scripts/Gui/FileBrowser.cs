@@ -21,34 +21,37 @@ public class FileBrowser: GUIControl
 	public string prevSearch = "";
 	public string[] fileExtensions;
 	private string directoryUp = "..";
-	private static int maxNrOfNameChars=50;
+	private static int maxNrOfNameChars = 50;
 	private string selectedFilePath;
 	public GUIControl placeHolder;
 	private FileBrowserListener listener;
+	private readonly string[] imageExtensions = { ".png", ".jpe?g", ".PNG", ".JPE?G" };
 
-    private enum Type
-    {
-        FOLDER,
-        FILE
+	private enum Type
+	{
+		FOLDER,
+		FILE
     };
 
-	public static bool PathIsValid(string path){
-		return  !string.IsNullOrEmpty (path);
+	public static bool PathIsValid(string path)
+	{
+		return  !string.IsNullOrEmpty(path);
 	}
 
-	public static string CropString(string s){
-		return s.Substring (Math.Max (0, s.Length - maxNrOfNameChars));
+	public static string CropString(string s)
+	{
+		return s.Substring(Math.Max(0, s.Length - maxNrOfNameChars));
 	}
 
-	public string[] GetFileExtensions ()
+	public string[] GetFileExtensions()
 	{
 		return fileExtensions;
 	}
 
-	public void Open(FileBrowserListener listener){
+	public void Open(FileBrowserListener listener)
+	{
 		this.listener = listener;
-		base.Open ();
-		//placeHolder.Replace (this);
+		base.Open();
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         GetAndroidPath();
@@ -57,15 +60,15 @@ public class FileBrowser: GUIControl
 #endif
 	}
 
-	public override void Close(){
-		base.Close ();
-		//placeHolder.Replace (this);
-		listener.FileIsSelected ();
+	public override void Close()
+	{
+		base.Close();
+		listener.FileIsSelected();
 	}
 
-	void Start ()
+	void Start()
 	{
-		currentDirectory = new DirectoryInfo (Directory.GetCurrentDirectory ());
+		currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
 		UpdateFileAndFolder ();
         screenName = "FileBrowser";
 	}
@@ -84,121 +87,121 @@ public class FileBrowser: GUIControl
             activity.Call("startBrowser");
         }));
         
-        while (string.IsNullOrEmpty(activity.Call<string>("getPath")));
+        while(string.IsNullOrEmpty(activity.Call<string>("getPath")));
         selectedFilePath = WWW.UnEscapeURL(activity.Call<string>("getPath")).Replace("content://fm.clean/document/", "");
     }
 #endif
 
-    private void UpdateFileAndFolder ()
+	private void UpdateFileAndFolder()
 	{
-		if (directoryLabel == null) {
-			Debug.Log ("DirectoryLabel is null.");
-		} else if (currentDirectory == null) {
-			Debug.Log ("CurrentDirectory is null.");
+		if(directoryLabel == null) {
+			Debug.Log("DirectoryLabel is null.");
+		} else if(currentDirectory == null) {
+			Debug.Log("CurrentDirectory is null.");
 		}
 
-		//only show last 100 chars
+		// Only show last 100 chars
 		directoryLabel.text = CropString(currentDirectory.FullName);
-		DrawFiles ();
-		DrawDirectories ();
+		DrawFiles();
+		DrawDirectories();
 	}
 
-	public string GetSelectedFile ()
+	public string GetSelectedFile()
 	{
 		return selectedFilePath;
 	}
 
-	private string GetSearch ()
+	private string GetSearch()
 	{
 		return searchField.text;
 	}
 
-	public void DrawFiles ()
+	public void DrawFiles()
 	{
 		string search = GetSearch();
-		if (previousDirectory == currentDirectory && prevSearch == search) {
+		if(previousDirectory == currentDirectory && prevSearch == search) {
 			return;
 		}
 
 		// Remove the buttons
-		fileView.RemoveAllChildren ();
+		fileView.RemoveAllChildren();
 		// The selected file is now invalid
 		fileLabel.text = "";
 
-		IEnumerable<FileInfo> files = GetFileList (search.Length != 0, search);
-		foreach (FileInfo file in files) {
-			AddFileButton (file, FileIsSelectable (file));
+		IEnumerable<FileInfo> files = GetFileList(search.Length != 0, search);
+		foreach(FileInfo file in files) {
+			AddFileButton(file, FileIsSelectable(file));
 		}
 
 		prevSearch = search;
 	}
 
-	private void DrawDirectories ()
+	private void DrawDirectories()
 	{
-		if (previousDirectory == currentDirectory) {
+		if(previousDirectory == currentDirectory) {
 			return;
 		}
 
 		// Remove the buttons
-		directoryView.RemoveAllChildren ();
-		if (currentDirectory.Parent != null) {
-			AddButton (directoryUp, currentDirectory.Parent.FullName, directoryView, Type.FOLDER, true);
+		directoryView.RemoveAllChildren();
+		if(currentDirectory.Parent != null) {
+			AddButton(directoryUp, currentDirectory.Parent.FullName, directoryView, Type.FOLDER, true);
 		}
 
-		DirectoryInfo[] directories = currentDirectory.GetDirectories ();
-		foreach (DirectoryInfo dir in directories) {
-			AddDirectoryButton (dir);
+		DirectoryInfo[] directories = currentDirectory.GetDirectories();
+		foreach(DirectoryInfo dir in directories) {
+			AddDirectoryButton(dir);
 		}
 
 		previousDirectory = currentDirectory;
 	}
 
-	private void AddFileButton (FileInfo file, bool enabled)
+	private void AddFileButton(FileInfo file, bool enabled)
 	{
 		AddButton(file.Name, file.FullName, fileView, Type.FILE, enabled);
 	}
 
-	private void SetSelectedFile(String fullPath){
+	private void SetSelectedFile(String fullPath)
+	{
 		selectedFilePath = fullPath;
-		fileLabel.text = CropString (fullPath);
+		fileLabel.text = CropString(fullPath);
 	}
 
-	private void AddDirectoryButton (DirectoryInfo dir)
+	private void AddDirectoryButton(DirectoryInfo dir)
 	{
 		AddButton(dir.Name, dir.FullName, directoryView, Type.FOLDER, true);
 	}
 
-	private void AddButton (string name, string fullName, GUIControl content, Type type, bool interactable)
+	private void AddButton(string name, string fullName, GUIControl content, Type type, bool interactable)
 	{
-		//create a clone of the contents child
-		GUIControl buttonControl = content.AddDynamicChild ();
-		Button button = buttonControl.GetComponent<Button> ();
+		// Create a clone of the contents child
+		GUIControl buttonControl = content.AddDynamicChild();
+		Button button = buttonControl.GetComponent<Button>();
 		button.interactable = interactable;
-		//change button label
-		button.GetComponentsInChildren<Text> () [0].text = name;
+		// Change button label
+		button.GetComponentsInChildren<Text>() [0].text = name;
 		string info = fullName;
-		button.onClick.AddListener (() => HandleClick (info, type));
+		button.onClick.AddListener(() => HandleClick(info, type));
 	}
 
-	private bool FileIsSelectable (FileInfo file)
+	private bool FileIsSelectable(FileInfo file)
 	{
-		foreach (string ext in fileExtensions) {
-			if (file.Name.EndsWith (ext))
+		foreach(string ext in fileExtensions) {
+			if(file.Name.EndsWith(ext))
 				return true;
 		}
 
 		return false;
 	}
 
-	private void HandleClick (string name, Type type)
+	private void HandleClick(string name, Type type)
 	{
-		switch (type) {
+		switch(type) {
 		case Type.FOLDER:
-			currentDirectory = new DirectoryInfo (name);
+			currentDirectory = new DirectoryInfo(name);
             // Clear search
 			searchField.text = "";
-			Debug.Log ("Foldere selected");
-			UpdateFileAndFolder ();
+			UpdateFileAndFolder();
 			return;
 		case Type.FILE:
 			SetSelectedFile(name);
@@ -207,41 +210,43 @@ public class FileBrowser: GUIControl
 			break;
 		}
 	}
-	//TODO search file doesn't work yet
 
 	// Only returns directories, drives and images
-	private IEnumerable<FileInfo> GetFileList (bool recursive, string searchPattern)
+	private IEnumerable<FileInfo> GetFileList(bool recursive, string searchPattern)
 	{
-		IEnumerable<FileInfo> files = Enumerable.Empty<FileInfo> ();
-		FileComparer comparer = new FileComparer ();
+		IEnumerable<FileInfo> files = Enumerable.Empty<FileInfo>();
+		FileComparer comparer = new FileComparer();
 
-		if (searchPattern.Length == 0) {
+		if(searchPattern.Length == 0) {
 			searchPattern = "*";
-		} else if (!searchPattern.Contains ("*")) {
+		} else if(!searchPattern.Contains("*")) {
 			searchPattern = "*" + searchPattern + "*";
 		}
 
-		files = files.Union (SearchDirectory (currentDirectory, searchPattern, recursive), comparer);
+		foreach (string ext in imageExtensions)
+		{
+			files = files.Union(SearchDirectory(currentDirectory, searchPattern + ext, recursive), comparer);
+		}
 
 		return files;
 	}
 
-	private FileInfo[] SearchDirectory (DirectoryInfo dir, string sp, bool recursive)
+	private FileInfo[] SearchDirectory(DirectoryInfo dir, string sp, bool recursive)
 	{
-		return dir.GetFiles (sp, (recursive) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+		return dir.GetFiles(sp,(recursive) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 	}
 }
 
 class FileComparer : IEqualityComparer<FileInfo>
 {
 
-	public bool Equals (FileInfo x, FileInfo y)
+	public bool Equals(FileInfo x, FileInfo y)
 	{
 		return x.FullName == y.FullName;
 	}
 
-	public int GetHashCode (FileInfo obj)
+	public int GetHashCode(FileInfo obj)
 	{
-		return obj.GetHashCode ();
+		return obj.GetHashCode();
 	}
 }
