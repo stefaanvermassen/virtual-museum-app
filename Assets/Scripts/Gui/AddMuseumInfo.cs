@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// This class controls the UI to add info to a museum
 /// </summary>
-public class AddMuseumInfo : MonoBehaviour
+public class AddMuseumInfo : StatisticsBehaviour
 {
 
     public InputField museumName;
@@ -22,6 +22,7 @@ public class AddMuseumInfo : MonoBehaviour
     {
         museumName.text = museum.museumName;
         museumDescription.text = museum.description;
+        StartStatistics("AddMuseumInfo");
     }
 
     /// <summary>
@@ -34,5 +35,6 @@ public class AddMuseumInfo : MonoBehaviour
         museum.description = museumDescription.text;
         Storage.Instance.SaveRemote(museum);
         panel.SetActive(false);
+        ClosingButton("Save");
     }
 }

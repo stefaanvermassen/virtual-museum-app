@@ -4,7 +4,7 @@ using Scanning;
 using System.Threading;
 using UnityEngine.UI;
 
-public class QRCam : MonoBehaviour {
+public class QRCam : StatisticsBehaviour {
 
     public Texture2D Encoded;
     public WebCamTexture CamTexture;
@@ -67,7 +67,9 @@ public class QRCam : MonoBehaviour {
 	  CamTexture.requestedWidth = Screen.width; //640;
 	  OnEnable();
 
-		StartScanning ();
+	  StartScanning ();
+      
+      StartStatistics("QRCam");
    }
 
 	void StartScanning(){

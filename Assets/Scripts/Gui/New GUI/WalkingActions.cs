@@ -115,6 +115,8 @@ public class WalkingActions : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if(savePopUp.IsOpen()) {
 				savePopUp.Close();
+			} else if(VRActive) {
+				SwitchVR ();
 			} else {
 #if MOBILE_INPUT
 				Back ();

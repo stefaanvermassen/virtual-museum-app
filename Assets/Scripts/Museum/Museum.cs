@@ -696,6 +696,7 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
         return loaded;
     }
 
+
 	protected void OnMuseumSaved(EventArgs e) {
 		EventHandler handler = MuseumSaved;
 		if (handler != null) {
@@ -709,5 +710,4 @@ public class Museum : MonoBehaviour, Savable<Museum, MuseumData>
 			}
 		}
 	}
-
 }

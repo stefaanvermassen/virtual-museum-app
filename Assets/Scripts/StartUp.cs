@@ -7,7 +7,7 @@ using API;
 
 using UnityEngine.UI;
 
-public class StartUp : MonoBehaviour {
+public class StartUp : StatisticsBehaviour {
 
 	public UnityEngine.UI.Text statusText;
 	Toast toast;
@@ -15,6 +15,7 @@ public class StartUp : MonoBehaviour {
 	bool loading = false;
 	
 	void Start () {
+		StartStatistics("StartUp");
 		try {
 			statusText.fontSize = Screen.width / 40;
 			CheckLogin ();
