@@ -68,7 +68,7 @@ public class FileBrowser: GUIControl
 
 	void Start()
 	{
-		currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+		currentDirectory = new DirectoryInfo(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments));
 		UpdateFileAndFolder ();
         screenName = "FileBrowser";
 	}
