@@ -12,7 +12,7 @@ public class MuseumPlaque : MonoBehaviour {
     private GameObject textObject;
     private GameObject cubeObject;
 
-	private static float PLAQUE_THICKNESS = 0.04f;
+	private static float PLAQUE_THICKNESS = 0.045f;
 	private static float FLOATING_MARGIN = 0.0001f;
 
     void Start() {
