@@ -8,12 +8,6 @@ using UnityEngine.UI;
 public class AddInfoTest
 {
     private const int TEST_CASES = 10;
-    private const int SEED = 987;
-
-    public AddInfoTest()
-    {
-        Random.seed = SEED;
-    }
 
     private void DestroyEverything()
     {
@@ -26,8 +20,8 @@ public class AddInfoTest
     {
         for (int count = 0; count < TEST_CASES; count++)
         {
-            string name = RandomString(0, 20);
-            string description = RandomString(0, 500);
+            string name = "testnaam";
+            string description = "Dit is een lange nutteloze uitleg.";
             AddMuseumInfo script = Initialize(name, description);
 
             Assert.AreEqual(script.museumName.text, name, "TitleField should be " + name + " but it's " + script.museumName.text);
@@ -41,11 +35,11 @@ public class AddInfoTest
     {
         for (int count = 0; count < TEST_CASES; count++)
         {
-            string name = RandomString(0, 20);
-            string description = RandomString(0, 500);
+            string name = "testnaam";
+            string description = "Dit is een lange nutteloze uitleg.";
             AddMuseumInfo script = Initialize(name, description);
 
-            script.Save(RandomInt(0, int.MaxValue));
+            script.Save(0);
             Assert.AreEqual(script.museum.museumName, name, "MuseumName should be " + name + " but it's " + script.museum.museumName);
             Assert.AreEqual(script.museum.description, description, "MuseumDescription should be " + description + " but it's " + script.museum.description);
             
@@ -60,13 +54,13 @@ public class AddInfoTest
     {
         for (int count = 0; count < TEST_CASES; count++)
         {
-            AddMuseumInfo script = Initialize(RandomString(0, 20), RandomString(0, 500));
+            AddMuseumInfo script = Initialize("n", "b");
 
-            string name = RandomString(0, 20);
-            string description = RandomString(0, 500);
+            string name = "testnaampje";
+            string description = "Dit is een korte nutteloze uitleg.";
             script.museumName.text = name;
             script.museumDescription.text = description;
-            script.Save(RandomInt(0, int.MaxValue));
+            script.Save(42);
 
             Assert.AreEqual(script.museum.museumName, name, "MuseumName should be " + name + " but it's " + script.museum.museumName);
             Assert.AreEqual(script.museum.description, description, "MuseumDescription should be " + description + " but it's " + script.museum.description);
@@ -110,27 +104,10 @@ public class AddInfoTest
 
     private Museum CreateMuseum(string name, string description)
     {
-        MuseumData data = new MuseumData(new List<MuseumTileData>(), new List<MuseumArtData>(), new List<MuseumObjectData>(), RandomString(0, 5), name, description, 1, API.Level.PUBLIC);
+        MuseumData data = new MuseumData(new List<MuseumTileData>(), new List<MuseumArtData>(), new List<MuseumObjectData>(), "thomas", name, description, 1, API.Level.PUBLIC);
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
         museum.Load(data);
         return museum;
-    }
-
-    private int RandomInt(int from, int until)
-    {
-        return (int)(Random.value * (from + until) - from);
-    }
-
-    private string RandomString(int minLength, int maxLength)
-    {
-        string s = "";
-        int length = RandomInt(minLength, maxLength);
-        for (int i = 0; i < length; i++)
-        {
-            char c = (char)RandomInt(0, 255);
-            s += c;
-        }
-        return s;
     }
 }

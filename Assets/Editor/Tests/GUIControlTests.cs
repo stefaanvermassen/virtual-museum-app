@@ -137,7 +137,6 @@ public class GUIControlTests
 	{
 		GameObject ob = new GameObject ();
 		return ob.AddComponent<GUIControl> ();
-
 	}
 }
 

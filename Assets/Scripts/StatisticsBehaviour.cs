@@ -26,6 +26,7 @@ public class StatisticsBehaviour : MonoBehaviour {
             Debug.LogWarning("You are trying to log a " + buttonName + " button click, but you have not yet set your screenName.\nAre you sure you called StartStatistics?");
             return;
         }
+
         // Report button clicked
         statistics.ButtonClicked("Save");
         End();
