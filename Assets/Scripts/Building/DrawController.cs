@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 /// Controller that handles all input and uses it to modify both the scene and the
 /// museum when inside the BuildMuseum scene.
 /// </summary>
-public class DrawController : StatisticsBehaviour {
+public class DrawController : MonoBehaviour {
 
     public enum Tools : int {
         Drawing,
@@ -65,7 +65,6 @@ public class DrawController : StatisticsBehaviour {
         wallLayerMask = (1 << LayerMask.NameToLayer("Walls"));
 		//load art info & thumbnail
 		Catalog.Refresh();
-        StartStatistics("BuildMuseum");
 	}
 
     /// <summary>

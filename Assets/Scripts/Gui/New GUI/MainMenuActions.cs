@@ -12,8 +12,8 @@ public class MainMenuActions : StatisticsBehaviour
 	public Text CreditsLabel;
 
 	void Start () {
-		StartStatistics("MainMenu");
 		GetCredits (CreditsLabel);
+		StartStatistics("MainMenu");
 	}
 
 	public void NewMuseum() {

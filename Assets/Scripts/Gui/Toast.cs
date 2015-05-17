@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class Toast : StatisticsBehaviour {
+public class Toast : MonoBehaviour {
 
     private Animator animator;
     private Text text;
@@ -19,7 +19,7 @@ public class Toast : StatisticsBehaviour {
     public void Notify(string message) {
         text.text = message;
         animator.SetTrigger("Play");
-        ClosingButton(message);
+        //ClosingButton(message);
         //StartStatistics("Toast");
     }
 }
