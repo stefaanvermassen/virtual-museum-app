@@ -17,6 +17,7 @@ public class ArtEditPanel : FileBrowserListener {
 	public Button artUploadButton;
 	public Image bigImage;
 	public ArtList artList;
+    public Text selectImageText;
 	bool imageChanged = false;
 	string imagePathSource;
 	byte[] imageFile;
@@ -25,6 +26,7 @@ public class ArtEditPanel : FileBrowserListener {
 
 	void OnEnable() {
 		deleteButton.gameObject.SetActive (false);
+        selectImageText.text = "Select an image file";
 		if (artListItem == null) {
 			//deleteButton.gameObject.SetActive(false);
 			saveButton.gameObject.SetActive(false);
@@ -106,6 +108,7 @@ public class ArtEditPanel : FileBrowserListener {
 			imagePathSource = fileBrowser.GetSelectedFile ();
 			imageFile = File.ReadAllBytes (fileBrowser.GetSelectedFile ());
 			if(imageFile != null && imagePathSource != null && imagePathSource.Length > 0) {
+                selectImageText.text = "";
 				imageChanged = true;
 				Texture2D texture = new Texture2D (1, 1);
 				texture.LoadImage (imageFile);
