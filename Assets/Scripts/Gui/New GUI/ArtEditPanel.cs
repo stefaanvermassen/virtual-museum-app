@@ -8,8 +8,8 @@ using System;
 
 public class ArtEditPanel : FileBrowserListener {
 
-	public InputField title;
-	public InputField description;
+	public CustomInputField title;
+	public CustomInputField description;
 	public GUIControl artPopUp;
 	public ArtListItem artListItem = null;
 	public ImageHighlightButton saveButton;
