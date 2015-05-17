@@ -20,6 +20,6 @@ public class Toast : StatisticsBehaviour {
         text.text = message;
         animator.SetTrigger("Play");
         ClosingButton(message);
-        StartStatistics("Toast");
+        //StartStatistics("Toast");
     }
 }
