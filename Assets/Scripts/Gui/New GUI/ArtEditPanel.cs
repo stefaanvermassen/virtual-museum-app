@@ -8,8 +8,8 @@ using System;
 
 public class ArtEditPanel : FileBrowserListener {
 
-	public InputField title;
-	public InputField description;
+	public CustomInputField title;
+	public CustomInputField description;
 	public GUIControl artPopUp;
 	public ArtListItem artListItem = null;
 	public ImageHighlightButton saveButton;
@@ -18,6 +18,7 @@ public class ArtEditPanel : FileBrowserListener {
 	public Image bigImage;
 	public ArtList artList;
     public Toast toast;
+    public Text selectImageText;
 	bool imageChanged = false;
 	string imagePathSource;
 	byte[] imageFile;
@@ -26,6 +27,7 @@ public class ArtEditPanel : FileBrowserListener {
 
 	void OnEnable() {
 		deleteButton.gameObject.SetActive (false);
+        selectImageText.text = "Select an image file";
 		if (artListItem == null) {
 			//deleteButton.gameObject.SetActive(false);
 			saveButton.gameObject.SetActive(false);
@@ -123,6 +125,7 @@ public class ArtEditPanel : FileBrowserListener {
 			imagePathSource = fileBrowser.GetSelectedFile ();
 			imageFile = File.ReadAllBytes (fileBrowser.GetSelectedFile ());
 			if(imageFile != null && imagePathSource != null && imagePathSource.Length > 0) {
+                selectImageText.text = "";
 				imageChanged = true;
 				Texture2D texture = new Texture2D (1, 1);
 				texture.LoadImage (imageFile);
