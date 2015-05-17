@@ -17,6 +17,7 @@ public class ArtEditPanel : FileBrowserListener {
 	public Button artUploadButton;
 	public Image bigImage;
 	public ArtList artList;
+    public Toast toast;
 	bool imageChanged = false;
 	string imagePathSource;
 	byte[] imageFile;
@@ -91,13 +92,29 @@ public class ArtEditPanel : FileBrowserListener {
 		if (changed) {
 			art.Save();
 			art.SaveRemote(artList.OnArtSaved);
+            AddCredits();
 		}
 		if (artListItem != null) {
 			artListItem = null;
 		}
 		//artList.InitList ();
 		artPopUp.FlipCloseOpen ();
-	}
+    }
+
+    private void AddCredits()
+    {
+        var cc = API.CreditController.Instance;
+        var addedartworkcreditmodel = new API.CreditModel(){ Action = API.CreditActions.ADDEDARTWORK};
+        cc.AddCredit(addedartworkcreditmodel, (info) => {
+        if (info.CreditsAdded) { // check if credits are added
+            toast.Notify("Thank you for sharing. Your total amount of tokens is: " + info.Credits);
+        } else {
+            Debug.Log("No tokens added for new build museum action.");
+        }
+        }, (error) => {
+            Debug.Log("An error occured when adding tokens for the user.");
+        });
+    }
 
 	public override void FileIsSelected ()
 	{
