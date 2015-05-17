@@ -9,7 +9,6 @@ public class UserTest {
     public void LoadUserInformation_LoadingUserData_UserDataLoaded()
     {
         UserData data = new UserData(5, "Bert");
-        var ob = new GameObject();
         var user = new User();
         user.Load(data);
         Assert.AreEqual(user.ID, data.ID, "ID should be " + data.ID + " but it's " + user.ID);
@@ -20,7 +19,6 @@ public class UserTest {
     public void SaveUserInformation_SaveNewName_NewNameSaved()
     {
         UserData data = new UserData(5, "Bert");
-        var ob = new GameObject();
         var user = new User();
         user.Load(data);
         string newName = "Rudyniet";

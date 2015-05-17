@@ -9,7 +9,6 @@ public class ArtTest {
     [Test]
     public void LoadArtInformation_LoadingArtData_ArtDataLoaded()
     {
-        var ob = new GameObject();
         var user = new User();
         UserData userData = new UserData(6, "Rudy");
         user.Load(userData);
@@ -30,7 +29,6 @@ public class ArtTest {
     [Test]
     public void SaveArtInformation_SaveArtData_ArtDataSaved()
     {
-        var ob = new GameObject();
         var user = new User();
         UserData userData = new UserData(6, "Rudy");
         user.Load(userData);
