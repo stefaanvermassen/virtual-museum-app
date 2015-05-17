@@ -11,11 +11,19 @@ public class MuseumLoader : MonoBehaviour {
 	public static MuseumAction currentAction = MuseumAction.Preview;
 	public Museum museum;
 
+
+	/// <summary>
+	/// Raises the enable event.
+	/// An ideal event to resfresh the catalog, with data from the server
+	/// </summary>
 	void OnEnable() {
 		Catalog.Refresh ();
 	}
 
-	// Use this for initialization
+	/// <summary>
+	/// Start this instance.
+	/// 
+	/// </summary>
 	void Start () {
 		MainMenuActions menu = FindObjectOfType<MainMenuActions> ();
 		if (menu != null) { // This the default museum.

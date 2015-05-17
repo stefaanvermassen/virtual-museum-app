@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-public class BuildMuseumActions : MonoBehaviour {
+public class BuildMuseumActions : StatisticsBehaviour {
 
 	public int tool;
 	public ImageHighlightButton[] toolButtons;
@@ -16,10 +16,26 @@ public class BuildMuseumActions : MonoBehaviour {
 	public GUIControl savePopUp;
 	public GUIControl objectsPopUp;
 	public GUIControl stylesPopUp;
+	public GUIControl colorPopUp;
+	public Toast toast;
 	public bool canScroll;
 
 	void Start() {
 		SetTool (1); // Pan tool
+		StartStatistics("Build museum");
+		if (museum.museumID == -1) {
+			var cc = API.CreditController.Instance;
+			var newbuildcreditmodel = new API.CreditModel(){ Action = API.CreditActions.BUILDEDMUSEUM};
+			cc.AddCredit(newbuildcreditmodel, (info) => {
+				if (info.CreditsAdded) { // check if credits are added
+					toast.Notify("Thank you for creating a new museum. Your total amount of tokens is: " + info.Credits);
+				} else {
+					Debug.Log("No tokens added for new build museum action.");
+				}
+			}, (error) => {
+				Debug.Log("An error occured when adding tokens for the user.");
+			});
+		}
 	}
 
 	public void BackToMain() {
@@ -34,12 +50,11 @@ public class BuildMuseumActions : MonoBehaviour {
 		for (int i = 0; i < toolButtons.Length; i++) {
 			if(tool == i) {
 				toolButtons[i].Highlight(true);
-				//toolButtons[i].Select();
 			} else {
 				toolButtons[i].Highlight(false);
 			}
 		}
-		if (DrawController.currentArt < 0) {
+		/*if (DrawController.currentArt < 0) {
 			artBackButton.gameObject.SetActive (false);
 		} else {
 			artBackButton.gameObject.SetActive (true);
@@ -48,11 +63,23 @@ public class BuildMuseumActions : MonoBehaviour {
 			objectBackButton.gameObject.SetActive (false);
 		} else {
 			objectBackButton.gameObject.SetActive (true);
+		}*/
+		if (DrawController.currentArt < 0 && tool == (int)DrawController.Tools.PlacingArt && !artCollectionPopUp.IsOpen ()) {
+			SetTool ((int)DrawController.Tools.Moving);
+		} else if (DrawController.currentObject < 0 && tool == (int)DrawController.Tools.PlacingObject && !objectsPopUp.IsOpen ()) {
+			SetTool ((int)DrawController.Tools.Moving);
 		}
 		if (Input.GetKeyDown (KeyCode.Return)) {
-			if(artBackButton.gameObject.activeSelf) {
-				artCollectionPopUp.Close ();
+			artCollectionPopUp.Close ();
+			objectsPopUp.Close();
+			if(colorPopUp.IsOpen ()) {
+				colorPopUp.Close();
+			} else {
+				stylesPopUp.Close ();
 			}
+			/*if(artBackButton.gameObject.activeSelf) {
+				artCollectionPopUp.Close ();
+			}*/
 		}
 		if (artCollectionPopUp.IsOpen () || savePopUp.IsOpen () || objectsPopUp.IsOpen () || stylesPopUp.IsOpen()) {
 			canScroll = false;
@@ -91,6 +118,18 @@ public class BuildMuseumActions : MonoBehaviour {
 		drawController.SetCurrentFloor (floorID);
 	}
 
+	public void SetWallColor(Color color) {
+		DrawController.currentWallColor = color;
+	}
+	
+	public void SetCeilingColor(Color color) {
+		DrawController.currentCeilingColor = color;
+	}
+	
+	public void SetFloorColor(Color color) {
+		DrawController.currentFloorColor = color;
+	}
+
 	public int GetArt() {
 		return DrawController.currentArt;
 	}
@@ -113,6 +152,18 @@ public class BuildMuseumActions : MonoBehaviour {
 
 	public int GetFrame() {
 		return DrawController.currentFrame;
+	}
+
+	public Color GetFloorColor() {
+		return DrawController.currentFloorColor;
+	}
+	
+	public Color GetWallColor() {
+		return DrawController.currentWallColor;
+	}
+	
+	public Color GetCeilingColor() {
+		return DrawController.currentCeilingColor;
 	}
 
 	public void Preview() {

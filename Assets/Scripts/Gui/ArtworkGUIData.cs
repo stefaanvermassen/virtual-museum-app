@@ -16,6 +16,9 @@ public class ArtworkGUIData : FileBrowserListener
 	//keep track if changed
 	private bool changed;
 
+	/// <summary>
+	/// Files the is selected.
+	/// </summary>
 	public override void FileIsSelected ()
 	{
 		//An image can only be added not edited
@@ -26,11 +29,12 @@ public class ArtworkGUIData : FileBrowserListener
 				changed = true;
 				Refresh ();
 			}
-
 		}
-
 	}
 
+	/// <summary>
+	/// Refresh this instance.
+	/// </summary>
 	public void Refresh ()
 	{
 		//update properties
@@ -50,10 +54,11 @@ public class ArtworkGUIData : FileBrowserListener
 			texture.LoadImage (artWork.imageFile);
 			thumbNail.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
 		}
-
-
 	}
 
+	/// <summary>
+	/// Save this instance.
+	/// </summary>
 	public void Save ()
 	{
 		if (nameInput.text != "" && artWork.name != nameInput.text) {
@@ -64,16 +69,22 @@ public class ArtworkGUIData : FileBrowserListener
 		if (changed) {
 			//save changes
 			artWork.Save ();
-
 		}
-	
 	}
 
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ArtworkGUIData"/> class.
+	/// </summary>
 	public ArtworkGUIData ()
 	{
 		artWork = new Art ();
 	}
 
+
+	/// <summary>
+	/// Init the specified artWork.
+	/// </summary>
+	/// <param name="artWork">Art work.</param>
 	public void Init (Art artWork)
 	{
 		this.artWork = artWork;
@@ -81,11 +92,14 @@ public class ArtworkGUIData : FileBrowserListener
 		Refresh ();
 	}
 
+
+	/// <summary>
+	/// Gets the art work.
+	/// </summary>
+	/// <value>The art work.</value>
 	public Art ArtWork {
 		get {
 			return this.artWork;
 		}
 	}
-
-
 }

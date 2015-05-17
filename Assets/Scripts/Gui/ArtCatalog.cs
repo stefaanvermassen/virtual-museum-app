@@ -5,22 +5,32 @@ using UnityEngine.UI;
 using API;
 using System;
 
-public class ArtCatalog : MonoBehaviour
+public class ArtCatalog : StatisticsBehaviour
 {
 	public GUIControl catalogContent;
 	private bool started = false;
 
+	/// <summary>
+	/// Start this instance.
+	/// </summary>
 	void Start() {
 		Refresh ();
 		started = true;
+		screenName = "ArtCatalog";
 	}
 
+	/// <summary>
+	/// Raises the enable event.
+	/// </summary>
 	void OnEnable() {
 		if(started) Refresh ();
 	}
 
 
-    //show new art panel in catalog
+	/// <summary>
+	/// Adds the new art to catalog.
+	/// </summary>
+	/// <param name="content">Content.</param>
 	public void AddNewArtToCatalog (GUIControl content)
 	{
 		//create and add a clone of the contents defined child
@@ -29,14 +39,23 @@ public class ArtCatalog : MonoBehaviour
 		//update UI elements
 		item.GetComponent<ArtworkGUIData> ().Refresh();
 	}
-	// do this in IEnumerator, because the upload is blocking for the moment, replace later with asyncloader in the upload of Art
+
+	/// <summary>
+	/// Posts the art.
+	/// </summary>
+	/// <param name="content">Content.</param>
 	public void PostArt (GUIControl content)
 	{
 		for (int i=0; i<content.transform.childCount; i++) {
 			content.GetChild (i).GetComponent<ArtworkGUIData> ().Save ();
 		}
 	}
-	
+
+	/// <summary>
+	/// Adds the art to catalog.
+	/// </summary>
+	/// <param name="art">Art.</param>
+	/// <param name="content">Content.</param>
 	private void AddArtToCatalog (Art art, GUIControl content)
 	{
 		//add new item to catalog
@@ -45,8 +64,10 @@ public class ArtCatalog : MonoBehaviour
 		//copy info in item
 		item.GetComponent<ArtworkGUIData>().Init(art);
 	}
+
 	//this method can be optimized a lot by not creating new objects for each refresh but byjust editing them
 	private Dictionary<int, Art>.ValueCollection allArt;
+
 	/// <summary>
 	/// Refresh the specified content.
 	/// </summary>
@@ -57,19 +78,13 @@ public class ArtCatalog : MonoBehaviour
 		catalogContent.RemoveAllChildren ();
 		Catalog.RefreshArtWork (new EventHandler(OnArtLoaded));
 		//get all art from catalog
-		/*allArt = Catalog.getAllArt ().Values;
-		Debug.Log (Catalog.getAllArt ().Count);*/
 
-		//load art in gui, check for each art is it's still loading or not
-		/*foreach (Art art in allArt) {
-			if(art.loadingImage) {
-				art.ArtLoaded += new EventHandler(OnArtLoaded);
-			} else {
-				AddArtToCatalog(art,catalogContent);
-			}
-		}*/
 	}
-
+	/// <summary>
+	/// Raises the art loaded event.
+	/// </summary>
+	/// <param name="sender">Sender.</param>
+	/// <param name="e">E.</param>
 	public void OnArtLoaded(object sender, EventArgs e) {
 		AddArtToCatalog((Art)sender,catalogContent);
 	}

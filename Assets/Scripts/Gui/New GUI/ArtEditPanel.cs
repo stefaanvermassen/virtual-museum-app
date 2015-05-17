@@ -8,8 +8,8 @@ using System;
 
 public class ArtEditPanel : FileBrowserListener {
 
-	public InputField title;
-	public InputField description;
+	public CustomInputField title;
+	public CustomInputField description;
 	public GUIControl artPopUp;
 	public ArtListItem artListItem = null;
 	public ImageHighlightButton saveButton;
@@ -17,6 +17,8 @@ public class ArtEditPanel : FileBrowserListener {
 	public Button artUploadButton;
 	public Image bigImage;
 	public ArtList artList;
+    public Toast toast;
+    public Text selectImageText;
 	bool imageChanged = false;
 	string imagePathSource;
 	byte[] imageFile;
@@ -25,6 +27,7 @@ public class ArtEditPanel : FileBrowserListener {
 
 	void OnEnable() {
 		deleteButton.gameObject.SetActive (false);
+        selectImageText.text = "Select an image file";
 		if (artListItem == null) {
 			//deleteButton.gameObject.SetActive(false);
 			saveButton.gameObject.SetActive(false);
@@ -91,13 +94,29 @@ public class ArtEditPanel : FileBrowserListener {
 		if (changed) {
 			art.Save();
 			art.SaveRemote(artList.OnArtSaved);
+            AddCredits();
 		}
 		if (artListItem != null) {
 			artListItem = null;
 		}
 		//artList.InitList ();
 		artPopUp.FlipCloseOpen ();
-	}
+    }
+
+    private void AddCredits()
+    {
+        var cc = API.CreditController.Instance;
+        var addedartworkcreditmodel = new API.CreditModel(){ Action = API.CreditActions.ADDEDARTWORK};
+        cc.AddCredit(addedartworkcreditmodel, (info) => {
+        if (info.CreditsAdded) { // check if credits are added
+            toast.Notify("Thank you for sharing. Your total amount of tokens is: " + info.Credits);
+        } else {
+            Debug.Log("No tokens added for new build museum action.");
+        }
+        }, (error) => {
+            Debug.Log("An error occured when adding tokens for the user.");
+        });
+    }
 
 	public override void FileIsSelected ()
 	{
@@ -106,6 +125,7 @@ public class ArtEditPanel : FileBrowserListener {
 			imagePathSource = fileBrowser.GetSelectedFile ();
 			imageFile = File.ReadAllBytes (fileBrowser.GetSelectedFile ());
 			if(imageFile != null && imagePathSource != null && imagePathSource.Length > 0) {
+                selectImageText.text = "";
 				imageChanged = true;
 				Texture2D texture = new Texture2D (1, 1);
 				texture.LoadImage (imageFile);

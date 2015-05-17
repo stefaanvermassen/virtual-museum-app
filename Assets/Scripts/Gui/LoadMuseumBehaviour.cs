@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class LoadMuseumBehaviour : MonoBehaviour {
+public class LoadMuseumBehaviour : StatisticsBehaviour {
 
     public Museum museum;
 
@@ -18,6 +18,7 @@ public class LoadMuseumBehaviour : MonoBehaviour {
         content = transform.FindChild("ScrollPanel").FindChild("Content");
         scrollbar = transform.FindChild("ScrollPanel").FindChild("Scrollbar").gameObject.GetComponent<Scrollbar>();
         initialized = true;
+        StartStatistics("LoadMuseum");
     }
 
     void Initialize() {
@@ -57,6 +58,7 @@ public class LoadMuseumBehaviour : MonoBehaviour {
             button.onClick.AddListener(() => {
                 museum.LoadRemote("" + closedM.MuseumID);
                 GetComponent<GUIControl>().Close();
+                ClosingButton("LoadRemote");
             });
         }
     }
