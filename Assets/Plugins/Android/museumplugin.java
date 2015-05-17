@@ -7,7 +7,7 @@ import android.app.Activity;
 
 public class MuseumMainActivity extends UnityPlayerActivity {
 
-    private String path = "";
+    private String path = null;
 
     public String getIntentDataString() {
         return getIntent().getDataString();
@@ -27,7 +27,7 @@ public class MuseumMainActivity extends UnityPlayerActivity {
         if (data != null) {
             path = data.getDataString();
         } else {
-            setResult(Activity.RESULT_CANCELED);
+            path = "";
         }
     }
 

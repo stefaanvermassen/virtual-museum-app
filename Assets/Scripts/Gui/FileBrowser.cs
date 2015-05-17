@@ -24,7 +24,7 @@ public class FileBrowser: GUIControl
 	private string selectedFilePath;
 	public GUIControl placeHolder;
 	private FileBrowserListener listener;
-	public string[] fileExtensions = { ".png", ".jpg", ".PNG", ".JPG" };
+	public string[] fileExtensions;
 
 	private enum Type
 	{
@@ -86,7 +86,7 @@ public class FileBrowser: GUIControl
             activity.Call("startBrowser");
         }));
         
-        while(string.IsNullOrEmpty(activity.Call<string>("getPath")));
+        while(activity.Call<string>("getPath") == null);
         selectedFilePath = WWW.UnEscapeURL(activity.Call<string>("getPath")).Replace("content://fm.clean/document/", "");
     }
 #endif
