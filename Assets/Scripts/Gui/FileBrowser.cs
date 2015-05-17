@@ -19,13 +19,12 @@ public class FileBrowser: GUIControl
 	public GUIControl fileView;
 	public DirectoryInfo previousDirectory, currentDirectory;
 	public string prevSearch = "";
-	public string[] fileExtensions;
 	private string directoryUp = "..";
 	private static int maxNrOfNameChars = 50;
 	private string selectedFilePath;
 	public GUIControl placeHolder;
 	private FileBrowserListener listener;
-	private readonly string[] imageExtensions = { ".png", ".jpe?g", ".PNG", ".JPE?G" };
+	public string[] fileExtensions;
 
 	private enum Type
 	{
@@ -68,7 +67,7 @@ public class FileBrowser: GUIControl
 
 	void Start()
 	{
-		currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+		currentDirectory = new DirectoryInfo(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments));
 		UpdateFileAndFolder ();
         screenName = "FileBrowser";
 	}
@@ -87,7 +86,7 @@ public class FileBrowser: GUIControl
             activity.Call("startBrowser");
         }));
         
-        while(string.IsNullOrEmpty(activity.Call<string>("getPath")));
+        while(activity.Call<string>("getPath") == null);
         selectedFilePath = WWW.UnEscapeURL(activity.Call<string>("getPath")).Replace("content://fm.clean/document/", "");
     }
 #endif
@@ -130,7 +129,7 @@ public class FileBrowser: GUIControl
 
 		IEnumerable<FileInfo> files = GetFileList(search.Length != 0, search);
 		foreach(FileInfo file in files) {
-			AddFileButton(file, FileIsSelectable(file));
+			AddFileButton(file);
 		}
 
 		prevSearch = search;
@@ -145,7 +144,7 @@ public class FileBrowser: GUIControl
 		// Remove the buttons
 		directoryView.RemoveAllChildren();
 		if(currentDirectory.Parent != null) {
-			AddButton(directoryUp, currentDirectory.Parent.FullName, directoryView, Type.FOLDER, true);
+			AddButton(directoryUp, currentDirectory.Parent.FullName, directoryView, Type.FOLDER);
 		}
 
 		DirectoryInfo[] directories = currentDirectory.GetDirectories();
@@ -156,9 +155,9 @@ public class FileBrowser: GUIControl
 		previousDirectory = currentDirectory;
 	}
 
-	private void AddFileButton(FileInfo file, bool enabled)
+	private void AddFileButton(FileInfo file)
 	{
-		AddButton(file.Name, file.FullName, fileView, Type.FILE, enabled);
+		AddButton(file.Name, file.FullName, fileView, Type.FILE);
 	}
 
 	private void SetSelectedFile(String fullPath)
@@ -169,29 +168,18 @@ public class FileBrowser: GUIControl
 
 	private void AddDirectoryButton(DirectoryInfo dir)
 	{
-		AddButton(dir.Name, dir.FullName, directoryView, Type.FOLDER, true);
+		AddButton(dir.Name, dir.FullName, directoryView, Type.FOLDER);
 	}
 
-	private void AddButton(string name, string fullName, GUIControl content, Type type, bool interactable)
+	private void AddButton(string name, string fullName, GUIControl content, Type type)
 	{
 		// Create a clone of the contents child
 		GUIControl buttonControl = content.AddDynamicChild();
 		Button button = buttonControl.GetComponent<Button>();
-		button.interactable = interactable;
 		// Change button label
 		button.GetComponentsInChildren<Text>() [0].text = name;
 		string info = fullName;
 		button.onClick.AddListener(() => HandleClick(info, type));
-	}
-
-	private bool FileIsSelectable(FileInfo file)
-	{
-		foreach(string ext in fileExtensions) {
-			if(file.Name.EndsWith(ext))
-				return true;
-		}
-
-		return false;
 	}
 
 	private void HandleClick(string name, Type type)
@@ -223,7 +211,7 @@ public class FileBrowser: GUIControl
 			searchPattern = "*" + searchPattern + "*";
 		}
 
-		foreach (string ext in imageExtensions)
+		foreach (string ext in fileExtensions)
 		{
 			files = files.Union(SearchDirectory(currentDirectory, searchPattern + ext, recursive), comparer);
 		}
