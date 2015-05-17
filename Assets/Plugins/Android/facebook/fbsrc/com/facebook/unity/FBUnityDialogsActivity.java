@@ -89,7 +89,7 @@ public class FBUnityDialogsActivity extends Activity {
                     @Override
                     public void onComplete(PendingCall pendingCall, Bundle data) {
                         // Verifying that the dialog did actually complete with a post gesture.
-                        if (FacebookDialog.getNativeDialogDidComplete(data)
+                        if (data != null && FacebookDialog.getNativeDialogDidComplete(data)
                                 && FacebookDialog.getNativeDialogCompletionGesture(data).equals(
                                         FacebookDialog.COMPLETION_GESTURE_POST)) {
                             final String postID = FacebookDialog.getNativeDialogPostId(data);
