@@ -54,8 +54,6 @@ public class FileBrowser: GUIControl
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         GetAndroidPath();
-        Debug.Log(GetSelectedFile());
-        Close();
 #endif
 	}
 
@@ -88,10 +86,13 @@ public class FileBrowser: GUIControl
         
         while(activity.Call<string>("getPath") == null);
         selectedFilePath = WWW.UnEscapeURL(activity.Call<string>("getPath")).Replace("content://fm.clean/document/", "");
+        
+        activity.Call("setPath", new object[]{ null });
+        Close();
     }
 #endif
 
-	private void UpdateFileAndFolder()
+    private void UpdateFileAndFolder()
 	{
 		if(directoryLabel == null) {
 			Debug.Log("DirectoryLabel is null.");
