@@ -44,7 +44,10 @@ public class Statistics
     /// </summary>
     private void StartSession()
     {
-        googleAnalytics.StartSession();
+        if (googleAnalytics != null)
+        {
+            googleAnalytics.StartSession();
+        }
     }
 
     /// <summary>
@@ -52,7 +55,10 @@ public class Statistics
     /// </summary>
     private void StopSession()
     {
-        googleAnalytics.StopSession();
+        if (googleAnalytics != null)
+        {
+            googleAnalytics.StopSession();
+        }
     }
 
     /// <summary>
@@ -70,7 +76,10 @@ public class Statistics
         lastScreen = screenName;
         StartSession();
 
-        googleAnalytics.LogScreen(screenName);
+        if (googleAnalytics != null)
+        {
+            googleAnalytics.LogScreen(screenName);
+        }
     }
 
     /// <summary>
@@ -99,8 +108,11 @@ public class Statistics
     /// <param name="description">The description of the exception</param>
     public void LogException(string description)
     {
-        googleAnalytics.LogException(new ExceptionHitBuilder()
-            .SetExceptionDescription(buildException(description)));
+        if (googleAnalytics != null)
+        {
+            googleAnalytics.LogException(new ExceptionHitBuilder()
+                .SetExceptionDescription(buildException(description)));
+        }
     }
 
     /// <summary>
@@ -109,9 +121,12 @@ public class Statistics
     /// <param name="buttonName">The name of the clicked button</param>
     public void ButtonClicked(string buttonName)
     {
-        googleAnalytics.LogEvent(new EventHitBuilder()
-            .SetEventCategory(BUTTON_CATEGORY)
-            .SetEventAction(BUTTON_EVENT + ": " + buildName(buttonName)));
+        if (googleAnalytics != null)
+        {
+            googleAnalytics.LogEvent(new EventHitBuilder()
+                .SetEventCategory(BUTTON_CATEGORY)
+                .SetEventAction(BUTTON_EVENT + ": " + buildName(buttonName)));
+        }
     }
 
     /// <summary>

@@ -20,6 +20,7 @@ public class WalkingActions : MonoBehaviour {
 	public Text[] useVRLabels;
 	public GUIControl savePopUp;
 	public GUIControl[] facebookShareButtons;
+	public Toast toast;
 
     private const string FB_LINK = "https://www.facebook.com/dialog/share?app_id=";
     private const string MUSEUM_LINK = "http://museum.awesomepeople.tv/museum/";
@@ -60,6 +61,22 @@ public class WalkingActions : MonoBehaviour {
 		if((!player.testMode) && ((!CrossPlatformInputManager.GetActiveInputMethod().Equals(CrossPlatformInputManager.ActiveInputMethod.Touch))
 		                   || VRActive)) Screen.lockCursor = true;
 #endif
+
+		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
+			var cc = API.CreditController.Instance;
+			var newentercreditmodel = new API.CreditModel(){ Action = API.CreditActions.ENTERMUSEUM };
+			newentercreditmodel.id = MuseumLoader.museumID;
+			cc.AddCredit(newentercreditmodel, (info) => {
+				if (info.CreditsAdded) { // check if credits are added
+					toast.Notify("Thank you for visiting this museum. Your total amount of tokens is: " + info.Credits);
+				} else {
+					Debug.Log("No tokens added for entering this museum.");
+				}
+			}, (error) => {
+				Debug.Log("An error occured when adding tokens for the user.");
+			});
+		}
+
 
 	}
 
@@ -115,6 +132,8 @@ public class WalkingActions : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if(savePopUp.IsOpen()) {
 				savePopUp.Close();
+			} else if(VRActive) {
+				SwitchVR ();
 			} else {
 #if MOBILE_INPUT
 				Back ();
@@ -179,6 +198,17 @@ public class WalkingActions : MonoBehaviour {
 
     public void FBShare()
     {
+		var cc = API.CreditController.Instance;
+		var sharedlinkcreditmodel = new API.CreditModel(){ Action = API.CreditActions.SHAREDLINK};
+		cc.AddCredit(sharedlinkcreditmodel, (info) => {
+			if (info.CreditsAdded) { // check if credits are added
+				toast.Notify("Thank you for sharing. Your total amount of tokens is: " + info.Credits);
+			} else {
+				Debug.Log("No tokens added for shared link action.");
+			}
+		}, (error) => {
+			Debug.Log("An error occured when adding tokens for the user.");
+		});
 #if UNITY_ANDROID
         if (!FB.IsInitialized)
         {

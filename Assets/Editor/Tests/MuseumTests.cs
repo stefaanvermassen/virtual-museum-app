@@ -98,10 +98,11 @@ public class MuseumTests {
     public void PlacingAndRemovingTiles_PlacingNeighbours_WallsDisappear() {
         var ob = new GameObject();
         var museum = ob.AddComponent<Museum>();
+		Catalog.Refresh ();
         for (int i = 0; i < TEST_CASES; i++) {
-            int x = RandomInt(-100, 100);
+            int x = RandomInt(1, 100);
             int y = 0;
-            int z = RandomInt(-100, 100);
+            int z = RandomInt(1, 100);
             museum.SetTile(1, 1, 1, x, y, z);
             var tile = museum.GetTile(x, y, z);
             museum.SetTile(1, 1, 1, x-1, y, z);

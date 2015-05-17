@@ -23,12 +23,6 @@ namespace API
                 LoginUser(user); 
                 Debug.Log("Logged in from file!");
             }
-            else
-            {
-                //TODO: remove this when we have a login view
-                var request = UserController.Instance.Login("VirtualMuseum", "@wesomePeople_20", (LoginUser),
-                    (error => { Debug.Log("An error occured when logging in"); }));
-            }
         }
 
         private static readonly SessionManager _Instance = new SessionManager();

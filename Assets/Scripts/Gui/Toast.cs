@@ -19,5 +19,7 @@ public class Toast : MonoBehaviour {
     public void Notify(string message) {
         text.text = message;
         animator.SetTrigger("Play");
+        //ClosingButton(message);
+        //StartStatistics("Toast");
     }
 }

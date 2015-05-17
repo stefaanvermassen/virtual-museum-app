@@ -3,6 +3,7 @@ using System.Collections;
 
 public class LoginGUI : MonoBehaviour {
 
+    // TODO: Is this still needed?
 	// Use this for initialization
 	void Start () {
 		//a login stub for the moment

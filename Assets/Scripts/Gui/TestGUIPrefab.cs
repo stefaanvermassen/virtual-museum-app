@@ -3,6 +3,7 @@ using System.Collections;
 
 public class TestGUIPrefab : MonoBehaviour {
 
+    // TODO: Is this still needed?
 	// Use this for initialization
 	void Start () {
 		//initialisation test code, works

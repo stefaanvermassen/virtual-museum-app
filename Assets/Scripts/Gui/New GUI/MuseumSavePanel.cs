@@ -29,6 +29,21 @@ public class MuseumSavePanel : MonoBehaviour {
 	public void Save() {
 		museum.museumName = title.text;
 		museum.description = description.text;
+		if(Application.loadedLevelName.Equals("BuildMuseum")) {
+			Debug.Log("credits");
+			var cc = API.CreditController.Instance;
+	        var creditmodel = new API.CreditModel(){ Action = API.CreditActions.EDITEDMUSEUM};
+	        cc.AddCredit(creditmodel, (info) => {
+				Debug.Log("credits credits cred");
+	            if (info.CreditsAdded) { // check if credits are added
+	                actions.toast.Notify("Thank you for editing your museum. Your total amount of tokens is: " + info.Credits);
+	            } else {
+	                Debug.Log("No tokens added for new build museum action.");
+	            }
+	        }, (error) => {
+	            Debug.Log("An error occured when adding tokens for the user.");
+	        });
+		}
 		//Storage.Instance.SaveRemote(museum);
 		museum.SaveRemote (OnSaved);
 		savePopUp.Close ();

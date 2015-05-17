@@ -10,13 +10,18 @@ using UnityEngine.UI;
 /// <summary>
 /// This class controls the UI to login
 /// </summary>
-public class LoginView : MonoBehaviour
+public class LoginView : StatisticsBehaviour
 {
 
     public CustomInputField usernameField;
     public CustomInputField passwordField;
     public GameObject panel;
     public Toast toast;
+
+    public void Start()
+    {
+        StartStatistics("Login");
+    }
 
     /// <summary>
     /// This logs in the user
@@ -41,6 +46,7 @@ public class LoginView : MonoBehaviour
             toast.Notify("Login successful!");
 			Application.LoadLevel("MainMenuScene");
             panel.SetActive(false);
+            ClosingButton("Login");
         }, (error) =>
         {
 			toast.Notify("Login failed. Please try again...");

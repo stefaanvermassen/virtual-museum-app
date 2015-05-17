@@ -13,6 +13,10 @@ public class ObjectCatalogController : GUIControl
 	// Objects are loaded on initialisation, a collection is dynamic, on the change of a collecition the loadObjects should be called again
 	// or load objects every time the catalog is shown
 
+	/// <summary>
+	/// Open the specified catalogType.
+	/// </summary>
+	/// <param name="catalogType">Catalog type.</param>
 	public void Open (string catalogType)
 	{
 		this.catalogType = catalogType;
@@ -20,16 +24,18 @@ public class ObjectCatalogController : GUIControl
 		//OnTop ();
 		
 	}
-
+	/// <summary>
+	/// Open this instance.
+	/// </summary>
 	public override void Open() {
 		base.Open ();
 		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
 	}
-
-	/*void OnEnable() {
-		loadObjects ((Catalog.CatalogType)Enum.Parse (typeof(Catalog.CatalogType), catalogType));
-	}*/
-
+	
+	/// <summary>
+	/// Shows the models.
+	/// </summary>
+	/// <param name="show">If set to <c>true</c> show.</param>
 	public void ShowModels(bool show) {
 		ObjectCatalogItemController[] items = catalogContent.GetComponentsInChildren<ObjectCatalogItemController>();
 		foreach(ObjectCatalogItemController item in items) {
@@ -37,8 +43,11 @@ public class ObjectCatalogController : GUIControl
 		}
 	}
 
-
-	//use objects id'd as strings in catalog to build the gui
+	/// <summary>
+	/// Loads the objects.
+	/// use objects id'd as strings in catalog to build the gui
+	/// </summary>
+	/// <param name="type">Type.</param>
 	public void loadObjects (Catalog.CatalogType type)
 	{
 
