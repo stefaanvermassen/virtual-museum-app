@@ -62,6 +62,22 @@ public class WalkingActions : MonoBehaviour {
 		                   || VRActive)) Screen.lockCursor = true;
 #endif
 
+		if (MuseumLoader.currentAction == MuseumLoader.MuseumAction.Visit) {
+			var cc = API.CreditController.Instance;
+			var newentercreditmodel = new API.CreditModel(){ Action = API.CreditActions.ENTERMUSEUM };
+			newentercreditmodel.id = MuseumLoader.museumID;
+			cc.AddCredit(newentercreditmodel, (info) => {
+				if (info.CreditsAdded) { // check if credits are added
+					toast.Notify("Thank you for visiting this museum. Your total amount of tokens is: " + info.Credits);
+				} else {
+					Debug.Log("No tokens added for entering this museum.");
+				}
+			}, (error) => {
+				Debug.Log("An error occured when adding tokens for the user.");
+			});
+		}
+
+
 	}
 
 	public void SwitchVR() {

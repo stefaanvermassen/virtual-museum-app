@@ -41,7 +41,7 @@ class OVRShimLoader
 		    EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64)
 			return;
 
-		PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.HiddenByDefault;
+		//PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.HiddenByDefault;
 
 		_useAutoPatcher = !OVRUnityVersionChecker.hasPreInitSupport;
 

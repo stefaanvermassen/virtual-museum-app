@@ -22,8 +22,7 @@ public class BuildMuseumActions : StatisticsBehaviour {
 
 	void Start() {
 		SetTool (1); // Pan tool
-		StartStatistics("Build museum");
-		if (museum.museumID == -1) {
+		if (MuseumLoader.museumID == -1) {
 			var cc = API.CreditController.Instance;
 			var newbuildcreditmodel = new API.CreditModel(){ Action = API.CreditActions.BUILDEDMUSEUM};
 			cc.AddCredit(newbuildcreditmodel, (info) => {
@@ -36,6 +35,7 @@ public class BuildMuseumActions : StatisticsBehaviour {
 				Debug.Log("An error occured when adding tokens for the user.");
 			});
 		}
+		StartStatistics("Build museum");
 	}
 
 	public void BackToMain() {
