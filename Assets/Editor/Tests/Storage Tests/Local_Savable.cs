@@ -46,7 +46,8 @@ public class Local_Savable{
         if (File.Exists(path)) File.Delete(path);
         st.SaveLocal<Museum, MuseumData>(museum);
 
-        Museum museum2 = new Museum();
+        var ob = new GameObject();
+        Museum museum2 = ob.AddComponent<Museum>();
         st.LoadLocal<Museum, MuseumData>(museum2,path);
 
         Assert.AreEqual(museum.ownerID, museum2.ownerID);
