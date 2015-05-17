@@ -72,7 +72,7 @@ public class ArtList : MonoBehaviour {
 		elementCount++;
 		item.transform.SetParent (transform, false);
 		item.list = this;
-		item.artID = (art.ID == null ? -1 : art.ID);
+		item.artID = (art.ID == 0 ? -1 : art.ID); // all IDs in the db start from one
 		item.artArtist = (art.owner.name == null ? "" : art.owner.name);
 		item.artDescription = (art.description == null ? "" : art.description);
 		item.artTitle = (art.name == null ? "" : art.name);

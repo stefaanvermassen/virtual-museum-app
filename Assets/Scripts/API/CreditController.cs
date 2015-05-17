@@ -69,8 +69,12 @@ namespace API
 	}
 
 	public enum CreditActions { 
-		ENTERMUSEUM, 
-		BUILDEDMUSEUM 
+            ENTERMUSEUM, 
+            BUILDEDMUSEUM, 
+            ADDEDARTWORK, 
+            SCANNEDARTWORK, 
+            SHAREDLINK,
+            EDITEDMUSEUM
 	}
 }
 

@@ -86,6 +86,17 @@ public class QRCam : StatisticsBehaviour {
 				var filter = new ArtFilter();
 				filter.Configure(Scanner.code);
 				filter.Collect();
+               	var cc = API.CreditController.Instance;
+        		var sharedlinkcreditmodel = new API.CreditModel(){ Action = API.CreditActions.SCANNEDARTWORK};
+        		cc.AddCredit(sharedlinkcreditmodel, (info) => {
+        			if (info.CreditsAdded) { // check if credits are added
+        				toast.Notify("Thank you for scanning an artwork. Your total amount of tokens is: " + info.Credits);
+        			} else {
+        				Debug.Log("No tokens added for new build museum action.");
+        			}
+        		}, (error) => {
+        			Debug.Log("An error occured when adding tokens for the user.");
+        		});
 				StartScanning();
 			}else{
 				toast.Notify("This is not a Virtual Museum Code, please try again!");

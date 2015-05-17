@@ -17,11 +17,25 @@ public class BuildMuseumActions : StatisticsBehaviour {
 	public GUIControl objectsPopUp;
 	public GUIControl stylesPopUp;
 	public GUIControl colorPopUp;
+	public Toast toast;
 	public bool canScroll;
 
 	void Start() {
 		SetTool (1); // Pan tool
 		StartStatistics("Build museum");
+		if (museum.museumID == -1) {
+			var cc = API.CreditController.Instance;
+			var newbuildcreditmodel = new API.CreditModel(){ Action = API.CreditActions.BUILDEDMUSEUM};
+			cc.AddCredit(newbuildcreditmodel, (info) => {
+				if (info.CreditsAdded) { // check if credits are added
+					toast.Notify("Thank you for creating a new museum. Your total amount of tokens is: " + info.Credits);
+				} else {
+					Debug.Log("No tokens added for new build museum action.");
+				}
+			}, (error) => {
+				Debug.Log("An error occured when adding tokens for the user.");
+			});
+		}
 	}
 
 	public void BackToMain() {
